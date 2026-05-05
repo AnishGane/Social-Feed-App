@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import "dotenv/config";
 import { errorHandler } from "./middleware/error.middleware";
+import routes from "./routes";
 
 const app = express();
 
@@ -19,5 +20,6 @@ app.use(
 );
 
 // Routes
+app.use("/api/v1", routes);
 
 export default app;

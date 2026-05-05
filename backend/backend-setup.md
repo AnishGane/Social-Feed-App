@@ -1,6 +1,6 @@
 1. mkdir backend
 2. pnpm init
-3. **Packages:** pnpm add express@4 mongoose dotenv cors bcryptjs jsonwebtoken cookie-parser
+3. **Packages:** pnpm add express@4 mongoose dotenv cors bcryptjs jsonwebtoken cookie-parser zod express-rate-limit
 4. **Dev deps (TypeScript setup):** pnpm add -D typescript ts-node-dev @types/express @types/node @types/cors @types/bcryptjs @types/jsonwebtoken @types/cookie-parser tsx
 5. Initialize TypeScript: npx tsc --init
 6. Update the `tsconfig.json`:

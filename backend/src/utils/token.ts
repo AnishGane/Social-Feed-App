@@ -6,7 +6,7 @@ export const generateAccessToken = (userId: string) => {
     {
       id: userId,
     },
-    env.JWT_SECRET,
+    env.JWT_SECRET!,
     { expiresIn: "15min" },
   );
 };
@@ -16,7 +16,7 @@ export const generateRefreshToken = (userId: string) => {
     {
       id: userId,
     },
-    env.JWT_SECRET,
+    env.JWT_REFRESH_SECRET!,
     { expiresIn: "7d" },
   );
 };
