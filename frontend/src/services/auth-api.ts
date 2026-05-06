@@ -1,6 +1,15 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./base-api";
 
+type AuthApisResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    user: string;
+    accessToken?: string;
+  } | null;
+};
+
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
@@ -22,14 +31,31 @@ export const authApi = createApi({
       }),
     }),
     // 3. LogoutAPI
-    logoutApi: builder.mutation({
+    logoutApi: builder.mutation<AuthApisResponse, void>({
       query: () => ({
         url: "/auth/logout",
         method: "POST",
       }),
     }),
+    // 4. refresh
+    refresh: builder.mutation<AuthApisResponse, void>({
+      query: () => ({
+        url: "/auth/refresh",
+        method: "POST",
+      }),
+    }),
+    // 5. me(user's own data)
+    me: builder.query<AuthApisResponse, void>({
+      query: () => "/auth/me",
+    }),
   }),
 });
 
-export const { useRegisterMutation, useLoginMutation, useLogoutApiMutation } =
-  authApi;
+export const {
+  useRegisterMutation,
+  useLoginMutation,
+  useLogoutApiMutation,
+  useRefreshMutation,
+  useMeQuery,
+  useLazyMeQuery,
+} = authApi;

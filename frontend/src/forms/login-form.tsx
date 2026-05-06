@@ -25,6 +25,7 @@ import { useAppDispatch } from "@/hooks"
 import { useNavigate } from "react-router-dom"
 import { useLoginMutation } from "@/services/auth-api"
 import { useState } from "react"
+import { toast } from "sonner"
 
 const LoginForm = ({
   className,
@@ -46,7 +47,13 @@ const LoginForm = ({
   async function onSubmit(data: LoginSchemaType) {
     try {
       const res = await login(data).unwrap();
-      dispatch(setCredentials(res));
+
+      dispatch(setCredentials({
+        user: res.data.user,
+        accessToken: res.data.accessToken
+      }));
+
+      toast.success(res.message || "Login successful.");
       navigate("/dashboard");
     } catch (err: any) {
       const message = err?.data?.message || "Login failed. Please try again.";

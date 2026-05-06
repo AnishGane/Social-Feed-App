@@ -30,7 +30,7 @@ export const baseQueryWithReauth: BaseQueryFn<
   let result = await baseQuery(args, api, extraOptions);
 
   // if access token expired
-  if (result.error && result.error.status === 401) {
+  if (result.error && [401, 403].includes(result.error.status as number)) {
     // try refresh
     if (!refreshPromise) {
       refreshPromise = Promise.resolve(
@@ -44,7 +44,12 @@ export const baseQueryWithReauth: BaseQueryFn<
 
     if (refreshResult.data) {
       // save new token
-      api.dispatch(setCredentials(refreshResult.data));
+      api.dispatch(
+        setCredentials({
+          user: (api.getState() as any).auth.user,
+          accessToken: refreshResult.data.accessToken,
+        }),
+      );
 
       // retry original request
       result = await baseQuery(args, api, extraOptions);

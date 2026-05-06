@@ -88,3 +88,11 @@ export const logoutUser = async (userId: string) => {
   user.refreshToken = "";
   await user.save();
 };
+
+export const getMe = async (userId: string) => {
+  const user = await User.findById(userId).select("-password");
+
+  if (!user) throw new ApiError("User not found", 404);
+
+  return user;
+}

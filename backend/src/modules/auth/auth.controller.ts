@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../../utils/async-handler";
 import {
+  getMe,
   loginUser,
   logoutUser,
   refreshTokenService,
@@ -74,4 +75,16 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
   res.clearCookie("refreshToken", { path: "/" });
 
   sendResponse(res, 200, null, "Logout successfully");
+});
+
+export const me = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new ApiError("Unauthorized", 401);
+  }
+
+  const userId = req.user._id;
+
+  const user = await getMe(userId.toString());
+
+  sendResponse(res, 200, user, "User fetched");
 });

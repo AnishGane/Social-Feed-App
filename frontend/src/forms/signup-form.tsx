@@ -53,7 +53,10 @@ const SignupForm = ({
         try {
             const res = await register(data).unwrap();
 
-            dispatch(setCredentials(res));
+            dispatch(setCredentials({
+                user: res.data.user,
+                accessToken: res.data.accessToken
+            }));
             navigate("/dashboard");
 
         } catch (err: any) {

@@ -6,13 +6,16 @@ import { BrowserRouter } from 'react-router-dom'
 import { Toaster } from './components/ui/sonner.tsx'
 import { Provider } from 'react-redux'
 import { store } from './store/store.ts'
+import AuthInitializer from './components/auth-initializer.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <Provider store={store}>
         <Toaster />
-        <App />
+        <AuthInitializer>
+          <App />
+        </AuthInitializer>
       </Provider>
     </BrowserRouter>
   </StrictMode>,
