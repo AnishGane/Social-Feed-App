@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import "dotenv/config";
 import { errorHandler } from "./middleware/error.middleware";
 import routes from "./routes";
+import { env } from "./config/env";
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(errorHandler);
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: env.CLIENT_URL || "http://localhost:5173",
     credentials: true,
   }),
 );

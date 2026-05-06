@@ -19,7 +19,15 @@ export const registerUser = async (
     password,
   });
 
-  return user;
+  const accessToken = generateAccessToken(user._id.toString());
+  const refreshToken = generateRefreshToken(user._id.toString());
+
+  user.refreshToken = refreshToken;
+  await user.save();
+
+  const { password: _password, ...userObj } = user.toObject();
+
+  return { user: userObj, accessToken, refreshToken };
 };
 
 export const loginUser = async (email: string, password: string) => {

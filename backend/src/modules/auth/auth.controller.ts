@@ -12,9 +12,19 @@ import { ApiError } from "../../utils/api-error";
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
-  const user = await registerUser(username, email, password);
+  const { user, accessToken, refreshToken } = await registerUser(
+    username,
+    email,
+    password,
+  );
 
-  sendResponse(res, 201, user, "User registered successfully");
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: env.NODE_ENV === "production",
+  });
+
+  sendResponse(res, 201, { user, accessToken }, "User registered successfully");
 });
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
@@ -24,7 +34,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "lax",
     secure: env.NODE_ENV === "production",
   });
 
@@ -41,8 +51,8 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
 
   res.cookie("refreshToken", tokens.refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: env.NODE_ENV === "production",
+    sameSite: "lax",
   });
 
   sendResponse(
