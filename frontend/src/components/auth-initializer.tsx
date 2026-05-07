@@ -1,6 +1,7 @@
 import { logout, setCredentials } from '@/features/auth/auth-slice';
 import { useAppDispatch } from '@/hooks';
 import { useLazyMeQuery, useRefreshMutation } from '@/services/auth-api';
+import { Loader2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 
 const AuthInitializer = ({ children }: { children: React.ReactNode }) => {
@@ -43,7 +44,7 @@ const AuthInitializer = ({ children }: { children: React.ReactNode }) => {
     if (loading) {
         return (
             <div className="h-screen flex items-center justify-center">
-                <p>Loading...</p>
+                <Loader2 className='animate-spin' />
             </div>
         );
     }

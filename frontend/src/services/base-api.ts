@@ -47,7 +47,7 @@ export const baseQueryWithReauth: BaseQueryFn<
       api.dispatch(
         setCredentials({
           user: (api.getState() as any).auth.user,
-          accessToken: refreshResult.data.accessToken,
+          accessToken: refreshResult.data.data.accessToken,
         }),
       );
 

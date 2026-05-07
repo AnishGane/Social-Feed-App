@@ -1,11 +1,18 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./base-api";
 
+type User = {
+  _id: string;
+  username: string;
+  email: string;
+  avatar?: string;
+};
+
 type AuthApisResponse = {
   success: boolean;
   message: string;
   data: {
-    user: string;
+    user?: User;
     accessToken?: string;
   } | null;
 };
