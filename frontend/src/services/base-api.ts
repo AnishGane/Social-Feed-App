@@ -10,18 +10,22 @@ import { env } from "@/lib/env";
 const baseQuery = fetchBaseQuery({
   baseUrl: `${env.BACKEND_URL}/api/v1`,
   credentials: "include",
+
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as any).auth.accessToken;
+
+    // console.log("REDUX TOKEN:", token);
+
     if (token) {
-      headers.set("authorization", `Bearer ${token}`);
+      headers.set("Authorization", `Bearer ${token}`);
     }
+
     return headers;
   },
 });
 
 let refreshPromise: Promise<any> | null = null;
 
-// wrapper for refresh logic
 export const baseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
   unknown,
@@ -29,12 +33,17 @@ export const baseQueryWithReauth: BaseQueryFn<
 > = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
-  // if access token expired
   if (result.error && [401, 403].includes(result.error.status as number)) {
-    // try refresh
     if (!refreshPromise) {
       refreshPromise = Promise.resolve(
-        baseQuery({ url: "/auth/refresh", method: "POST" }, api, extraOptions),
+        baseQuery(
+          {
+            url: "/auth/refresh",
+            method: "POST",
+          },
+          api,
+          extraOptions,
+        ),
       ).finally(() => {
         refreshPromise = null;
       });
@@ -43,15 +52,15 @@ export const baseQueryWithReauth: BaseQueryFn<
     const refreshResult: any = await refreshPromise;
 
     if (refreshResult.data) {
-      // save new token
+      const newToken = refreshResult.data.data.accessToken;
+
       api.dispatch(
         setCredentials({
           user: (api.getState() as any).auth.user,
-          accessToken: refreshResult.data.data.accessToken,
+          accessToken: newToken,
         }),
       );
 
-      // retry original request
       result = await baseQuery(args, api, extraOptions);
     } else {
       api.dispatch(logout());

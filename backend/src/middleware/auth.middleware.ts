@@ -9,6 +9,8 @@ export const protect = async (
   res: Response,
   next: NextFunction,
 ) => {
+  // console.log(req.headers.authorization);
+
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) throw new ApiError("No token", 401);

@@ -1,42 +1,53 @@
-import { logout, setCredentials } from '@/features/auth/auth-slice';
-import { useAppDispatch } from '@/hooks';
-import { useLazyMeQuery, useRefreshMutation } from '@/services/auth-api';
-import { Loader2 } from 'lucide-react';
-import React, { useEffect, useState } from 'react'
+import { logout, setCredentials } from "@/features/auth/auth-slice";
+import { useAppDispatch } from "@/hooks";
+import { useLazyMeQuery, useRefreshMutation } from "@/services/auth-api";
+import { Loader2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
-const AuthInitializer = ({ children }: { children: React.ReactNode }) => {
+const AuthInitializer = ({
+    children,
+}: {
+    children: React.ReactNode;
+}) => {
     const [loading, setLoading] = useState(true);
+    const [refresh] = useRefreshMutation();
+
     const dispatch = useAppDispatch();
 
-    const [refresh] = useRefreshMutation();
     const [getMe] = useLazyMeQuery();
 
     useEffect(() => {
         const initAuth = async () => {
             try {
-                // 1. refresh token (cookie-based)
-                const res = await refresh().unwrap();
-                const token = res.data.accessToken;
+                const refreshRes = await refresh().unwrap();
 
-                // set token FIRST
-                dispatch(setCredentials({ user: null, accessToken: token }));
+                const token = refreshRes.data?.accessToken;
 
-                // THEN call /me
-                const userRes = await getMe().unwrap();
+                if (!token) {
+                    throw new Error("No token");
+                }
 
-                // 3. store both
                 dispatch(
                     setCredentials({
-                        user: userRes.data,
-                        accessToken: token
+                        user: null,
+                        accessToken: token,
                     })
                 );
-            } catch {
+
+                const meRes = await getMe().unwrap();
+
+                dispatch(
+                    setCredentials({
+                        user: meRes.data,
+                        accessToken: token,
+                    })
+                );
+            } catch (error) {
                 dispatch(logout());
             } finally {
                 setLoading(false);
             }
-        }
+        };
 
         initAuth();
     }, []);
@@ -44,12 +55,12 @@ const AuthInitializer = ({ children }: { children: React.ReactNode }) => {
     if (loading) {
         return (
             <div className="h-screen flex items-center justify-center">
-                <Loader2 className='animate-spin' />
+                <Loader2 className="animate-spin" />
             </div>
         );
     }
 
     return children;
-}
+};
 
-export default AuthInitializer
+export default AuthInitializer;
