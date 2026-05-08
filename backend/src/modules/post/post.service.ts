@@ -14,7 +14,7 @@ export const createPostService = async (
   userId: string,
 ) => {
   if (!Types.ObjectId.isValid(userId)) {
-    throw new ApiError(`Invalid user ${userId} identifier`, 400);
+    throw new ApiError("Invalid user identifier", 400);
   }
 
   return await createPostRepo({
@@ -33,7 +33,7 @@ export const getPostsService = async (skip: number, limit: number) => {
 
 export const getPostByIdService = async (id: string) => {
   if (!Types.ObjectId.isValid(id)) {
-    throw new ApiError(`Invalid post ${id} identifier`, 400);
+    throw new ApiError("Invalid post identifier", 400);
   }
 
   const post = await findPostByIdRepo(id);
@@ -47,36 +47,36 @@ export const updatePostService = async (
   data: UpdatePostInput,
 ) => {
   if (!Types.ObjectId.isValid(id)) {
-    throw new ApiError(`Invalid post ${id} identifier`, 400);
+    throw new ApiError("Invalid post identifier", 400);
   }
 
   if (!Types.ObjectId.isValid(userId)) {
-    throw new ApiError(`Invalid user ${userId} identifier`, 400);
+    throw new ApiError("Invalid user identifier", 400);
   }
 
   const post = await findPostByIdRepo(id);
   if (!post) throw new ApiError("Post not found", 404);
 
   if (post.author.toString() !== userId)
-    throw new ApiError("Unauthorized", 401);
+    throw new ApiError("Forbidden access", 403);
 
   return await updatePostRepo(id, data);
 };
 
 export const deletePostService = async (id: string, userId: string) => {
   if (!Types.ObjectId.isValid(id)) {
-    throw new ApiError(`Invalid post ${id} identifier`, 400);
+    throw new ApiError("Invalid post identifier", 400);
   }
 
   if (!Types.ObjectId.isValid(userId)) {
-    throw new ApiError(`Invalid user ${userId} identifier`, 400);
+    throw new ApiError("Invalid user identifier", 400);
   }
 
   const post = await findPostByIdRepo(id);
 
   if (!post) throw new ApiError("Post not found", 404);
   if (post.author.toString() !== userId)
-    throw new ApiError("Unauthorized", 401);
+    throw new ApiError("Forbidden access", 403);
 
   return deletePostRepo(id);
 };

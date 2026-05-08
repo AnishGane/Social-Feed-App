@@ -21,8 +21,15 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const getPosts = asyncHandler(async (req: Request, res: Response) => {
-  const skip = Number(req.query.skip) || 0;
-  const limit = Number(req.query.limit) || 10;
+  const skip = Number.parseInt(String(req.query.skip ?? "0"), 10);
+  const limit = Number.parseInt(String(req.query.limit ?? "10"), 10);
+
+  if (!Number.isInteger(skip) || skip < 0) {
+    throw new Error("Invalid 'skip' query param");
+  }
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+    throw new Error("Invalid 'limit' query param");
+  }
 
   const posts = await getPostsService(skip, limit);
 
