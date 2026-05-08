@@ -3,7 +3,7 @@ import { register, login, refresh, logout, me } from "./auth.controller";
 import { protect } from "../../middleware/auth.middleware";
 import { validate } from "../../middleware/validate.middleware";
 import { loginSchema, registerSchema } from "./auth.validation";
-import { authLimiter } from "../../config/rate-limit";
+import { authLimiter } from "../../middleware/rate-limit/auth-rate-limit";
 
 const router = Router();
 
