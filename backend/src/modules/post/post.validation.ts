@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createPostInput = z.object({
+export const createPostSchema = z.object({
   title: z
     .string()
     .min(1, "Title must be at least 1 character")

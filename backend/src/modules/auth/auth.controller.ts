@@ -7,37 +7,34 @@ import {
   refreshTokenService,
   registerUser,
 } from "./auth.service";
-import { env } from "../../config/env";
 import { sendResponse } from "../../utils/api-response";
 import { ApiError } from "../../utils/api-error";
+import { loginSchema, registerSchema } from "./auth.validation";
+import { requireUser } from "../../utils/require-user";
+import { refreshCookieOptions } from "../../utils/cookie-options";
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
-  const { username, email, password } = req.body;
+  const parsed = registerSchema.parse(req.body);
   const { user, accessToken, refreshToken } = await registerUser(
-    username,
-    email,
-    password,
+    parsed.username,
+    parsed.email,
+    parsed.password,
   );
 
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: env.NODE_ENV === "production",
-  });
+  res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
   sendResponse(res, 201, { user, accessToken }, "User registered successfully");
 });
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const parsed = loginSchema.parse(req.body);
 
-  const { user, accessToken, refreshToken } = await loginUser(email, password);
+  const { user, accessToken, refreshToken } = await loginUser(
+    parsed.email,
+    parsed.password,
+  );
 
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: env.NODE_ENV === "production",
-  });
+  res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
   sendResponse(res, 200, { user, accessToken }, "Login successfully");
 });
@@ -50,11 +47,7 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
 
   const tokens = await refreshTokenService(token);
 
-  res.cookie("refreshToken", tokens.refreshToken, {
-    httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax",
-  });
+  res.cookie("refreshToken", tokens.refreshToken, refreshCookieOptions);
 
   sendResponse(
     res,
@@ -65,12 +58,9 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const logout = asyncHandler(async (req: Request, res: Response) => {
-  if (!req.user) {
-    throw new ApiError("Unauthorized", 401);
-  }
+  const user = requireUser(req);
 
-  const userId = req.user._id;
-  await logoutUser(userId.toString());
+  await logoutUser(user._id.toString());
 
   res.clearCookie("refreshToken", { path: "/" });
 
@@ -78,13 +68,9 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const me = asyncHandler(async (req: Request, res: Response) => {
-  if (!req.user) {
-    throw new ApiError("Unauthorized", 401);
-  }
+  const user = requireUser(req);
 
-  const userId = req.user._id;
+  const currentUser = await getMe(user._id.toString());
 
-  const user = await getMe(userId.toString());
-
-  sendResponse(res, 200, user, "User fetched");
+  sendResponse(res, 200, currentUser, "User fetched");
 });

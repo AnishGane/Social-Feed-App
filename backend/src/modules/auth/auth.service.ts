@@ -95,4 +95,4 @@ export const getMe = async (userId: string) => {
   if (!user) throw new ApiError("User not found", 404);
 
   return user;
-}
+};
