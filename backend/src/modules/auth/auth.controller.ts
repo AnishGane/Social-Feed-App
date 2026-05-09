@@ -9,16 +9,15 @@ import {
 } from "./auth.service";
 import { sendResponse } from "../../utils/api-response";
 import { ApiError } from "../../utils/api-error";
-import { loginSchema, registerSchema } from "./auth.validation";
 import { requireUser } from "../../utils/require-user";
 import { refreshCookieOptions } from "../../utils/cookie-options";
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
-  const parsed = registerSchema.parse(req.body);
+  const { username, email, password } = req.body;
   const { user, accessToken, refreshToken } = await registerUser(
-    parsed.username,
-    parsed.email,
-    parsed.password,
+    username,
+    email,
+    password,
   );
 
   res.cookie("refreshToken", refreshToken, refreshCookieOptions);
@@ -27,12 +26,9 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
-  const parsed = loginSchema.parse(req.body);
+  const { email, password } = req.body;
 
-  const { user, accessToken, refreshToken } = await loginUser(
-    parsed.email,
-    parsed.password,
-  );
+  const { user, accessToken, refreshToken } = await loginUser(email, password);
 
   res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
