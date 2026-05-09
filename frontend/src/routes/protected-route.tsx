@@ -1,7 +1,8 @@
 import { useAppSelector } from "@/hooks";
-import { Navigate, Outlet } from "react-router-dom";
+import type React from "react";
+import { Navigate } from "react-router-dom";
 
-const ProtectedRoutes = () => {
+const ProtectedRoutes = ({ children }: { children: React.ReactNode }) => {
 
   const { accessToken } = useAppSelector(state => state.auth);
 
@@ -9,7 +10,7 @@ const ProtectedRoutes = () => {
     return <Navigate to="/auth" replace />;
   }
 
-  return <Outlet />;
+  return children;
 }
 
 export default ProtectedRoutes

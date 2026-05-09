@@ -1,13 +1,14 @@
 import { useAppSelector } from "@/hooks"
-import { Navigate, Outlet } from "react-router-dom";
+import type React from "react";
+import { Navigate } from "react-router-dom";
 
-const PublicRoute = () => {
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
     const { accessToken } = useAppSelector(state => state.auth);
     if (accessToken) {
-        return <Navigate to="/dashboard" replace />;
+        return <Navigate to="/" replace />;
     }
 
-    return <Outlet />;
+    return children;
 }
 
 export default PublicRoute

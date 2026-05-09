@@ -1,24 +1,8 @@
-import { Routes, Route } from 'react-router-dom';
-import AuthPage from './pages/auth';
-import PublicRoute from './routes/public-route';
-import ProtectedRoutes from './routes/protected-route';
-import DashboardPage from './pages/dashboard';
+import { RouterProvider } from "react-router-dom"
+import { router } from "./routes/app-route"
 
 const App = () => {
-  return (
-    <Routes>
-
-      <Route index element={<h1>Home</h1>} />
-
-      <Route element={<PublicRoute />}>
-        <Route path='/auth' element={<AuthPage />} />
-      </Route>
-
-      <Route element={<ProtectedRoutes />}>
-        <Route path='/dashboard' element={<DashboardPage />} />
-      </Route>
-    </Routes>
-  )
+  return <RouterProvider router={router} />
 }
 
 export default App
