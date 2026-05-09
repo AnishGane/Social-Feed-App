@@ -1,18 +1,28 @@
 // 1 user = 1 vote per post (enforced by unique index)
 
-import mongoose from "mongoose";
+import mongoose, { Document, Types, Schema } from "mongoose";
 
-const voteSchema = new mongoose.Schema(
+export interface IVote extends Document {
+  user: Types.ObjectId;
+  post: Types.ObjectId;
+
+  type: "up" | "down";
+
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const voteSchema = new Schema<IVote>(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
       index: true,
     },
 
     post: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Post",
       required: true,
       index: true,

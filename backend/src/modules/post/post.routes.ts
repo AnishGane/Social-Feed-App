@@ -13,6 +13,9 @@ import {
   createPostLimiter,
   updatePostLimiter,
 } from "../../middleware/rate-limit/post-rate-limit";
+import { voteSchema } from "../vote/vote.validation";
+import { votePost } from "../vote/vote.controller";
+import { votePostLimiter } from "../../middleware/rate-limit/vote-rate-limit";
 
 const router = express.Router();
 
@@ -33,5 +36,12 @@ router.put(
   updatePost,
 );
 router.delete("/:id", protect, deletePost);
+router.post(
+  "/:postId/vote",
+  protect,
+  votePostLimiter,
+  validate(voteSchema),
+  votePost,
+);
 
 export default router;

@@ -7,7 +7,6 @@ import {
   getPostsService,
   updatePostService,
 } from "./post.service";
-import { createPostSchema, updatePostSchema } from "./post.validation";
 import { sendResponse } from "../../utils/api-response";
 import { requireUser } from "../../utils/require-user";
 

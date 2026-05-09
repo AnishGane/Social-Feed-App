@@ -1,4 +1,5 @@
 import { ApiError } from "../../utils/api-error";
+import { validateObjectId } from "../../utils/validate-object-id";
 import {
   createPostRepo,
   findPostByIdRepo,
@@ -6,20 +7,17 @@ import {
   updatePostRepo,
   deletePostRepo,
 } from "./post.repository";
-import { CreatePostInput, UpdatePostInput } from "./post.types";
-import { Types } from "mongoose";
+import { CreatePostInput, UpdatePostInput } from "./post.validation";
 
 export const createPostService = async (
   data: CreatePostInput,
   userId: string,
 ) => {
-  if (!Types.ObjectId.isValid(userId)) {
-    throw new ApiError("Invalid user identifier", 400);
-  }
+  const userObjectId = validateObjectId(userId, "User");
 
   return await createPostRepo({
     ...data,
-    author: new Types.ObjectId(userId),
+    author: userObjectId,
   });
 };
 
@@ -32,11 +30,9 @@ export const getPostsService = async (skip: number, limit: number) => {
 };
 
 export const getPostByIdService = async (id: string) => {
-  if (!Types.ObjectId.isValid(id)) {
-    throw new ApiError("Invalid post identifier", 400);
-  }
+  const postObjectId = validateObjectId(id, "Post");
 
-  const post = await findPostByIdRepo(id);
+  const post = await findPostByIdRepo(postObjectId);
   if (!post) throw new ApiError("Post not found", 404);
   return post;
 };
@@ -46,36 +42,27 @@ export const updatePostService = async (
   userId: string,
   data: UpdatePostInput,
 ) => {
-  if (!Types.ObjectId.isValid(id)) {
-    throw new ApiError("Invalid post identifier", 400);
-  }
+  const postObjectId = validateObjectId(id, "Post");
 
-  if (!Types.ObjectId.isValid(userId)) {
-    throw new ApiError("Invalid user identifier", 400);
-  }
+  const userObjectId = validateObjectId(userId, "User");
 
-  const post = await findPostByIdRepo(id);
+  const post = await findPostByIdRepo(postObjectId);
   if (!post) throw new ApiError("Post not found", 404);
 
-  if (post.author.toString() !== userId)
+  if (!post.author.equals(userObjectId))
     throw new ApiError("Forbidden access", 403);
 
   return await updatePostRepo(id, data);
 };
 
 export const deletePostService = async (id: string, userId: string) => {
-  if (!Types.ObjectId.isValid(id)) {
-    throw new ApiError("Invalid post identifier", 400);
-  }
+  const postObjectId = validateObjectId(id, "Post");
+  const userObjectId = validateObjectId(userId, "User");
 
-  if (!Types.ObjectId.isValid(userId)) {
-    throw new ApiError("Invalid user identifier", 400);
-  }
-
-  const post = await findPostByIdRepo(id);
+  const post = await findPostByIdRepo(postObjectId);
 
   if (!post) throw new ApiError("Post not found", 404);
-  if (post.author.toString() !== userId)
+  if (!post.author.equals(userObjectId))
     throw new ApiError("Forbidden access", 403);
 
   return deletePostRepo(id);
