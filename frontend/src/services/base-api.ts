@@ -33,7 +33,14 @@ export const baseQueryWithReauth: BaseQueryFn<
 > = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
-  if (result.error && [401, 403].includes(result.error.status as number)) {
+  const isRefreshCall =
+    typeof args !== "string" && args.url === "/auth/refresh";
+
+  if (
+    result.error &&
+    [401, 403].includes(result.error.status as number) &&
+    !isRefreshCall
+  ) {
     if (!refreshPromise) {
       refreshPromise = Promise.resolve(
         baseQuery(

@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import { ApiError } from "./api-error";
 
 export const validateObjectId = (
-  id: string,
+  id: string | Types.ObjectId,
   field = "Resource",
 ): Types.ObjectId => {
   if (!Types.ObjectId.isValid(id)) {

@@ -9,9 +9,10 @@ import {
   updateVoteRepo,
 } from "./vote.repository";
 import postModel from "../post/post.model";
+
 export const voteService = async (
-  userId: string,
-  postId: string,
+  userId: string | Types.ObjectId,
+  postId: string | Types.ObjectId,
   type: "up" | "down",
 ) => {
   validateObjectId(userId, "User");

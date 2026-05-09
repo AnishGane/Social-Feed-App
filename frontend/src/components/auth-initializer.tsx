@@ -2,7 +2,7 @@ import { logout, setCredentials } from "@/features/auth/auth-slice";
 import { useAppDispatch } from "@/hooks";
 import { useLazyMeQuery, useRefreshMutation } from "@/services/auth-api";
 import { Loader2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const AuthInitializer = ({
     children,
@@ -11,21 +11,21 @@ const AuthInitializer = ({
 }) => {
     const [loading, setLoading] = useState(true);
     const [refresh] = useRefreshMutation();
+    const initialized = useRef(false);
 
     const dispatch = useAppDispatch();
 
     const [getMe] = useLazyMeQuery();
 
     useEffect(() => {
+        if (initialized.current) return;
+
+        initialized.current = true;
         const initAuth = async () => {
             try {
                 const refreshRes = await refresh().unwrap();
 
-                const token = refreshRes.data?.accessToken;
-
-                if (!token) {
-                    throw new Error("No token");
-                }
+                const token = refreshRes.data.accessToken;
 
                 dispatch(
                     setCredentials({
