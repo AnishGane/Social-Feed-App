@@ -1,9 +1,6 @@
 import {
     BadgeCheck,
     Bell,
-    ChevronUp,
-    ChevronsUp,
-    ChevronsUpDown,
     CreditCard,
     LogOut,
     Sparkles,
@@ -29,7 +26,9 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar"
-import type { User } from "@/services/auth-api"
+import { Button } from "./ui/button"
+import UserAvatar from "./user-avatar"
+import type { User } from "@/types"
 
 const NavUser = ({
     user,
@@ -45,22 +44,19 @@ const NavUser = ({
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton
                             size="lg"
-                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground md:h-10 md:px-1 py-6"
+                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground  md:h-10 md:px-1 py-6"
                         >
-                            <Avatar className="size-8 rounded-lg">
-                                <AvatarImage src={user.avatar} alt={user.username} />
-                                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                            </Avatar>
+                            <UserAvatar seed={user.username} />
                             <div className="grid flex-1 text-left text-base leading-tight">
-                                <span className="truncate font-medium">{user.username}</span>
+                                <span className="truncate font-normal">{user.username}</span>
                                 <span className="truncate text-sm tracking-wide">{user.email}</span>
                             </div>
-                            <ChevronUp className="ml-auto size-4 cursor-pointer" />
+                            <Button variant="outline" size="sm">Beta</Button>
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                        side={isMobile ? "bottom" : "right"}
+                        side={isMobile ? "bottom" : "top"}
                         align="end"
                         sideOffset={4}
                     >

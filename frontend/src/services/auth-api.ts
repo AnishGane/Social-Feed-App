@@ -1,28 +1,40 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./base-api";
+import type { User } from "@/types";
+import type { ApiResponse } from "@/types/api";
 
-export type User = {
-  _id: string;
+export type RegisterInput = {
   username: string;
   email: string;
-  avatar?: string;
+  password: string;
 };
 
-type AuthApisResponse = {
-  success: boolean;
-  message: string;
-  data: {
-    user?: User;
-    accessToken?: string;
-  } | null;
+export type LoginInput = {
+  email: string;
+  password: string;
 };
+
+export type AuthResponse = ApiResponse<{
+  user: User;
+  accessToken: string;
+}>;
+
+export type RefreshResponse = ApiResponse<{
+  accessToken: string;
+}>;
+
+export type LogoutResponse = ApiResponse<null>;
+
+export type MeResponse = ApiResponse<User>;
 
 export const authApi = createApi({
   reducerPath: "authApi",
+
   baseQuery: baseQueryWithReauth,
+
   endpoints: (builder) => ({
     //1. register
-    register: builder.mutation({
+    register: builder.mutation<AuthResponse, RegisterInput>({
       query: (data) => ({
         url: "/auth/register",
         method: "POST",
@@ -30,7 +42,7 @@ export const authApi = createApi({
       }),
     }),
     // 2. login
-    login: builder.mutation({
+    login: builder.mutation<AuthResponse, LoginInput>({
       query: (data) => ({
         url: "/auth/login",
         method: "POST",
@@ -38,21 +50,21 @@ export const authApi = createApi({
       }),
     }),
     // 3. LogoutAPI
-    logoutApi: builder.mutation<AuthApisResponse, void>({
+    logoutApi: builder.mutation<LogoutResponse, void>({
       query: () => ({
         url: "/auth/logout",
         method: "POST",
       }),
     }),
     // 4. refresh
-    refresh: builder.mutation<AuthApisResponse, void>({
+    refresh: builder.mutation<RefreshResponse, void>({
       query: () => ({
         url: "/auth/refresh",
         method: "POST",
       }),
     }),
     // 5. me(user's own data)
-    me: builder.query<AuthApisResponse, void>({
+    me: builder.query<MeResponse, void>({
       query: () => "/auth/me",
     }),
   }),

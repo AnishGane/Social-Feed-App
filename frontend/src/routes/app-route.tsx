@@ -4,6 +4,14 @@ import AppLayout from "@/layouts/app-layout";
 import PublicRoute from "./public-route";
 import AuthLayout from "@/layouts/auth-layout";
 import AuthPage from "@/pages/auth";
+import HomePage from "@/pages/home";
+import ProfilePage from "@/pages/profile";
+import BookmarksPage from "@/pages/bookmarks";
+import SettingsPage from "@/pages/settings";
+import SearchPage from "@/pages/search";
+import CreatePostPage from "@/pages/create-post";
+import NotificationsPage from "@/pages/notifications";
+import NotFoundPage from "@/pages/not-found";
 
 export const router = createBrowserRouter([
     {
@@ -16,19 +24,31 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <h1>Dashboard</h1>
+                element: <HomePage />
             },
             {
                 path: "/profile",
-                element: <h1>Profile</h1>
+                element: <ProfilePage />
             },
             {
                 path: "/bookmarks",
-                element: <h1>Bookmarks</h1>
+                element: <BookmarksPage />
             },
             {
                 path: "/settings",
-                element: <h1>Settings</h1>
+                element: <SettingsPage />
+            },
+            {
+                path: "/search",
+                element: <SearchPage />
+            },
+            {
+                path: "/create-post",
+                element: <CreatePostPage />
+            },
+            {
+                path: "/notifications",
+                element: <NotificationsPage />
             }
         ]
     },
@@ -50,6 +70,6 @@ export const router = createBrowserRouter([
 
     {
         path: "*",
-        element: <h1>404</h1>,
+        element: <NotFoundPage />,
     },
 ])
