@@ -1,18 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./base-api";
-import type { User } from "@/types";
 import type { ApiResponse } from "@/types/api";
-
-export type RegisterInput = {
-  username: string;
-  email: string;
-  password: string;
-};
-
-export type LoginInput = {
-  email: string;
-  password: string;
-};
+import type { LoginInput, RegisterInput, User } from "@/types";
 
 export type AuthResponse = ApiResponse<{
   user: User;

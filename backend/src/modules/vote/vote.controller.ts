@@ -7,8 +7,7 @@ import { sendResponse } from "../../utils/api-response";
 export const votePost = asyncHandler(async (req: Request, res: Response) => {
   const user = requireUser(req);
 
-  const { postId } = req.params;
-  const { type } = req.body;
+  const { type, postId } = req.body;
 
   // Validate required fields
   if (!postId) {

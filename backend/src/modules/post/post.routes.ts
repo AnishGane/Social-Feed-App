@@ -5,6 +5,7 @@ import {
   deletePost,
   getPostById,
   getPosts,
+  getPostsByUser,
   updatePost,
 } from "./post.controller";
 import { validate } from "../../middleware/validate.middleware";
@@ -27,6 +28,9 @@ router.post(
   createPost,
 );
 router.get("/", getPosts);
+router.post("/vote", protect, votePostLimiter, validate(voteSchema), votePost);
+router.get("/user/:userId", protect, getPostsByUser);
+
 router.get("/:id", getPostById);
 router.put(
   "/:id",
@@ -36,12 +40,5 @@ router.put(
   updatePost,
 );
 router.delete("/:id", protect, deletePost);
-router.post(
-  "/:postId/vote",
-  protect,
-  votePostLimiter,
-  validate(voteSchema),
-  votePost,
-);
 
 export default router;

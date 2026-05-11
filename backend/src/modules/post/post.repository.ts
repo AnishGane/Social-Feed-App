@@ -24,3 +24,15 @@ export const getPostsRepo = (skip = 0, limit = 10): Promise<IPost[]> =>
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit);
+
+export const getPostsByUserRepo = (
+  userId: string | Types.ObjectId,
+  skip = 0,
+  limit = 10,
+): Promise<IPost[]> =>
+  postModel
+    .find({ author: userId, isPublished: true })
+    .populate("author", "name avatar")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);

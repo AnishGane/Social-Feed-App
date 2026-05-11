@@ -4,6 +4,7 @@ import {
   createPostService,
   deletePostService,
   getPostByIdService,
+  getPostsByUserService,
   getPostsService,
   updatePostService,
 } from "./post.service";
@@ -19,6 +20,7 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
   sendResponse(res, 201, post, "Post created successfully");
 });
 
+// Get Post of all the users
 export const getPosts = asyncHandler(async (req: Request, res: Response) => {
   const skip = Number.parseInt(String(req.query.skip ?? "0"), 10);
   const limit = Number.parseInt(String(req.query.limit ?? "10"), 10);
@@ -61,3 +63,24 @@ export const deletePost = asyncHandler(async (req: Request, res: Response) => {
 
   sendResponse(res, 200, null, "Post deleted successfully");
 });
+
+// Get posts of a single user
+export const getPostsByUser = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.params.userId;
+
+    const skip = Number.parseInt(String(req.query.skip ?? "0"), 10);
+    const limit = Number.parseInt(String(req.query.limit ?? "10"), 10);
+
+    if (!Number.isInteger(skip) || skip < 0) {
+      throw new Error("Invalid 'skip' query param");
+    }
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+      throw new Error("Invalid 'limit' query param");
+    }
+
+    const posts = await getPostsByUserService(userId.toString(), skip, limit);
+
+    sendResponse(res, 200, posts, "User posts fetched successfully");
+  },
+);

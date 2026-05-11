@@ -1,17 +1,9 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./base-api";
 import type { ApiResponse } from "@/types/api";
-import type { Post, VoteType } from "@/types";
+import type { CreatePostInput, Post, VoteType } from "@/types";
 
 type GetPostsResponse = ApiResponse<Post[]>;
-
-type CreatePostInput = {
-  title: string;
-  content: string;
-  thumbnailImage?: string;
-  mainImage?: string;
-  tags?: string[];
-};
 
 type VoteResponse = ApiResponse<{
   upvotesCount: number;
@@ -78,9 +70,9 @@ export const postApi = createApi({
       }
     >({
       query: ({ postId, type }) => ({
-        url: `/posts/${postId}/vote`,
+        url: `/posts/vote`,
         method: "POST",
-        body: { type },
+        body: { postId, type },
       }),
 
       async onQueryStarted(_, { queryFulfilled }) {

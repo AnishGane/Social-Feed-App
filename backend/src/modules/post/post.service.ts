@@ -6,6 +6,7 @@ import {
   getPostsRepo,
   updatePostRepo,
   deletePostRepo,
+  getPostsByUserRepo,
 } from "./post.repository";
 import { CreatePostInput, UpdatePostInput } from "./post.validation";
 
@@ -66,4 +67,18 @@ export const deletePostService = async (id: string, userId: string) => {
     throw new ApiError("Forbidden access", 403);
 
   return deletePostRepo(id);
+};
+
+export const getPostsByUserService = async (
+  userId: string,
+  skip = 0,
+  limit = 0,
+) => {
+  const userObjectId = validateObjectId(userId);
+
+  if (skip < 0 || limit <= 0) {
+    throw new ApiError("Invalid pagination parameters", 400);
+  }
+
+  return await getPostsByUserRepo(userObjectId, skip, limit);
 };

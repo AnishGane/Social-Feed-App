@@ -1,23 +1,27 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+
+import {
+    SidebarInset,
+    SidebarProvider,
+    SidebarTrigger,
+} from "@/components/ui/sidebar";
+
 import { Outlet } from "react-router-dom";
 
 const AppLayout = () => {
     return (
         <SidebarProvider>
-            <div className="min-h-screen flex bg-background">
-                <AppSidebar />
+            <AppSidebar />
 
-                <main className="flex-1">
-                    <div className="border-b p-4">
-                        <SidebarTrigger />
-                    </div>
+            <SidebarInset>
+                <header className="flex h-16 items-center border-b px-4">
+                    <SidebarTrigger />
+                </header>
 
-                    <div className="p-4">
-                        <Outlet />
-                    </div>
+                <main className="min-h-[calc(100vh-64px)] bg-background">
+                    <Outlet />
                 </main>
-            </div>
+            </SidebarInset>
         </SidebarProvider>
     );
 };
