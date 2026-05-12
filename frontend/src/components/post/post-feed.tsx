@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Post } from "@/types";
-import { useGetPostsQuery } from "@/services/post-api";
+import { useLazyGetPostsQuery } from "@/services/post-api";
 import PostCard from "./post-card";
 import PostSkeleton from "./post-skeleton";
 import EmptyFeed from "./empty-feed";
@@ -8,59 +8,138 @@ import EmptyFeed from "./empty-feed";
 const LIMIT = 10;
 
 const PostFeed = () => {
-    const [skip, setSkip] = useState(0);
+    const [posts, setPosts] = useState<Post[]>(
+        []
+    );
 
-    const [allPosts, setAllPosts] = useState<Post[]>([]);
+    const [nextCursor, setNextCursor] =
+        useState<string | null>(null);
 
-    const [hasMore, setHasMore] = useState(true);
+    /*
+      HAS MORE POSTS
+    */
+    const [hasMore, setHasMore] =
+        useState(true);
 
-    const loadMoreRef = useRef<HTMLDivElement | null>(null);
+    const [initialLoading, setInitialLoading] =
+        useState(true);
 
-    const { data, isLoading, isFetching } =
-        useGetPostsQuery({
-            skip,
-            limit: LIMIT,
-        });
+    /*
+      INTERSECTION OBSERVER REF
+    */
+    const loadMoreRef =
+        useRef<HTMLDivElement | null>(null);
 
-    useEffect(() => {
-        if (!data?.data) return;
+    /*
+      RTK QUERY LAZY HOOK
+    */
+    const [
+        getPosts,
+        { isFetching },
+    ] = useLazyGetPostsQuery();
 
-        setAllPosts((prev) => {
-            const existingIds = new Set(
-                prev.map((post) => post._id)
-            );
+    const fetchPosts = useCallback(
+        async (cursor?: string) => {
+            try {
+                const response =
+                    await getPosts({
+                        cursor,
+                        limit: LIMIT,
+                    }).unwrap();
 
-            const newPosts = data.data.filter(
-                (post) => !existingIds.has(post._id)
-            );
+                const incomingPosts =
+                    response.data.posts;
 
-            return [...prev, ...newPosts];
-        });
+                const incomingNextCursor =
+                    response.data.nextCursor;
 
-        if (data.data.length < LIMIT) {
-            setHasMore(false);
-        }
-    }, [data]);
+                /*
+                  APPEND UNIQUE POSTS
+                */
+                setPosts((prev) => {
+                    const existingIds =
+                        new Set(
+                            prev.map(
+                                (post) =>
+                                    post._id
+                            )
+                        );
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                const first = entries[0];
+                    const uniquePosts =
+                        incomingPosts.filter(
+                            (post) =>
+                                !existingIds.has(
+                                    post._id
+                                )
+                        );
 
+                    return [
+                        ...prev,
+                        ...uniquePosts,
+                    ];
+                });
+
+                setNextCursor(
+                    incomingNextCursor
+                );
+
+                /*
+                  NO MORE POSTS
+                */
                 if (
-                    first.isIntersecting &&
-                    hasMore &&
-                    !isFetching
+                    !incomingNextCursor ||
+                    incomingPosts.length <
+                    LIMIT
                 ) {
-                    setSkip((prev) => prev + LIMIT);
+                    setHasMore(false);
                 }
-            },
-            {
-                threshold: 1,
+            } catch (error) {
+                console.error(
+                    "Failed to fetch posts",
+                    error
+                );
+            } finally {
+                setInitialLoading(false);
             }
-        );
+        },
+        [getPosts]
+    );
 
-        const currentRef = loadMoreRef.current;
+    /*
+      INITIAL FETCH
+    */
+    useEffect(() => {
+        fetchPosts();
+    }, [fetchPosts]);
+
+    /*
+      INTERSECTION OBSERVER
+    */
+    useEffect(() => {
+        const observer =
+            new IntersectionObserver(
+                (entries) => {
+                    const first =
+                        entries[0];
+
+                    if (
+                        first.isIntersecting &&
+                        hasMore &&
+                        !isFetching &&
+                        nextCursor
+                    ) {
+                        fetchPosts(
+                            nextCursor
+                        );
+                    }
+                },
+                {
+                    threshold: 1,
+                }
+            );
+
+        const currentRef =
+            loadMoreRef.current;
 
         if (currentRef) {
             observer.observe(currentRef);
@@ -68,16 +147,23 @@ const PostFeed = () => {
 
         return () => {
             if (currentRef) {
-                observer.unobserve(currentRef);
+                observer.unobserve(
+                    currentRef
+                );
             }
         };
-    }, [hasMore, isFetching]);
+    }, [
+        fetchPosts,
+        hasMore,
+        isFetching,
+        nextCursor,
+    ]);
 
     const handleVoteUpdate = (
         postId: string,
         updates: Partial<Post>
     ) => {
-        setAllPosts((prev) =>
+        setPosts((prev) =>
             prev.map((post) =>
                 post._id === postId
                     ? {
@@ -89,7 +175,10 @@ const PostFeed = () => {
         );
     };
 
-    if (isLoading && allPosts.length === 0) {
+    if (
+        initialLoading &&
+        posts.length === 0
+    ) {
         return (
             <div className="space-y-4">
                 <PostSkeleton />
@@ -99,17 +188,19 @@ const PostFeed = () => {
         );
     }
 
-    if (!allPosts.length) {
+    if (!posts.length) {
         return <EmptyFeed />;
     }
 
     return (
         <div className="space-y-4">
-            {allPosts.map((post) => (
+            {posts.map((post) => (
                 <PostCard
                     key={post._id}
                     post={post}
-                    onVoteUpdate={handleVoteUpdate}
+                    onVoteUpdate={
+                        handleVoteUpdate
+                    }
                 />
             ))}
 
@@ -119,7 +210,10 @@ const PostFeed = () => {
                 </div>
             )}
 
-            <div ref={loadMoreRef} />
+            <div
+                ref={loadMoreRef}
+                className="h-10"
+            />
         </div>
     );
 };

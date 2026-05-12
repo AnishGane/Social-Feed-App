@@ -1,6 +1,6 @@
 // DB Queries all here
 
-import { Types } from "mongoose";
+import { Types, isValidObjectId } from "mongoose";
 import postModel, { IPost } from "./post.model";
 
 export const createPostRepo = (data: Partial<IPost>) => postModel.create(data);
@@ -17,22 +17,65 @@ export const deletePostRepo = (id: string | Types.ObjectId) =>
 export const findPostByIdRepo = (id: string | Types.ObjectId) =>
   postModel.findById(id);
 
-export const getPostsRepo = (skip = 0, limit = 10): Promise<IPost[]> =>
-  postModel
-    .find({ isPublished: true })
-    .populate("author", "name avatar")
-    .sort({ createdAt: -1 })
-    .skip(skip)
+export const getPostsRepo = async (cursor?: string, limit = 10) => {
+  const query: any = {
+    isPublished: true,
+  };
+
+  if (cursor) {
+    if (!isValidObjectId(cursor)) {
+      throw new Error("Invalid cursor format");
+    }
+    query._id = {
+      $lt: new Types.ObjectId(cursor),
+    };
+  }
+
+  const posts = await postModel
+    .find(query)
+    .populate("author", "username avatar")
+    .sort({ _id: -1 })
     .limit(limit);
 
-export const getPostsByUserRepo = (
+  const nextCursor =
+    posts.length === limit ? posts[posts.length - 1]._id : null;
+
+  return {
+    posts,
+    nextCursor,
+  };
+};
+
+export const getPostsByUserRepo = async (
   userId: string | Types.ObjectId,
-  skip = 0,
+  cursor?: string,
   limit = 10,
-): Promise<IPost[]> =>
-  postModel
-    .find({ author: userId, isPublished: true })
-    .populate("author", "name avatar")
-    .sort({ createdAt: -1 })
-    .skip(skip)
+) => {
+  const query: any = {
+    author: userId,
+    isPublished: true,
+  };
+
+  if (cursor) {
+    if (!isValidObjectId(cursor)) {
+      throw new Error("Invalid cursor format");
+    }
+    query._id = {
+      $lt: new Types.ObjectId(cursor),
+    };
+  }
+
+  const posts = await postModel
+    .find(query)
+    .populate("author", "username avatar")
+    .sort({ _id: -1 })
     .limit(limit);
+
+  const nextCursor =
+    posts.length === limit ? posts[posts.length - 1]._id : null;
+
+  return {
+    posts,
+    nextCursor,
+  };
+};

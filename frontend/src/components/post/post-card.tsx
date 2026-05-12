@@ -1,5 +1,3 @@
-// components/post/post-card.tsx
-
 import type { Post } from "@/types";
 
 import {
@@ -25,6 +23,7 @@ const PostCard = ({
     post,
     onVoteUpdate,
 }: Props) => {
+    console.log(post.mainImage)
     return (
         <Card>
             <CardHeader>

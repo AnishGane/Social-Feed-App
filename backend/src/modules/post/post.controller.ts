@@ -22,19 +22,15 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
 
 // Get Post of all the users
 export const getPosts = asyncHandler(async (req: Request, res: Response) => {
-  const skip = Number.parseInt(String(req.query.skip ?? "0"), 10);
-  const limit = Number.parseInt(String(req.query.limit ?? "10"), 10);
+  const cursor =
+    typeof req.query.cursor === "string" ? req.query.cursor : undefined;
+  const rawLimit = Number(req.query.limit);
+  const limit =
+    !isNaN(rawLimit) && rawLimit > 0 && rawLimit <= 100 ? rawLimit : 10;
 
-  if (!Number.isInteger(skip) || skip < 0) {
-    throw new Error("Invalid 'skip' query param");
-  }
-  if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
-    throw new Error("Invalid 'limit' query param");
-  }
+  const result = await getPostsService(cursor, limit);
 
-  const posts = await getPostsService(skip, limit);
-
-  sendResponse(res, 200, posts, "Posts fetched successfully");
+  sendResponse(res, 200, result, "Posts fetched successfully");
 });
 
 export const getPostById = asyncHandler(async (req: Request, res: Response) => {
@@ -67,20 +63,19 @@ export const deletePost = asyncHandler(async (req: Request, res: Response) => {
 // Get posts of a single user
 export const getPostsByUser = asyncHandler(
   async (req: Request, res: Response) => {
+    const cursor =
+      typeof req.query.cursor === "string" ? req.query.cursor : undefined;
+    const rawLimit = Number(req.query.limit);
+    const limit =
+      !isNaN(rawLimit) && rawLimit > 0 && rawLimit <= 100 ? rawLimit : 10;
     const userId = req.params.userId;
 
-    const skip = Number.parseInt(String(req.query.skip ?? "0"), 10);
-    const limit = Number.parseInt(String(req.query.limit ?? "10"), 10);
+    const result = await getPostsByUserService(
+      userId.toString(),
+      cursor,
+      limit,
+    );
 
-    if (!Number.isInteger(skip) || skip < 0) {
-      throw new Error("Invalid 'skip' query param");
-    }
-    if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
-      throw new Error("Invalid 'limit' query param");
-    }
-
-    const posts = await getPostsByUserService(userId.toString(), skip, limit);
-
-    sendResponse(res, 200, posts, "User posts fetched successfully");
+    sendResponse(res, 200, result, "User posts fetched successfully");
   },
 );

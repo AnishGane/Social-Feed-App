@@ -1,9 +1,9 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./base-api";
 import type { ApiResponse } from "@/types/api";
-import type { CreatePostInput, Post, VoteType } from "@/types";
+import type { CreatePostInput, PaginatedPosts, Post, VoteType } from "@/types";
 
-type GetPostsResponse = ApiResponse<Post[]>;
+type GetPostsResponse = ApiResponse<PaginatedPosts>;
 
 type VoteResponse = ApiResponse<{
   upvotesCount: number;
@@ -20,19 +20,23 @@ export const postApi = createApi({
   tagTypes: ["Posts"],
 
   endpoints: (builder) => ({
-    // 1. get posts with infinite scroll
+    // 1. GET POSTS (CURSOR PAGINATION)
     getPosts: builder.query<
       GetPostsResponse,
-      { skip?: number; limit?: number }
+      { cursor?: string; limit?: number }
     >({
-      query: ({ skip = 0, limit = 10 }) => ({
-        url: `/posts?skip=${skip}&limit=${limit}`,
-        method: "GET",
-      }),
+      query: ({ cursor, limit = 10 }) => {
+        const params = new URLSearchParams({ limit: limit.toString() });
+        if (cursor) params.set("cursor", cursor);
+        return {
+          url: `/posts?${params.toString()}`,
+          method: "GET",
+        };
+      },
       providesTags: ["Posts"],
     }),
 
-    // 2. get single post
+    // 2. GET SINGLE POST
     getPostById: builder.query<ApiResponse<Post>, string>({
       query: (id) => ({
         url: `/posts/${id}`,
@@ -40,7 +44,7 @@ export const postApi = createApi({
       }),
     }),
 
-    // 3. create post
+    // 3. CREATE POST
     createPost: builder.mutation<ApiResponse<Post>, CreatePostInput>({
       query: (data) => ({
         url: "/posts",
@@ -51,7 +55,7 @@ export const postApi = createApi({
       invalidatesTags: ["Posts"],
     }),
 
-    // 4. delete post
+    // 4. DELETE POST
     deletePost: builder.mutation<ApiResponse<null>, string>({
       query: (id) => ({
         url: `/posts/${id}`,
@@ -61,7 +65,7 @@ export const postApi = createApi({
       invalidatesTags: ["Posts"],
     }),
 
-    // 5. vote post
+    // 5. VOTE POST
     votePost: builder.mutation<
       VoteResponse,
       {
@@ -86,7 +90,7 @@ export const postApi = createApi({
       invalidatesTags: ["Posts"],
     }),
 
-    // 6. update post
+    // 6. UPDATE POST
     updatePost: builder.mutation<
       ApiResponse<Post>,
       {
@@ -102,6 +106,27 @@ export const postApi = createApi({
 
       invalidatesTags: ["Posts"],
     }),
+
+    // 7. GET POSTS BY USER
+    getPostsByUser: builder.query<
+      GetPostsResponse,
+      {
+        userId: string;
+        cursor?: string;
+        limit?: number;
+      }
+    >({
+      query: ({ userId, cursor, limit = 10 }) => {
+        const params = new URLSearchParams({ limit: limit.toString() });
+        if (cursor) params.set("cursor", cursor);
+        return {
+          url: `/posts/user/${userId}?${params.toString()}`,
+          method: "GET",
+        };
+      },
+
+      providesTags: ["Posts"],
+    }),
   }),
 });
 
@@ -116,4 +141,7 @@ export const {
   useDeletePostMutation,
 
   useVotePostMutation,
+
+  useGetPostsByUserQuery,
+  useLazyGetPostsByUserQuery,
 } = postApi;

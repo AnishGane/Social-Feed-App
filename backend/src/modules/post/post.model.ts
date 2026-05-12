@@ -80,7 +80,7 @@ const postSchema = new Schema<IPost>(
 
     isPublished: {
       type: Boolean,
-      default: false,
+      default: true,
       index: true,
     },
   },

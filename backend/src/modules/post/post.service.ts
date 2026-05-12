@@ -22,12 +22,19 @@ export const createPostService = async (
   });
 };
 
-export const getPostsService = async (skip: number, limit: number) => {
-  if (skip < 0 || limit <= 0) {
-    throw new ApiError("Invalid pagination parameters", 400);
+export const getPostsService = async (cursor?: string, limit = 10) => {
+  if (limit <= 0 || limit > 100) {
+    throw new ApiError(
+      "IInvalid limit parameter. Must be between 1 and 100",
+      400,
+    );
   }
 
-  return await getPostsRepo(skip, limit);
+  if (cursor) {
+    validateObjectId(cursor, "Cursor");
+  }
+
+  return await getPostsRepo(cursor, limit);
 };
 
 export const getPostByIdService = async (id: string) => {
@@ -71,14 +78,21 @@ export const deletePostService = async (id: string, userId: string) => {
 
 export const getPostsByUserService = async (
   userId: string,
-  skip = 0,
-  limit = 0,
+  cursor?: string,
+  limit = 10,
 ) => {
-  const userObjectId = validateObjectId(userId);
+  const userObjectId = validateObjectId(userId, "User");
 
-  if (skip < 0 || limit <= 0) {
-    throw new ApiError("Invalid pagination parameters", 400);
+  if (cursor) {
+    validateObjectId(cursor, "Cursor");
   }
 
-  return await getPostsByUserRepo(userObjectId, skip, limit);
+  if (limit <= 0 || limit > 100) {
+    throw new ApiError(
+      "IInvalid limit parameter. Must be between 1 and 100",
+      400,
+    );
+  }
+
+  return await getPostsByUserRepo(userObjectId, cursor, limit);
 };

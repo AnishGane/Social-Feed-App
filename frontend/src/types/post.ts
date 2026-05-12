@@ -33,3 +33,8 @@ export type CreatePostInput = {
   mainImage?: string;
   tags?: string[];
 };
+
+export interface PaginatedPosts {
+  posts: Post[];
+  nextCursor: string | null;
+}
