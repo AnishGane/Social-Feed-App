@@ -23,7 +23,6 @@ const PostCard = ({
     post,
     onVoteUpdate,
 }: Props) => {
-    console.log(post.mainImage)
     return (
         <Card>
             <CardHeader>

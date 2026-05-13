@@ -11,7 +11,7 @@ createRoot(document.getElementById('root')!).render(
   // <StrictMode>
   <Provider store={store}>
     <TooltipProvider>
-      <Toaster />
+      <Toaster richColors />
       <AuthInitializer>
         <App />
       </AuthInitializer>

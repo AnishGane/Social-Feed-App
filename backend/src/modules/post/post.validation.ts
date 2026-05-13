@@ -8,12 +8,12 @@ export const createPostSchema = z.object({
 
   content: z.string().min(1, "Content must be at least 1 character"),
 
-  thumbnailImage: z
-    .string()
-    .url("Thumbnail image must be a valid URL")
-    .optional(),
+  // thumbnailImage: z
+  //   .string()
+  //   .url("Thumbnail image must be a valid URL")
+  //   .optional(),
 
-  mainImage: z.string().url("Main image must be a valid URL").optional(),
+  // mainImage: z.string().url("Main image must be a valid URL").optional(),
 
   tags: z.array(z.string()).optional(),
 });

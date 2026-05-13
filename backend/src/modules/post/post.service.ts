@@ -8,16 +8,46 @@ import {
   deletePostRepo,
   getPostsByUserRepo,
 } from "./post.repository";
-import { CreatePostInput, UpdatePostInput } from "./post.validation";
+import { UpdatePostInput, createPostSchema } from "./post.validation";
+import uploadImageToCloudinary from "../../utils/upload-image";
+import { validateImageFile } from "../../utils/validate-image";
+
+interface CreatePostRequestBody {
+  title: string;
+  content: string;
+  tags?: string | undefined | string[];
+}
 
 export const createPostService = async (
-  data: CreatePostInput,
+  reqBody: CreatePostRequestBody,
+  file: Express.Multer.File | undefined,
   userId: string,
 ) => {
   const userObjectId = validateObjectId(userId, "User");
 
+  let imageUrl: string | undefined;
+
+  if (file) {
+    try {
+      await validateImageFile(file);
+
+      imageUrl = await uploadImageToCloudinary(file);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+    }
+  }
+
+  const validatedData = createPostSchema.parse({
+    title: reqBody.title,
+    content: reqBody.content,
+    tags: reqBody.tags,
+  });
+
   return await createPostRepo({
-    ...data,
+    ...validatedData,
+    mainImage: imageUrl,
     author: userObjectId,
   });
 };
