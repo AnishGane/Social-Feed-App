@@ -1,7 +1,8 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./base-api";
 import type { ApiResponse } from "@/types/api";
-import type { LoginInput, RegisterInput, User } from "@/types";
+import type { User } from "@/types";
+import type { LoginSchemaType, SignupSchemaType } from "@/schema/auth-schema";
 
 export type AuthResponse = ApiResponse<{
   user: User;
@@ -23,7 +24,7 @@ export const authApi = createApi({
 
   endpoints: (builder) => ({
     //1. register
-    register: builder.mutation<AuthResponse, RegisterInput>({
+    register: builder.mutation<AuthResponse, SignupSchemaType>({
       query: (data) => ({
         url: "/auth/register",
         method: "POST",
@@ -31,7 +32,7 @@ export const authApi = createApi({
       }),
     }),
     // 2. login
-    login: builder.mutation<AuthResponse, LoginInput>({
+    login: builder.mutation<AuthResponse, LoginSchemaType>({
       query: (data) => ({
         url: "/auth/login",
         method: "POST",

@@ -6,7 +6,7 @@ import postModel, { IPost } from "./post.model";
 export const createPostRepo = (data: Partial<IPost>) => postModel.create(data);
 
 export const updatePostRepo = (
-  id: string | Types.ObjectId,
+  id: string | Types.ObjectId,  
   data: Partial<IPost>,
 ): Promise<IPost | null> =>
   postModel.findByIdAndUpdate(id, data, { new: true, runValidators: true });

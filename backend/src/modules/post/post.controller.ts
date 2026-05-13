@@ -10,12 +10,24 @@ import {
 } from "./post.service";
 import { sendResponse } from "../../utils/api-response";
 import { requireUser } from "../../utils/require-user";
+import { createPostSchema } from "./post.validation";
+import { parseTags } from "./post.utils";
 
 export const createPost = asyncHandler(async (req: Request, res: Response) => {
   const user = requireUser(req);
   const userId = user._id.toString();
 
-  const post = await createPostService(req.body, userId);
+  const tags = req.body.tags ? parseTags(req.body.tags) : [];
+
+  const validation = createPostSchema.safeParse({
+    ...req.body,
+    tags,
+  });
+  if (!validation.success) {
+    return sendResponse(res, 400, validation.error.message, "Validation failed");
+  }
+
+  const post = await createPostService(validation.data, req.file, userId);
 
   sendResponse(res, 201, post, "Post created successfully");
 });

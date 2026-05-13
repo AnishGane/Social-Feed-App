@@ -45,7 +45,7 @@ export const postApi = createApi({
     }),
 
     // 3. CREATE POST
-    createPost: builder.mutation<ApiResponse<Post>, CreatePostInput>({
+    createPost: builder.mutation<ApiResponse<Post>, FormData>({
       query: (data) => ({
         url: "/posts",
         method: "POST",

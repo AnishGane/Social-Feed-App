@@ -40,12 +40,12 @@ const postSchema = new Schema<IPost>(
 
     thumbnailImage: {
       type: String,
-      default: "",
+      default: null,
     },
 
     mainImage: {
       type: String,
-      default: "",
+      default: null,
     },
 
     tags: [

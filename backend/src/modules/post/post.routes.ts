@@ -17,14 +17,16 @@ import {
 import { voteSchema } from "../vote/vote.validation";
 import { votePost } from "../vote/vote.controller";
 import { votePostLimiter } from "../../middleware/rate-limit/vote-rate-limit";
+import upload from "../../middleware/multer.middleware";
 
 const router = express.Router();
 
+// because multipart form data won't work properly with your current validator.
 router.post(
   "/",
   protect,
   createPostLimiter,
-  validate(createPostSchema),
+  upload.single("mainImage"),
   createPost,
 );
 router.get("/", getPosts);
