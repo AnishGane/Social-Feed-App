@@ -36,6 +36,7 @@ export const createPostService = async (
       if (error instanceof ApiError) {
         throw error;
       }
+      throw new ApiError("Image upload failed", 500);
     }
   }
 

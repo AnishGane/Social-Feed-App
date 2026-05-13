@@ -4,8 +4,8 @@ export interface IPost extends Document {
   author: Types.ObjectId;
   title: string;
   content: string;
-  thumbnailImage?: string;
-  mainImage?: string;
+  thumbnailImage?: string | null;
+  mainImage?: string | null;
   tags?: string[];
 
   upvotesCount: number;

@@ -20,7 +20,7 @@ export const createPostSchema = z.object({
     .optional()
     .refine(
       (files) => {
-        if (files.length === 0) {
+        if (!files || files.length === 0) {
           return true;
         }
 
@@ -32,7 +32,7 @@ export const createPostSchema = z.object({
     )
     .refine(
       (files) => {
-        if (files.length === 0) {
+        if (!files || files.length === 0) {
           return true;
         }
 
