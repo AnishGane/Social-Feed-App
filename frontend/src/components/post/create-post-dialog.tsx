@@ -23,7 +23,7 @@ const CreatePostDialog = ({
             open={open}
             onOpenChange={onOpenChange}
         >
-            <DialogContent className="w-full max-w-lg mx-auto">
+            <DialogContent className="w-full max-w-lg! mx-auto">
                 <DialogHeader>
                     <DialogTitle className="text-xl">
                         Create a new Post

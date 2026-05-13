@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button"
 import { useCreatePostMutation } from "@/services/post-api"
 import { toast } from "sonner"
 import { useEffect, useRef, useState } from "react"
-import { Image, X } from "lucide-react"
+import { Image, Loader2, X } from "lucide-react"
 
 const CreatePostForm = ({ onOpenChange }: { onOpenChange: (open: boolean) => void }) => {
     const form = useForm<CreatePostInput>({
@@ -240,7 +240,7 @@ const CreatePostForm = ({ onOpenChange }: { onOpenChange: (open: boolean) => voi
                     render={({ field, fieldState }) => (
                         <Field data-invalid={fieldState.invalid}>
                             <FieldLabel htmlFor="form-rhf-post-tags">
-                                Tags
+                                Tags (optional)
                             </FieldLabel>
                             <Input
                                 {...field}
@@ -270,7 +270,10 @@ const CreatePostForm = ({ onOpenChange }: { onOpenChange: (open: boolean) => voi
                         Reset
                     </Button>
                     <Button type="submit" disabled={isLoading} className="cursor-pointer py-5 flex-1">
-                        {isLoading ? "Creating..." : "Create Post"}
+                        {isLoading ? <>
+                            <Loader2 className="mr-1 animate-spin" />
+                            Creating...
+                        </> : "Create Post"}
                     </Button>
                 </div>
             </FieldGroup>

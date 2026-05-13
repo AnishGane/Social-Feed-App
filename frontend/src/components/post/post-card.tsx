@@ -9,6 +9,8 @@ import {
 
 import VoteButtons from "./vote-buttons";
 import UserAvatar from "../user-avatar";
+import { MessageCircleMore, TrendingUp } from "lucide-react";
+import { formatPostDate } from "@/utils/format-date";
 
 type Props = {
     post: Post;
@@ -37,9 +39,7 @@ const PostCard = ({
                         </h3>
 
                         <p className="text-xs text-muted-foreground">
-                            {new Date(
-                                post.createdAt
-                            ).toLocaleString()}
+                            {formatPostDate(post.createdAt)}
                         </p>
                     </div>
                 </div>
@@ -60,7 +60,8 @@ const PostCard = ({
                     <img
                         src={post.mainImage}
                         alt={post.title}
-                        className="w-full rounded-xl object-cover"
+                        className="w-full rounded-xl object-cover select-none"
+                        draggable={false}
                     />
                 )}
 
@@ -69,7 +70,7 @@ const PostCard = ({
                         {post.tags.map((tag) => (
                             <span
                                 key={tag}
-                                className="rounded-full bg-muted px-3 py-1 text-xs"
+                                className="rounded-full bg-muted font-semibold tracking-wide px-3 py-1 text-xs"
                             >
                                 #{tag}
                             </span>
@@ -84,9 +85,17 @@ const PostCard = ({
                     onVoteUpdate={onVoteUpdate}
                 />
 
-                <span className="text-sm text-muted-foreground">
-                    {post.commentCount} comments
-                </span>
+                <div className="flex items-center justify-center gap-2">
+                    <span title="Comments" className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+                        <MessageCircleMore className="size-5" />{post.commentCount}
+                    </span>
+
+                    <div className="size-[3px] mt-0.5 rounded-full bg-muted-foreground" />
+
+                    <span title="Score" className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+                        <TrendingUp className="size-5" /> {post.score}
+                    </span>
+                </div>
             </CardFooter>
         </Card>
     );
