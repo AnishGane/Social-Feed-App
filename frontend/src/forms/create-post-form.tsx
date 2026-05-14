@@ -144,7 +144,7 @@ const CreatePostForm = ({ onOpenChange }: { onOpenChange: (open: boolean) => voi
                                 />
                                 <InputGroupAddon align="block-end">
                                     <InputGroupText className="tabular-nums">
-                                        {field.value.length}/500 characters
+                                        {field.value.length}/1000 characters
                                     </InputGroupText>
                                 </InputGroupAddon>
                             </InputGroup>

@@ -11,10 +11,11 @@ import VoteButtons from "./vote-buttons";
 import UserAvatar from "../user-avatar";
 import { MessageCircleMore, TrendingUp } from "lucide-react";
 import { formatPostDate } from "@/utils/format-date";
+import { useState } from "react";
+import { Button } from "../ui/button";
 
 type Props = {
     post: Post;
-
     onVoteUpdate: (
         postId: string,
         updates: Partial<Post>
@@ -25,6 +26,11 @@ const PostCard = ({
     post,
     onVoteUpdate,
 }: Props) => {
+    const [expanded, setExpanded] = useState(false);
+
+    // only enable 'show more' when post has image
+    const shouldClamp = !!post.mainImage;
+
     return (
         <Card>
             <CardHeader>
@@ -34,7 +40,7 @@ const PostCard = ({
                     </div>
 
                     <div>
-                        <h3 className="font-semibold">
+                        <h3 className="font-semibold text-base">
                             {post.author.username}
                         </h3>
 
@@ -51,9 +57,24 @@ const PostCard = ({
                         {post.title}
                     </h2>
 
-                    <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">
+                    <p
+                        className={`mt-2 whitespace-pre-wrap text-sm text-muted-foreground transition-all ${shouldClamp && !expanded
+                            ? "line-clamp-3"
+                            : ""
+                            }`}
+                    >
                         {post.content}
                     </p>
+
+                    {shouldClamp && post.content.length > 180 && (
+                        <Button
+                            variant="link"
+                            className="h-auto p-0 mt-1 text-sm cursor-pointer text-primary/90 hover:text-primary"
+                            onClick={() => setExpanded((prev) => !prev)}
+                        >
+                            {expanded ? "Show less" : "Show more"}
+                        </Button>
+                    )}
                 </div>
 
                 {post.mainImage && (

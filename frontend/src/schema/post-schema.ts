@@ -13,8 +13,10 @@ export const createPostSchema = z.object({
     .string()
     .min(1, "Title must be at least 1 character")
     .max(100, "Title must be at most 100 characters"),
-  content: z.string().min(1, "Content must be at least 1 character"),
-  // thumbnailImage: z.string().url("Thumbnail image must be a valid URL").optional(),
+  content: z
+    .string()
+    .min(1, "Content must be at least 1 character")
+    .max(1000, "Content must be at most 1000 characters"),
   mainImage: z
     .instanceof(FileList)
     .optional()
