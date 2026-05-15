@@ -2,17 +2,10 @@ import PostFeed from "@/components/post/post-feed";
 import ProfileHeader from "@/components/profile/profile-header";
 import ProfileStats from "@/components/profile/profile-stats";
 import { Card } from "@/components/ui/card";
-import { useGetProfileQuery } from "@/services/user-api";
-import { useParams } from "react-router-dom";
+import { useGetMeQuery } from "@/services/user-api"
 
-const ProfilePage = () => {
-    const { username } = useParams();
-
-    if (!username) {
-        return <div>Invalid profile URL</div>;
-    }
-
-    const { data, isLoading } = useGetProfileQuery(username);
+const MyProfile = () => {
+    const { data, isLoading } = useGetMeQuery();
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -37,4 +30,4 @@ const ProfilePage = () => {
     )
 }
 
-export default ProfilePage
+export default MyProfile

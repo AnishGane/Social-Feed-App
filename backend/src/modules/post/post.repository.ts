@@ -83,3 +83,42 @@ export const getPostsByUserRepo = async (
 export const countPostsByUserRepo = (userId: string | Types.ObjectId) => {
   return postModel.countDocuments({ author: userId, isPublished: true });
 };
+
+export const getPostsStatByUserRepo = async (
+  userId: string | Types.ObjectId,
+) => {
+  const stats = await postModel.aggregate([
+    {
+      $match: {
+        author: new Types.ObjectId(userId),
+        isPublished: true,
+      },
+    },
+
+    {
+      $group: {
+        _id: null,
+
+        upvotesReceived: {
+          $sum: "$upvotesCount",
+        },
+
+        downvotesReceived: {
+          $sum: "$downvotesCount",
+        },
+
+        totalScore: {
+          $sum: "$score",
+        },
+      },
+    },
+  ]);
+
+  return (
+    stats[0] || {
+      upvotesReceived: 0,
+      downvotesReceived: 0,
+      totalScore: 0,
+    }
+  );
+};

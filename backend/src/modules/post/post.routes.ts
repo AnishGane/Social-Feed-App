@@ -30,7 +30,13 @@ router.post(
   createPost,
 );
 router.get("/", getPosts);
-router.post("/vote", protect, votePostLimiter, validate(voteSchema), votePost);
+router.post(
+  "/vote",
+  protect,
+  votePostLimiter,
+  validate(voteSchema, "body"),
+  votePost,
+);
 router.get("/user/:userId", protect, getPostsByUser);
 
 router.get("/:id", getPostById);
@@ -38,7 +44,7 @@ router.put(
   "/:id",
   protect,
   updatePostLimiter,
-  validate(updatePostSchema),
+  validate(updatePostSchema, "body"),
   updatePost,
 );
 router.delete("/:id", protect, deletePost);

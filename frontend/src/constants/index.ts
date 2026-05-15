@@ -26,7 +26,7 @@ export const navItems = [
   },
   {
     label: "Profile",
-    url: "/profile",
+    url: "/u/me",
     icon: UserIcon,
   },
   {
