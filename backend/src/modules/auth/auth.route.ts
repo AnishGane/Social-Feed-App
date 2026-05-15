@@ -7,8 +7,13 @@ import { authLimiter } from "../../middleware/rate-limit/auth-rate-limit";
 
 const router = Router();
 
-router.post("/register", authLimiter, validate(registerSchema), register);
-router.post("/login", authLimiter, validate(loginSchema), login);
+router.post(
+  "/register",
+  authLimiter,
+  validate(registerSchema, "body"),
+  register,
+);
+router.post("/login", authLimiter, validate(loginSchema, "body"), login);
 router.post("/refresh", authLimiter, refresh);
 router.post("/logout", protect, logout);
 router.get("/me", protect, me);

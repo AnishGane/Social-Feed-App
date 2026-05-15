@@ -16,12 +16,12 @@ export interface IUser extends Document {
   name?: string;
   bio?: string;
   socialLinks?: {
-    website: string;
-    github: string;
-    linkedin: string;
-    twitter: string;
-    instagram: string;
-    youtube: string;
+    website?: string;
+    github?: string;
+    linkedin?: string;
+    twitter?: string;
+    instagram?: string;
+    youtube?: string;
   };
   createdAt: Date;
   updatedAt: Date;
@@ -61,7 +61,7 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
       default: "",
     },
-    
+
     refreshToken: {
       type: String,
       default: null,

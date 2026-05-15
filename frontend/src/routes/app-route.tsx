@@ -12,6 +12,7 @@ import SearchPage from "@/pages/search";
 import CreatePostPage from "@/pages/create-post";
 import NotificationsPage from "@/pages/notifications";
 import NotFoundPage from "@/pages/not-found";
+import MyProfile from "@/pages/my-profile";
 
 export const router = createBrowserRouter([
     {
@@ -27,8 +28,8 @@ export const router = createBrowserRouter([
                 element: <HomePage />
             },
             {
-                path: "/profile",
-                element: <ProfilePage />
+                path: "/u/me",
+                element: <MyProfile />
             },
             {
                 path: "/bookmarks",
@@ -49,6 +50,10 @@ export const router = createBrowserRouter([
             {
                 path: "/notifications",
                 element: <NotificationsPage />
+            },
+            {
+                path: "/u/:username",
+                element: <ProfilePage />
             }
         ]
     },

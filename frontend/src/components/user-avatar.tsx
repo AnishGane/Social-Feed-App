@@ -2,8 +2,14 @@ import { useMemo } from 'react';
 import { createAvatar } from '@dicebear/core';
 import { lorelei } from '@dicebear/collection';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { cn } from '@/lib/utils';
 
-const UserAvatar = ({ seed = 'John Doe' }) => {
+type Props = {
+    seed?: string;
+    className: string
+}
+
+const UserAvatar = ({ seed = 'John Doe', className }: Props) => {
 
     const avatar = useMemo(() => {
         return createAvatar(lorelei, {
@@ -14,7 +20,7 @@ const UserAvatar = ({ seed = 'John Doe' }) => {
     }, [seed]);
 
     return (
-        <Avatar className="size-8 rounded-lg">
+        <Avatar className={cn("rounded-lg", className)}>
             <AvatarImage src={avatar} alt="Avatar" />
             <AvatarFallback className="rounded-lg">CN</AvatarFallback>
         </Avatar>

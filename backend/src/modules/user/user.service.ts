@@ -2,7 +2,7 @@ import { ApiError } from "../../utils/api-error";
 import { validateObjectId } from "../../utils/validate-object-id";
 import {
   countPostsByUserRepo,
-  getPostsByUserRepo,
+  getPostsStatByUserRepo,
 } from "../post/post.repository";
 import {
   findUserByIdRepo,
@@ -20,6 +20,9 @@ export const getProfileService = async (username: string) => {
 
   const postsCount = await countPostsByUserRepo(user._id);
 
+  const { upvotesReceived, downvotesReceived, totalScore } =
+    await getPostsStatByUserRepo(user._id);
+
   return {
     user: {
       _id: user._id,
@@ -30,9 +33,14 @@ export const getProfileService = async (username: string) => {
       socialLinks: user.socialLinks,
       createdAt: user.createdAt,
     },
-
     stats: {
       postsCount,
+
+      upvotesReceived,
+
+      downvotesReceived,
+
+      totalScore,
     },
   };
 };
@@ -69,14 +77,30 @@ export const getMeService = async (userId: string) => {
     throw new ApiError("User not found", 404);
   }
 
+  const postsCount = await countPostsByUserRepo(user._id);
+
+  const { upvotesReceived, downvotesReceived, totalScore } =
+    await getPostsStatByUserRepo(user._id);
+
   return {
-    _id: user._id,
-    username: user.username,
-    name: user.name,
-    bio: user.bio,
-    avatar: user.avatar,
-    socialLinks: user.socialLinks,
-    email: user.email, // Include email for own profile if needed
-    createdAt: user.createdAt,
+    user: {
+      _id: user._id,
+      username: user.username,
+      name: user.name,
+      bio: user.bio,
+      avatar: user.avatar,
+      socialLinks: user.socialLinks,
+      email: user.email, // Include email for own profile if needed
+      createdAt: user.createdAt,
+    },
+    stats: {
+      postsCount,
+
+      upvotesReceived,
+
+      downvotesReceived,
+
+      totalScore,
+    },
   };
 };

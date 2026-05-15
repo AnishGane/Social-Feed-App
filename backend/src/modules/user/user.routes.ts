@@ -12,9 +12,14 @@ const router = express.Router();
 router.get("/me", protect, getMe);
 
 // Update Profile
-router.patch("/me", protect, validate(updateProfileSchema), updateProfile);
+router.patch(
+  "/me",
+  protect,
+  validate(updateProfileSchema, "body"),
+  updateProfile,
+);
 
 // Public Profile
-router.get("/:username", validate(getUserProfileSchema), getProfile);
+router.get("/:username", validate(getUserProfileSchema, "params"), getProfile);
 
 export default router;

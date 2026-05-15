@@ -1,14 +1,20 @@
 import { Request, Response, NextFunction } from "express";
-import { ZodError, ZodType } from "zod";
+import { ZodObject, ZodError } from "zod";
+
+type ValidationTarget = "body" | "params" | "query";
 
 export const validate =
-  (schema: ZodType) => (req: Request, res: Response, next: NextFunction) => {
+  <T extends ZodObject>(schema: T, target: ValidationTarget = "body") =>
+  (req: Request, res: Response, next: NextFunction) => {
     try {
-      req.body = schema.parse(req.body);
+      const parsed = schema.parse(req[target]);
+
+      req[target] = parsed as any;
+
       next();
-    } catch (err) {
-      if (err instanceof ZodError) {
-        const errors = err.issues.map((issue) => ({
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const errors = error.issues.map((issue) => ({
           field: issue.path.join("."),
           message: issue.message,
         }));
@@ -20,6 +26,6 @@ export const validate =
         });
       }
 
-      next(err);
+      next(error);
     }
   };
