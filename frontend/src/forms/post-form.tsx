@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import {
     Field,
     FieldDescription,
@@ -9,36 +8,28 @@ import {
     FieldGroup,
     FieldLabel,
 } from "@/components/ui/field";
-
 import { Input } from "@/components/ui/input";
-
 import {
     InputGroup,
     InputGroupAddon,
     InputGroupText,
     InputGroupTextarea,
 } from "@/components/ui/input-group";
-
 import { Button } from "@/components/ui/button";
-
 import {
     Image,
     Loader2,
     X,
 } from "lucide-react";
-
 import { toast } from "sonner";
-
 import {
     createPostSchema,
     type CreatePostInput,
 } from "@/schema/post-schema";
-
 import {
     useCreatePostMutation,
     useUpdatePostMutation,
 } from "@/services/post-api";
-
 import type { Post } from "@/types";
 
 type Props = {
@@ -306,6 +297,7 @@ const PostForm = ({
                                             onClick={
                                                 removeImage
                                             }
+                                            aria-label="Remove selected image"
                                         >
                                             <X className="size-4" />
                                         </Button>
