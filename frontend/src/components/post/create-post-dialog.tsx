@@ -4,9 +4,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-
-import CreatePostForm from "@/forms/create-post-form";
 import { Separator } from "../ui/separator";
+import PostForm from "@/forms/post-form";
 
 type Props = {
     open: boolean;
@@ -17,21 +16,24 @@ const CreatePostDialog = ({
     open,
     onOpenChange,
 }: Props) => {
-
     return (
         <Dialog
             open={open}
             onOpenChange={onOpenChange}
         >
-            <DialogContent className="w-full max-w-lg! mx-auto">
+            <DialogContent className="max-w-lg">
                 <DialogHeader>
                     <DialogTitle className="text-xl">
                         Create a new Post
                     </DialogTitle>
                 </DialogHeader>
+
                 <Separator />
 
-                <CreatePostForm onOpenChange={onOpenChange} />
+                <PostForm
+                    mode="create"
+                    onOpenChange={onOpenChange}
+                />
             </DialogContent>
         </Dialog>
     );

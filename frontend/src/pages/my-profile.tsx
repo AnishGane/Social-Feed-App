@@ -3,16 +3,17 @@ import ProfileHeader from "@/components/profile/profile-header";
 import ProfileStats from "@/components/profile/profile-stats";
 import { Card } from "@/components/ui/card";
 import { useGetMeQuery } from "@/services/user-api"
+import { Loader2 } from "lucide-react";
 
 const MyProfile = () => {
     const { data, isLoading } = useGetMeQuery();
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
     }
 
     if (!data?.data) {
-        return <div>User not found</div>;
+        return <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">User not found</div>;
     }
 
     const profile = data.data;

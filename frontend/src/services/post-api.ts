@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./base-api";
 import type { ApiResponse } from "@/types/api";
-import type { CreatePostInput, PaginatedPosts, Post, VoteType } from "@/types";
+import type { PaginatedPosts, Post, VoteType } from "@/types";
 
 type GetPostsResponse = ApiResponse<PaginatedPosts>;
 
@@ -33,7 +33,16 @@ export const postApi = createApi({
           method: "GET",
         };
       },
-      providesTags: ["Posts"],
+      providesTags: (result) =>
+        result?.data?.posts
+          ? [
+              ...result.data.posts.map((post) => ({
+                type: "Posts" as const,
+                id: post._id,
+              })),
+              { type: "Posts", id: "LIST" },
+            ]
+          : [{ type: "Posts", id: "LIST" }],
     }),
 
     // 2. GET SINGLE POST
@@ -52,7 +61,7 @@ export const postApi = createApi({
         body: data,
       }),
 
-      invalidatesTags: ["Posts"],
+      invalidatesTags: [{ type: "Posts", id: "LIST" }],
     }),
 
     // 4. DELETE POST
@@ -62,7 +71,10 @@ export const postApi = createApi({
         method: "DELETE",
       }),
 
-      invalidatesTags: ["Posts"],
+      invalidatesTags: (_result, _error, postId) => [
+        { type: "Posts", id: postId },
+        { type: "Posts", id: "LIST" },
+      ],
     }),
 
     // 5. VOTE POST
@@ -87,7 +99,9 @@ export const postApi = createApi({
         }
       },
 
-      invalidatesTags: ["Posts"],
+      invalidatesTags: (_result, _error, arg) => [
+        { type: "Posts", id: arg.postId },
+      ],
     }),
 
     // 6. UPDATE POST
@@ -95,7 +109,7 @@ export const postApi = createApi({
       ApiResponse<Post>,
       {
         id: string;
-        data: Partial<CreatePostInput>;
+        data: FormData;
       }
     >({
       query: ({ id, data }) => ({
@@ -104,7 +118,10 @@ export const postApi = createApi({
         body: data,
       }),
 
-      invalidatesTags: ["Posts"],
+      invalidatesTags: (_result, _error, arg) => [
+        { type: "Posts", id: arg.id },
+        { type: "Posts", id: "LIST" },
+      ],
     }),
 
     // 7. GET POSTS BY USER
@@ -125,7 +142,10 @@ export const postApi = createApi({
         };
       },
 
-      providesTags: ["Posts"],
+      providesTags: (_result, _error, arg) => [
+        { type: "Posts", id: arg.userId },
+        { type: "Posts", id: "LIST" },
+      ],
     }),
   }),
 });

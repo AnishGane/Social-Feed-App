@@ -9,10 +9,19 @@ import {
 
 import VoteButtons from "./vote-buttons";
 import UserAvatar from "../user-avatar";
-import { MessageCircleMore, TrendingUp } from "lucide-react";
+import { EllipsisVertical, MessageCircleMore, Trash2, TrendingUp } from "lucide-react";
 import { formatPostDate } from "@/utils/format-date";
 import { useState } from "react";
 import { Button } from "../ui/button";
+import { useGetMeQuery } from "@/services/user-api";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import EditPostDialog from "./edit-post-dialog";
 
 type Props = {
     post: Post;
@@ -31,23 +40,31 @@ const PostCard = ({
     // only enable 'show more' when post has image
     const shouldClamp = !!post.mainImage;
 
+    const me = useGetMeQuery().data?.data;
+    const isOwner = me?.user._id === post.author._id;
+
     return (
         <Card>
             <CardHeader>
-                <div className="flex items-center gap-3">
-                    <div className="flex size-10 items-center justify-center rounded-full bg-muted text-sm font-bold">
-                        <UserAvatar seed={post.author.username} className="size-8" />
-                    </div>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="flex size-10 items-center justify-center rounded-full bg-muted text-sm font-bold">
+                            <UserAvatar seed={post.author.username} className="size-8" />
+                        </div>
 
-                    <div>
-                        <h3 className="font-semibold text-base">
-                            {post.author.username}
-                        </h3>
+                        <div>
+                            <h3 className="font-semibold text-base">
+                                {post.author.username}
+                            </h3>
 
-                        <p className="text-xs text-muted-foreground">
-                            {formatPostDate(post.createdAt)}
-                        </p>
+                            <p className="text-xs text-muted-foreground">
+                                {formatPostDate(post.createdAt)}
+                            </p>
+                        </div>
                     </div>
+                    {isOwner && (
+                        <PostCardDropdownMenus post={post} />
+                    )}
                 </div>
             </CardHeader>
 
@@ -119,6 +136,36 @@ const PostCard = ({
                 </div>
             </CardFooter>
         </Card>
+    );
+};
+
+const PostCardDropdownMenus = ({
+    post,
+}: {
+    post: Post;
+}) => {
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button
+                    variant="ghost"
+                    className="cursor-pointer"
+                >
+                    <EllipsisVertical />
+                </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent>
+                <EditPostDialog post={post} />
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem variant="destructive">
+                    <Trash2 />
+                    Delete Post
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 };
 

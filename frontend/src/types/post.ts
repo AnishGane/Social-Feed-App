@@ -26,13 +26,13 @@ export interface Post {
   updatedAt: string;
 }
 
-export type CreatePostInput = {
-  title: string;
-  content: string;
-  thumbnailImage?: string;
-  mainImage?: string;
-  tags?: string[];
-};
+// export type CreatePostInput = {
+//   title: string;
+//   content: string;
+//   thumbnailImage?: string;
+//   mainImage?: string;
+//   tags?: string[];
+// };
 
 export interface PaginatedPosts {
   posts: Post[];
