@@ -10,7 +10,7 @@ import {
 } from "./post.service";
 import { sendResponse } from "../../utils/api-response";
 import { requireUser } from "../../utils/require-user";
-import { createPostSchema } from "./post.validation";
+import { createPostSchema, updatePostSchema } from "./post.validation";
 import { parseTags } from "./post.utils";
 
 export const createPost = asyncHandler(async (req: Request, res: Response) => {
@@ -24,7 +24,12 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
     tags,
   });
   if (!validation.success) {
-    return sendResponse(res, 400, validation.error.message, "Validation failed");
+    return sendResponse(
+      res,
+      400,
+      validation.error.message,
+      "Validation failed",
+    );
   }
 
   const post = await createPostService(validation.data, req.file, userId);
@@ -57,9 +62,25 @@ export const updatePost = asyncHandler(async (req: Request, res: Response) => {
   const user = requireUser(req);
   const userId = user._id.toString();
 
-  const post = await updatePostService(id, userId, req.body);
+  const tags = req.body.tags ? parseTags(req.body.tags) : [];
 
-  sendResponse(res, 200, post, "Post updated Successfully");
+  const validation = updatePostSchema.safeParse({
+    title: req.body.title,
+    content: req.body.content,
+    tags,
+  });
+  if (!validation.success) {
+    return sendResponse(
+      res,
+      400,
+      validation.error.message,
+      "Validation failed",
+    );
+  }
+
+  const post = await updatePostService(id, userId, validation.data, req.file);
+
+  sendResponse(res, 200, post, "Post updated Successfully.");
 });
 
 export const deletePost = asyncHandler(async (req: Request, res: Response) => {

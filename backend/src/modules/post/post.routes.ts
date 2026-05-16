@@ -9,7 +9,6 @@ import {
   updatePost,
 } from "./post.controller";
 import { validate } from "../../middleware/validate.middleware";
-import { createPostSchema, updatePostSchema } from "./post.validation";
 import {
   createPostLimiter,
   updatePostLimiter,
@@ -44,7 +43,7 @@ router.put(
   "/:id",
   protect,
   updatePostLimiter,
-  validate(updatePostSchema, "body"),
+  upload.single("mainImage"),
   updatePost,
 );
 router.delete("/:id", protect, deletePost);

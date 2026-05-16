@@ -8,7 +8,11 @@ import {
   deletePostRepo,
   getPostsByUserRepo,
 } from "./post.repository";
-import { UpdatePostInput, createPostSchema } from "./post.validation";
+import {
+  UpdatePostInput,
+  createPostSchema,
+  updatePostSchema,
+} from "./post.validation";
 import uploadImageToCloudinary from "../../utils/upload-image";
 import { validateImageFile } from "../../utils/validate-image";
 
@@ -40,11 +44,7 @@ export const createPostService = async (
     }
   }
 
-  const validatedData = createPostSchema.parse({
-    title: reqBody.title,
-    content: reqBody.content,
-    tags: reqBody.tags,
-  });
+  const validatedData = createPostSchema.parse(reqBody);
 
   return await createPostRepo({
     ...validatedData,
@@ -56,7 +56,7 @@ export const createPostService = async (
 export const getPostsService = async (cursor?: string, limit = 10) => {
   if (limit <= 0 || limit > 100) {
     throw new ApiError(
-      "IInvalid limit parameter. Must be between 1 and 100",
+      "Invalid limit parameter. Must be between 1 and 100",
       400,
     );
   }
@@ -79,7 +79,8 @@ export const getPostByIdService = async (id: string) => {
 export const updatePostService = async (
   id: string,
   userId: string,
-  data: UpdatePostInput,
+  reqBody: UpdatePostInput,
+  file: Express.Multer.File | undefined,
 ) => {
   const postObjectId = validateObjectId(id, "Post");
 
@@ -91,7 +92,28 @@ export const updatePostService = async (
   if (!post.author.equals(userObjectId))
     throw new ApiError("Forbidden access", 403);
 
-  return await updatePostRepo(id, data);
+  let imageUrl = post.mainImage;
+  if (file) {
+    try {
+      await validateImageFile(file);
+
+      imageUrl = await uploadImageToCloudinary(file);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError("Image upload failed", 500);
+    }
+  }
+
+  const validatedData = updatePostSchema.parse(reqBody);
+
+  const updatedPost = await updatePostRepo(id, {
+    ...validatedData,
+    mainImage: imageUrl || null,
+  });
+
+  return updatedPost;
 };
 
 export const deletePostService = async (id: string, userId: string) => {
@@ -120,7 +142,7 @@ export const getPostsByUserService = async (
 
   if (limit <= 0 || limit > 100) {
     throw new ApiError(
-      "IInvalid limit parameter. Must be between 1 and 100",
+      "Invalid limit parameter. Must be between 1 and 100",
       400,
     );
   }

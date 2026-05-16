@@ -3,6 +3,7 @@ import ProfileHeader from "@/components/profile/profile-header";
 import ProfileStats from "@/components/profile/profile-stats";
 import { Card } from "@/components/ui/card";
 import { useGetProfileQuery } from "@/services/user-api";
+import { Loader2 } from "lucide-react";
 import { useParams } from "react-router-dom";
 
 const ProfilePage = () => {
@@ -15,7 +16,7 @@ const ProfilePage = () => {
     const { data, isLoading } = useGetProfileQuery(username);
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
     }
 
     if (!data?.data) {
