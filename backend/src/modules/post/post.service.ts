@@ -95,6 +95,15 @@ export const updatePostService = async (
   const validatedData = updatePostSchema.parse(reqBody);
 
   let imageUrl = post.mainImage;
+
+  const removeImage = reqBody.removeImage === "true";
+
+  // Remove main image
+  if (removeImage) {
+    imageUrl = null;
+  }
+
+  // New image upload
   if (file) {
     try {
       await validateImageFile(file);
@@ -110,7 +119,7 @@ export const updatePostService = async (
 
   const updatedPost = await updatePostRepo(id, {
     ...validatedData,
-    mainImage: imageUrl || null,
+    mainImage: imageUrl,
   });
 
   return updatedPost;

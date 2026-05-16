@@ -9,7 +9,9 @@ export const updatePostRepo = (
   id: string | Types.ObjectId,
   data: Partial<IPost>,
 ): Promise<IPost | null> =>
-  postModel.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+  postModel.findByIdAndUpdate(id, {
+    $set: data,
+  }, { new: true, runValidators: true });
 
 export const deletePostRepo = (id: string | Types.ObjectId) =>
   postModel.findByIdAndDelete(id);
