@@ -68,6 +68,7 @@ export const updatePost = asyncHandler(async (req: Request, res: Response) => {
     title: req.body.title,
     content: req.body.content,
     tags,
+    removeImage: req.body.removeImage,
   });
   if (!validation.success) {
     return sendResponse(

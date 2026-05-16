@@ -67,6 +67,10 @@ const PostForm = ({
         post?.mainImage || null
     );
 
+    // removal flag, send over to the backend to tell that ""user removed image""
+    const [removeCurrentImage, setRemoveCurrentImage] =
+        useState(false);
+
     const currentUrlRef = useRef<string | null>(null);
 
     useEffect(() => {
@@ -110,6 +114,8 @@ const PostForm = ({
 
         setPreviewUrl(null);
         form.setValue("mainImage", undefined);
+
+        setRemoveCurrentImage(true);
     };
 
     async function onSubmit(data: CreatePostInput) {
@@ -129,6 +135,8 @@ const PostForm = ({
                 )
             );
 
+            formData.append("removeImage", String(removeCurrentImage));
+
             if (
                 data.mainImage &&
                 data.mainImage.length > 0
@@ -145,6 +153,7 @@ const PostForm = ({
                     data: formData,
                 }).unwrap();
 
+
                 toast.success(res.message);
             } else {
                 await createPost(formData).unwrap();
@@ -153,6 +162,8 @@ const PostForm = ({
             }
 
             form.reset();
+
+            setRemoveCurrentImage(false);
 
             onOpenChange(false);
         } catch (error) {
@@ -262,26 +273,16 @@ const PostForm = ({
                                             accept="image/*"
                                             className="hidden"
                                             onChange={(e) => {
-                                                const files =
-                                                    e.target
-                                                        .files;
+                                                const files = e.target.files;
 
-                                                field.onChange(
-                                                    files
-                                                );
+                                                field.onChange(files);
 
-                                                if (
-                                                    files &&
-                                                    files[0]
-                                                ) {
-                                                    const url =
-                                                        URL.createObjectURL(
-                                                            files[0]
-                                                        );
+                                                if (files && files[0]) {
+                                                    setRemoveCurrentImage(false);
 
-                                                    setPreviewUrl(
-                                                        url
-                                                    );
+                                                    const url = URL.createObjectURL(files[0]);
+
+                                                    setPreviewUrl(url);
                                                 }
                                             }}
                                         />
@@ -361,6 +362,8 @@ const PostForm = ({
                             setPreviewUrl(
                                 post?.mainImage || null
                             );
+
+                            setRemoveCurrentImage(false);
                         }}
                     >
                         Reset
