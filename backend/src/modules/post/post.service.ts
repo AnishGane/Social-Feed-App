@@ -29,6 +29,8 @@ export const createPostService = async (
 ) => {
   const userObjectId = validateObjectId(userId, "User");
 
+  const validatedData = createPostSchema.parse(reqBody);
+
   let imageUrl: string | undefined;
 
   if (file) {
@@ -43,8 +45,6 @@ export const createPostService = async (
       throw new ApiError("Image upload failed", 500);
     }
   }
-
-  const validatedData = createPostSchema.parse(reqBody);
 
   return await createPostRepo({
     ...validatedData,
@@ -92,6 +92,8 @@ export const updatePostService = async (
   if (!post.author.equals(userObjectId))
     throw new ApiError("Forbidden access", 403);
 
+  const validatedData = updatePostSchema.parse(reqBody);
+
   let imageUrl = post.mainImage;
   if (file) {
     try {
@@ -105,8 +107,6 @@ export const updatePostService = async (
       throw new ApiError("Image upload failed", 500);
     }
   }
-
-  const validatedData = updatePostSchema.parse(reqBody);
 
   const updatedPost = await updatePostRepo(id, {
     ...validatedData,

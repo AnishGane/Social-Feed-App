@@ -9,7 +9,10 @@ const MyProfile = () => {
     const { data, isLoading } = useGetMeQuery();
 
     if (isLoading) {
-        return <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
+        return <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center" role="status" aria-live="polite">
+            <Loader2 className="animate-spin" aria-hidden="true" />
+            <span className="sr-only">Loading profile</span>
+        </div>;
     }
 
     if (!data?.data) {

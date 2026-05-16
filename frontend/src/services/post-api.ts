@@ -51,6 +51,8 @@ export const postApi = createApi({
         url: `/posts/${id}`,
         method: "GET",
       }),
+
+      providesTags: (_result, _error, id) => [{ type: "Posts", id }],
     }),
 
     // 3. CREATE POST
@@ -142,10 +144,16 @@ export const postApi = createApi({
         };
       },
 
-      providesTags: (_result, _error, arg) => [
-        { type: "Posts", id: arg.userId },
-        { type: "Posts", id: "LIST" },
-      ],
+      providesTags: (result) =>
+        result?.data?.posts
+          ? [
+              ...result.data.posts.map((post) => ({
+                type: "Posts" as const,
+                id: post._id,
+              })),
+              { type: "Posts", id: "LIST" },
+            ]
+          : [{ type: "Posts", id: "LIST" }],
     }),
   }),
 });

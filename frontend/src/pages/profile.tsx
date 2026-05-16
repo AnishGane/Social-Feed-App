@@ -16,11 +16,14 @@ const ProfilePage = () => {
     const { data, isLoading } = useGetProfileQuery(username);
 
     if (isLoading) {
-        return <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
+        return <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center" role="status" aria-live="polite">
+            <Loader2 className="animate-spin" aria-hidden="true" />
+            <span className="sr-only">Loading profile</span>
+        </div>;
     }
 
     if (!data?.data) {
-        return <div>User not found</div>;
+        return <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">User not found</div>;
     }
 
     const profile = data.data;
