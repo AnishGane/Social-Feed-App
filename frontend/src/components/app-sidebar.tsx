@@ -10,7 +10,7 @@ import {
 import { navItems } from "@/constants"
 import { BringToFront } from "lucide-react"
 import { Separator } from "./ui/separator"
-import { useLocation } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import NavUser from "./nav-user"
 import { useAppSelector } from "@/hooks"
 
@@ -25,7 +25,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <div className="size-8 p-[6px] rounded-md bg-primary">
           <BringToFront className="size-full text-secondary" />
         </div>
-        <span className="font-medium text-xl text-primary">SocialFeed</span>
+        <Link to="/" className="font-medium text-xl text-primary">SocialFeed</Link>
       </SidebarHeader>
       <Separator />
       <SidebarContent className="p-2 flex flex-col items-center justify-center">

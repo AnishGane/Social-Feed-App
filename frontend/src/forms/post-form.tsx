@@ -104,6 +104,8 @@ const PostForm = ({
             });
 
             setPreviewUrl(post.mainImage || null);
+
+            setRemoveCurrentImage(false);
         }
     }, [post, form]);
 
@@ -153,7 +155,6 @@ const PostForm = ({
                     data: formData,
                 }).unwrap();
 
-
                 toast.success(res.message);
             } else {
                 await createPost(formData).unwrap();
@@ -167,8 +168,6 @@ const PostForm = ({
 
             onOpenChange(false);
         } catch (error) {
-            console.error(error);
-
             toast.error(
                 isEdit
                     ? "Failed to update post."
@@ -354,7 +353,7 @@ const PostForm = ({
                     <Button
                         type="reset"
                         variant="secondary"
-                        className="flex-1"
+                        className="flex-1 py-5 cursor-pointer"
                         disabled={isLoading}
                         onClick={() => {
                             form.reset();
@@ -371,7 +370,7 @@ const PostForm = ({
 
                     <Button
                         type="submit"
-                        className="flex-1"
+                        className="flex-1 py-5 cursor-pointer"
                         disabled={isLoading}
                     >
                         {isLoading ? (
