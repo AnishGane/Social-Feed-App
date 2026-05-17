@@ -1,4 +1,6 @@
 import { ApiError } from "../../utils/api-error";
+import uploadImageToCloudinary from "../../utils/upload-image";
+import { validateImageFile } from "../../utils/validate-image";
 import { validateObjectId } from "../../utils/validate-object-id";
 import {
   countPostsByUserRepo,
@@ -32,6 +34,7 @@ export const getProfileService = async (username: string) => {
       avatar: user.avatar,
       socialLinks: user.socialLinks,
       createdAt: user.createdAt,
+      bannerImage: user.bannerImage,
     },
     stats: {
       postsCount,
@@ -48,10 +51,34 @@ export const getProfileService = async (username: string) => {
 export const updateProfileService = async (
   userId: string,
   data: UpdateProfileInput,
+  file: Express.Multer.File | undefined,
 ) => {
   const userObjectId = validateObjectId(userId, "User");
 
-  const updatedUser = await updateUserRepo(userObjectId, data);
+  let bannerImageUrl: string | undefined;
+
+  if (file) {
+    try {
+      await validateImageFile(file);
+
+      bannerImageUrl = await uploadImageToCloudinary(file, "social-feed-users");
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError("Image upload failed", 500);
+    }
+  }
+
+  const updatePayload: Partial<UpdateProfileInput> = {
+    ...data,
+  };
+
+  if (bannerImageUrl) {
+    updatePayload.bannerImage = bannerImageUrl;
+  }
+
+  const updatedUser = await updateUserRepo(userObjectId, updatePayload);
 
   if (!updatedUser) {
     throw new ApiError("User not found", 404);
@@ -65,6 +92,8 @@ export const updateProfileService = async (
     avatar: updatedUser.avatar,
     socialLinks: updatedUser.socialLinks,
     createdAt: updatedUser.createdAt,
+    bannerImage: updatedUser.bannerImage,
+    email: updatedUser.email,
   };
 };
 
@@ -90,8 +119,9 @@ export const getMeService = async (userId: string) => {
       bio: user.bio,
       avatar: user.avatar,
       socialLinks: user.socialLinks,
-      email: user.email, // Include email for own profile if needed
+      email: user.email,
       createdAt: user.createdAt,
+      bannerImage: user.bannerImage,
     },
     stats: {
       postsCount,

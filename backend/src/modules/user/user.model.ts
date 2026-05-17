@@ -15,6 +15,7 @@ export interface IUser extends Document {
 
   name?: string;
   bio?: string;
+  bannerImage?: string;
   socialLinks?: {
     website?: string;
     github?: string;
@@ -79,6 +80,11 @@ const userSchema = new mongoose.Schema<IUser>(
       trim: true,
       maxlength: 160,
       default: "",
+    },
+
+    bannerImage: {
+      type: String,
+      default: null,
     },
 
     socialLinks: {

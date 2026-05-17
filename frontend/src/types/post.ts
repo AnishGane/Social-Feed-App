@@ -20,6 +20,8 @@ export interface Post {
   commentCount: number;
   score: number;
 
+  currentUserVote?: VoteType | null;
+
   isPublished: boolean;
 
   createdAt: string;

@@ -1,24 +1,19 @@
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import {
     Field,
     FieldError,
     FieldGroup,
     FieldLabel,
 } from "@/components/ui/field";
-
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-
 import {
     editProfileSchema,
     type EditProfileInput,
 } from "@/schema/user-schema";
-
 import { useUpdateProfileMutation } from "@/services/user-api";
-
 import type { User } from "@/types";
 import { toast } from "sonner";
 
@@ -46,28 +41,23 @@ const EditProfileForm = ({ user, setOpen }: { user: User, setOpen: React.Dispatc
 
     const onSubmit = async (data: EditProfileInput) => {
         try {
+            const formData = new FormData();
 
-            // Remove empty social links
-            const cleanedData = {
-                ...data,
-                socialLinks: Object.fromEntries(
-                    Object.entries(data.socialLinks || {}).filter(([_, value]) => value && value.trim() !== '')
-                ) as typeof data.socialLinks
-            };
+            if (data.name !== undefined) formData.append("name", data.name);
+            if (data.bio !== undefined) formData.append("bio", data.bio);
 
-            // If no social links remain, remove the entire socialLinks object
-            if (cleanedData.socialLinks && Object.keys(cleanedData.socialLinks).length === 0) {
-                delete cleanedData.socialLinks;
+            if (data.socialLinks) {
+                Object.entries(data.socialLinks).forEach(([key, value]) => {
+                    if (value && value.trim() !== "") {
+                        formData.append(`socialLinks[${key}]`, value);
+                    }
+                });
             }
 
-            await updateProfile(cleanedData).unwrap();
-
-            setOpen(false);
+            await updateProfile(formData).unwrap();
 
             toast.success("Profile updated successfully.");
             setOpen(false);
-
-            toast.success("Profile updated successfully.");
         } catch (error) {
             toast.error("Failed to update profile.");
         }
