@@ -9,6 +9,7 @@ const optionalUrl = z
 export const updateProfileSchema = z.object({
   name: z.string().max(50, "Name must be at most 50 characters").optional(),
   bio: z.string().max(160, "Bio must be at most 160 characters").optional(),
+  bannerImage: z.string().url("Banner image must be a valid URL").optional().nullable(),
 
   socialLinks: z
     .object({

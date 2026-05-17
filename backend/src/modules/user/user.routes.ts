@@ -5,6 +5,7 @@ import { protect } from "../../middleware/auth.middleware";
 import { validate } from "../../middleware/validate.middleware";
 import { updateProfileSchema } from "./user.validation";
 import { getUserProfileSchema } from "./user.validation";
+import upload from "../../middleware/multer.middleware";
 
 const router = express.Router();
 
@@ -14,7 +15,8 @@ router.get("/me", protect, getMe);
 // Update Profile
 router.patch(
   "/me",
-  protect,
+  protect,  
+  upload.single("bannerImage"),
   validate(updateProfileSchema, "body"),
   updateProfile,
 );

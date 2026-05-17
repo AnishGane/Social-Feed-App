@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import EditPostDialog from "./edit-post-dialog";
 import AlertDialogComp from "../alert-dialog-comp";
+import { useLocation } from "react-router-dom";
 
 type Props = {
     post: Post;
@@ -43,6 +44,9 @@ const PostCard = ({
     const me = useGetMeQuery().data?.data;
     const isOwner = me?.user._id === post.author._id;
 
+    const pathname = useLocation().pathname;
+    const isMeProfile = pathname === "/u/me";
+
     return (
         <Card>
             <CardHeader>
@@ -62,7 +66,7 @@ const PostCard = ({
                             </p>
                         </div>
                     </div>
-                    {isOwner && (
+                    {isOwner && isMeProfile && (
                         <PostCardDropdownMenus post={post} />
                     )}
                 </div>
@@ -165,8 +169,8 @@ const PostCardDropdownMenus = ({
                     icon={Trash2}
                     title="Are you sure you want to delete this post?"
                     description="This action cannot be undone. If you once deleted a post, you can't recover it."
-                    iconLabel="Delete Post" 
-                    post={post}/>
+                    iconLabel="Delete Post"
+                    post={post} />
             </DropdownMenuContent>
         </DropdownMenu>
     );

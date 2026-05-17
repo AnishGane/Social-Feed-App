@@ -15,6 +15,7 @@ export type User = {
 
   name?: string;
   bio?: string;
+  bannerImage?: string;
 
   socialLinks?: SocialLinks;
 
@@ -32,11 +33,4 @@ export interface ProfileStats {
 export interface ProfileResponse {
   user: User;
   stats: ProfileStats;
-}
-
-export interface UpdateProfileInput {
-  name?: string;
-  bio?: string;
-
-  socialLinks?: SocialLinks;
 }

@@ -3,7 +3,6 @@ import { baseQueryWithReauth } from "./base-api";
 import type {
   ApiResponse,
   ProfileResponse,
-  UpdateProfileInput,
   User,
 } from "@/types";
 
@@ -38,7 +37,7 @@ export const userApi = createApi({
     }),
 
     // 3. Update Profile
-    updateProfile: builder.mutation<ApiResponse<User>, UpdateProfileInput>({
+    updateProfile: builder.mutation<ApiResponse<User>, FormData>({
       query: (data) => ({
         url: "/users/me",
         method: "PATCH",

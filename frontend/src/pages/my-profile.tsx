@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 
 const MyProfile = () => {
     const { data, isLoading } = useGetMeQuery();
+    // const userData = useAppSelector(state => state.auth.user);
 
     if (isLoading) {
         return <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center" role="status" aria-live="polite">

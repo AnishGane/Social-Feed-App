@@ -15,7 +15,7 @@ export const voteService = async (
   postId: string | Types.ObjectId,
   type: "up" | "down",
 ) => {
-  validateObjectId(userId, "User");
+  const userObjectId = validateObjectId(userId, "User");
   const postObjectId = validateObjectId(postId, "Post");
 
   const session = await mongoose.startSession();
@@ -27,7 +27,7 @@ export const voteService = async (
     if (!post) throw new ApiError("Post not found", 404);
 
     const existingVote = await findExistingVoteRepo(
-      userId,
+      userObjectId,
       postObjectId,
       session,
     );
@@ -38,7 +38,7 @@ export const voteService = async (
     if (!existingVote) {
       await createVoteRepo(
         {
-          user: new Types.ObjectId(userId),
+          user: userObjectId,
           post: postObjectId,
           type,
         },

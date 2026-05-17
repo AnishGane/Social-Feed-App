@@ -4,6 +4,7 @@ import { Globe } from "lucide-react";
 import EditProfileDialog from "./edit-profile-dialog";
 import SocialLinks from "../social-links";
 import { Github, Instagram, Linkedin, X, Youtube } from "@/assets/icons";
+import UserBannerImage from "./user-banner-image";
 import { useGetMeQuery } from "@/services/user-api";
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const ProfileHeader = ({ user }: Props) => {
+    // const me = useAppSelector(state => state.auth.user);
     const me = useGetMeQuery().data?.data;
 
     const isOwner = me?.user._id === user._id;
@@ -19,9 +21,7 @@ const ProfileHeader = ({ user }: Props) => {
         <div className="flex flex-col space-y-1">
             <div className="relative h-44">
                 {/* Banner image */}
-                <div className="h-full">
-                    <img src="https://images.unsplash.com/photo-1777829999062-917dd30ad425?q=80&w=1412&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="banner" className="h-full w-full object-cover" draggable={false} />
-                </div>
+                <UserBannerImage user={user} />
 
                 {/* User Image */}
                 <div className="flex size-[120px] p-1 absolute bottom-[-40%] left-0 items-center justify-center rounded-full bg-white">

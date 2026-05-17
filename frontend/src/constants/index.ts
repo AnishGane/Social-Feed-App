@@ -5,7 +5,6 @@ import {
   UserIcon,
   BookmarkIcon,
   BellIcon,
-  PlusSquareIcon,
 } from "lucide-react";
 
 export const navItems = [
@@ -18,11 +17,6 @@ export const navItems = [
     label: "Search",
     url: "/search",
     icon: SearchIcon,
-  },
-  {
-    label: "Create Post",
-    url: "/create-post",
-    icon: PlusSquareIcon,
   },
   {
     label: "Profile",

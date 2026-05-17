@@ -1,13 +1,7 @@
-// components/post/vote-buttons.tsx
-
 import { ThumbsDown, ThumbsUp } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
-
 import type { Post } from "@/types";
-
 import { useVotePostMutation } from "@/services/post-api";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -25,10 +19,8 @@ const VoteButtons = ({
 }: Props) => {
     const [votePost, { isLoading }] = useVotePostMutation();
 
-    const [activeVote, setActiveVote] = useState<Record<string, boolean>>({
-        up: false,
-        down: false,
-    });
+    const isUpvoted = post.currentUserVote === "up";
+    const isDownvoted = post.currentUserVote === "down";
 
     const handleVote = async (
         type: "up" | "down"
@@ -44,30 +36,10 @@ const VoteButtons = ({
                 downvotesCount:
                     res.data.downvotesCount,
                 score: res.data.score,
+                currentUserVote: res.data.currentUserVote,
             });
         } catch (error) {
             console.error(error);
-        }
-    };
-
-    const handleVoteClick = async (type: "up" | "down") => {
-        const isUp = type === "up";
-        const wasActive = isUp ? activeVote.up : activeVote.down;
-        const willBeActive = !wasActive;
-
-        setActiveVote({
-            up: isUp && willBeActive,
-            down: !isUp && willBeActive,
-        });
-
-        try {
-            await handleVote(type);
-        } catch {
-            // Revert on failure
-            setActiveVote((prev) => ({
-                ...prev,
-                [type]: wasActive,
-            }));
         }
     };
 
@@ -77,11 +49,11 @@ const VoteButtons = ({
                 size="sm"
                 variant="outline"
                 disabled={isLoading}
-                onClick={() => handleVoteClick("up")}
+                onClick={() => handleVote("up")}
 
                 className="flex items-center gap-1 cursor-pointer"
             >
-                <ThumbsUp className={cn("size-4", activeVote.up && "fill-primary")} />
+                <ThumbsUp className={cn("size-4", isUpvoted && "fill-primary")} />
                 <p className="text-sm pt-px">{post.upvotesCount}</p>
             </Button>
 
@@ -89,10 +61,10 @@ const VoteButtons = ({
                 size="sm"
                 variant="outline"
                 disabled={isLoading}
-                onClick={() => handleVoteClick("down")}
+                onClick={() => handleVote("down")}
                 className="flex items-center gap-1 cursor-pointer"
             >
-                <ThumbsDown className={cn("size-4", activeVote.down && "fill-primary")} />
+                <ThumbsDown className={cn("size-4", isDownvoted && "fill-primary")} />
                 <p className="text-sm pt-px">{post.downvotesCount}</p>
             </Button>
         </div >

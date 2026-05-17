@@ -28,11 +28,10 @@ export const updateProfile = asyncHandler(
   async (req: Request, res: Response) => {
     const user = requireUser(req);
 
-    const validatedData = updateProfileSchema.parse(req.body);
-
     const updatedUser = await updateProfileService(
       user._id.toString(),
-      validatedData,
+      req.body,
+      req.file,
     );
 
     sendResponse(res, 200, updatedUser, "Profile updated successfully");
