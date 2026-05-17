@@ -17,11 +17,11 @@ import { useGetMeQuery } from "@/services/user-api";
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import EditPostDialog from "./edit-post-dialog";
+import AlertDialogComp from "../alert-dialog-comp";
 
 type Props = {
     post: Post;
@@ -161,10 +161,12 @@ const PostCardDropdownMenus = ({
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem variant="destructive">
-                    <Trash2 />
-                    Delete Post
-                </DropdownMenuItem>
+                <AlertDialogComp
+                    icon={Trash2}
+                    title="Are you sure you want to delete this post?"
+                    description="This action cannot be undone. If you once deleted a post, you can't recover it."
+                    iconLabel="Delete Post" 
+                    post={post}/>
             </DropdownMenuContent>
         </DropdownMenu>
     );

@@ -10,7 +10,7 @@ export const createPostSchema = z.object({
 
   tags: z.array(z.string()).optional(),
 
-  removeImage: z.string().optional(),
+  removeImage: z.enum(["true", "false"]).optional(),
 });
 
 export const updatePostSchema = createPostSchema.partial();

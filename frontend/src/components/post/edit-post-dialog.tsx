@@ -1,22 +1,16 @@
 import { useState } from "react";
-
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-
 import {
     DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-
 import { Pencil } from "lucide-react";
-
 import { Separator } from "../ui/separator";
-
 import PostForm from "@/forms/post-form";
-
 import type { Post } from "@/types";
 
 type Props = {
@@ -45,9 +39,9 @@ const EditPostDialog = ({
                 open={open}
                 onOpenChange={setOpen}
             >
-                <DialogContent className="max-w-lg">
+                <DialogContent className="max-w-lg!">
                     <DialogHeader>
-                        <DialogTitle className="text-xl">
+                        <DialogTitle className="text-xl font-semibold">
                             Edit Post
                         </DialogTitle>
                     </DialogHeader>
