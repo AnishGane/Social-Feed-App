@@ -51,17 +51,20 @@ const PostCard = ({
         <Card>
             <CardHeader>
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 w-full">
                         <div className="flex size-10 items-center justify-center rounded-full bg-muted text-sm font-bold">
-                            <UserAvatar seed={post.author.username} className="size-8" />
+                            <UserAvatar seed={post.author._id} className="size-8" />
                         </div>
 
-                        <div>
-                            <h3 className="font-semibold text-base">
-                                {post.author.username}
-                            </h3>
+                        <div className="flex items-center justify-between w-full">
+                            <div className="flex flex-col">
+                                <h3 className="font-semibold text-base">
+                                    {post.author.name}
+                                </h3>
+                                <p className="text-xs text-muted-foreground tracking-wide">@{post.author.username}</p>
+                            </div>
 
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-[13px] text-muted-foreground">
                                 {formatPostDate(post.createdAt)}
                             </p>
                         </div>
@@ -79,11 +82,9 @@ const PostCard = ({
                     </h2>
 
                     <p
-                        className={`mt-2 whitespace-pre-wrap text-sm text-muted-foreground transition-all ${shouldClamp && !expanded
+                        className={`mt-2 whitespace-pre-wrap text-justify text-sm text-muted-foreground transition-all ${shouldClamp && !expanded
                             ? "line-clamp-3"
-                            : ""
-                            }`}
-                    >
+                            : ""}`}>
                         {post.content}
                     </p>
 

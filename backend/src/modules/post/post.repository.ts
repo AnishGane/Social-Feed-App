@@ -9,9 +9,13 @@ export const updatePostRepo = (
   id: string | Types.ObjectId,
   data: Partial<IPost>,
 ): Promise<IPost | null> =>
-  postModel.findByIdAndUpdate(id, {
-    $set: data,
-  }, { new: true, runValidators: true });
+  postModel.findByIdAndUpdate(
+    id,
+    {
+      $set: data,
+    },
+    { new: true, runValidators: true },
+  );
 
 export const deletePostRepo = (id: string | Types.ObjectId) =>
   postModel.findByIdAndDelete(id);
@@ -35,7 +39,7 @@ export const getPostsRepo = async (cursor?: string, limit = 10) => {
 
   const posts = await postModel
     .find(query)
-    .populate("author", "username avatar")
+    .populate("author", "username avatar name")
     .sort({ _id: -1 })
     .limit(limit);
 
@@ -69,7 +73,7 @@ export const getPostsByUserRepo = async (
 
   const posts = await postModel
     .find(query)
-    .populate("author", "username avatar")
+    .populate("author", "username avatar name")
     .sort({ _id: -1 })
     .limit(limit);
 
