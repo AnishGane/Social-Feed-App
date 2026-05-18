@@ -25,7 +25,7 @@ const ProfileHeader = ({ user }: Props) => {
 
                 {/* User Image */}
                 <div className="flex size-[120px] p-1 absolute bottom-[-40%] left-0 items-center justify-center rounded-full bg-white">
-                    <UserAvatar seed={user.username || user.name} className="size-full" />
+                    <UserAvatar seed={user._id} className="size-full" />
                 </div>
             </div>
 

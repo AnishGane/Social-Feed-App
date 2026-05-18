@@ -9,7 +9,7 @@ type Props = {
     className: string
 }
 
-const UserAvatar = ({ seed = 'John Doe', className }: Props) => {
+const UserAvatar = ({ seed, className }: Props) => {
 
     const avatar = useMemo(() => {
         return createAvatar(lorelei, {

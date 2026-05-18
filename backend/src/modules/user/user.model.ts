@@ -41,6 +41,9 @@ const userSchema = new mongoose.Schema<IUser>(
       trim: true,
       minlength: 3,
       maxlength: 20,
+      match: /^[a-zA-Z0-9_]+$/,
+      lowercase: true,
+      unique: true,
     },
 
     email: {
@@ -66,6 +69,7 @@ const userSchema = new mongoose.Schema<IUser>(
     refreshToken: {
       type: String,
       default: null,
+      select: false,
     },
 
     name: {

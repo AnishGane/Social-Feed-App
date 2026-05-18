@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import type { Post } from "@/types";
 import { useVotePostMutation } from "@/services/post-api";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 type Props = {
     post: Post;
@@ -38,8 +39,10 @@ const VoteButtons = ({
                 score: res.data.score,
                 currentUserVote: res.data.currentUserVote,
             });
+
+            toast.success(res.message || `Voted ${type === "up" ? "up" : "down"}`);
         } catch (error) {
-            console.error(error);
+            toast.error((error as Error).message || "Failed to vote.");
         }
     };
 

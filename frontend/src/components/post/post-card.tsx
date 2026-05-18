@@ -9,7 +9,7 @@ import {
 
 import VoteButtons from "./vote-buttons";
 import UserAvatar from "../user-avatar";
-import { EllipsisVertical, MessageCircleMore, Trash2, TrendingUp } from "lucide-react";
+import { Dot, EllipsisVertical, MessageSquare, Trash2, TrendingUp } from "lucide-react";
 import { formatPostDate } from "@/utils/format-date";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -127,15 +127,15 @@ const PostCard = ({
                     onVoteUpdate={onVoteUpdate}
                 />
 
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex items-center justify-center">
                     <span title="Comments" className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-                        <MessageCircleMore className="size-5" />{post.commentCount}
+                        <MessageSquare className="size-4.5" />{post.commentCount}
                     </span>
 
-                    <div className="size-[3px] mt-0.5 rounded-full bg-muted-foreground" />
+                    <Dot className="size-4.5" />
 
                     <span title="Score" className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-                        <TrendingUp className="size-5" /> {post.score}
+                        <TrendingUp className="size-4.5" /> {post.score}
                     </span>
                 </div>
             </CardFooter>

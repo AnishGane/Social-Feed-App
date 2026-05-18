@@ -18,7 +18,7 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
     username,
     email,
     password,
-    name
+    name,
   );
 
   res.cookie("refreshToken", refreshToken, refreshCookieOptions);
