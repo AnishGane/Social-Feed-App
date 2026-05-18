@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
+import ScrollToTop from "@/components/scroll-to-top";
 
 import {
     SidebarInset,
@@ -11,6 +12,7 @@ import { Outlet } from "react-router-dom";
 const AppLayout = () => {
     return (
         <SidebarProvider>
+            <ScrollToTop />
             <AppSidebar />
 
             <SidebarInset>

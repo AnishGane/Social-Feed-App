@@ -27,23 +27,25 @@ const PostFeed = ({ userId }: { userId?: string }) => {
     }
 
     return (
-        <div className="space-y-4">
-            {posts.map((post) => (
-                <PostCard
-                    key={post._id}
-                    post={post}
-                    onVoteUpdate={updatePost}
-                />
-            ))}
+        <>
+            <div className="flex flex-col items-center gap-4">
+                {posts.map((post) => (
+                    <PostCard
+                        key={post._id}
+                        post={post}
+                        onVoteUpdate={updatePost}
+                    />
+                ))}
 
-            {isFetching && (
-                <div className="space-y-4">
-                    <PostSkeleton />
-                </div>
-            )}
+                {isFetching && (
+                    <div className="space-y-4">
+                        <PostSkeleton />
+                    </div>
+                )}
 
-            <div ref={loadMoreRef} className="h-10" />
-        </div>
+            </div>
+            <div ref={loadMoreRef} className="h-5" />
+        </>
     );
 };
 

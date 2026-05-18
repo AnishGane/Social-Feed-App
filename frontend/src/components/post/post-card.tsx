@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import EditPostDialog from "./edit-post-dialog";
 import AlertDialogComp from "../alert-dialog-comp";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 type Props = {
     post: Post;
@@ -47,8 +47,10 @@ const PostCard = ({
     const pathname = useLocation().pathname;
     const isMeProfile = pathname === "/u/me";
 
+    const visitProfile = isOwner ? `/u/me` : `/u/${post.author.username}`;
+
     return (
-        <Card>
+        <Card className="w-full">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 w-full">
@@ -57,12 +59,12 @@ const PostCard = ({
                         </div>
 
                         <div className="flex items-center justify-between w-full">
-                            <div className="flex flex-col">
+                            <Link to={visitProfile} className="flex flex-col">
                                 <h3 className="font-semibold text-base">
                                     {post.author.name}
                                 </h3>
                                 <p className="text-xs text-muted-foreground tracking-wide">@{post.author.username}</p>
-                            </div>
+                            </Link>
 
                             <p className="text-[13px] text-muted-foreground">
                                 {formatPostDate(post.createdAt)}

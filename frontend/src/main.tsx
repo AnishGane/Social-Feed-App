@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'
 import { store } from './store/store.ts'
 import AuthInitializer from './components/auth-initializer.tsx'
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { ThemeProvider } from "@/components/theme-provider"
 
 createRoot(document.getElementById('root')!).render(
   // <StrictMode>
@@ -13,7 +14,9 @@ createRoot(document.getElementById('root')!).render(
     <TooltipProvider>
       <Toaster />
       <AuthInitializer>
-        <App />
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          <App />
+        </ThemeProvider>
       </AuthInitializer>
     </TooltipProvider>
   </Provider>

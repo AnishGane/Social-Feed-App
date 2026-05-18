@@ -1,3 +1,4 @@
+import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button"
 import { useLogoutApiMutation } from "@/services/auth-api"
 import { useNavigate } from "react-router-dom";
@@ -21,6 +22,7 @@ const SettingsPage = () => {
             <Button onClick={handleLogout}>
                 {isLoading ? "Logging out..." : "Logout"}
             </Button>
+            <ModeToggle />
         </>
     )
 }
