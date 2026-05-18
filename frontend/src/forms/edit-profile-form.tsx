@@ -23,6 +23,7 @@ const EditProfileForm = ({ user, setOpen }: { user: User, setOpen: React.Dispatc
 
         defaultValues: {
             name: user.name || "",
+            username: user.username || undefined,
             bio: user.bio || "",
 
             socialLinks: {
@@ -45,6 +46,7 @@ const EditProfileForm = ({ user, setOpen }: { user: User, setOpen: React.Dispatc
 
             if (data.name !== undefined) formData.append("name", data.name);
             if (data.bio !== undefined) formData.append("bio", data.bio);
+            if (data.username) formData.append("username", data.username);
 
             if (data.socialLinks) {
                 Object.entries(data.socialLinks).forEach(([key, value]) => {
@@ -88,6 +90,37 @@ const EditProfileForm = ({ user, setOpen }: { user: User, setOpen: React.Dispatc
                                 id="form-rhf-profile-name"
                                 aria-invalid={fieldState.invalid}
                                 placeholder="Your name"
+                                autoComplete="off"
+                                className="rounded-sm"
+                            />
+
+                            {fieldState.invalid && (
+                                <FieldError
+                                    errors={[fieldState.error]}
+                                />
+                            )}
+                        </Field>
+                    )}
+                />
+
+                {/* Username */}
+                <Controller
+                    name="username"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                            <FieldLabel
+                                htmlFor="form-rhf-profile-username"
+                                className="text-base"
+                            >
+                                Username
+                            </FieldLabel>
+
+                            <Input
+                                {...field}
+                                id="form-rhf-profile-username"
+                                aria-invalid={fieldState.invalid}
+                                placeholder="Your username"
                                 autoComplete="off"
                                 className="rounded-sm"
                             />

@@ -33,7 +33,7 @@ import type { User } from "@/types"
 const NavUser = ({
     user,
 }: {
-    user: Omit<User, "_id">
+    user: User
 }) => {
     const { isMobile } = useSidebar()
 
@@ -46,7 +46,7 @@ const NavUser = ({
                             size="lg"
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground  md:h-10 md:px-1 py-6"
                         >
-                            <UserAvatar seed={user.username} className="size-8" />
+                            <UserAvatar seed={user._id} className="size-8" />
                             <div className="grid flex-1 text-left text-base leading-tight">
                                 <span className="truncate font-normal">{user.name}</span>
                                 <span className="truncate text-sm tracking-wide">{user.email}</span>

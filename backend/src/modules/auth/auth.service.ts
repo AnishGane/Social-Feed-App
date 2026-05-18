@@ -10,13 +10,25 @@ export const registerUser = async (
   password: string,
   name: string,
 ) => {
-  const exists = await User.findOne({ email });
+  const normalizedUsername = username.toLowerCase();
 
-  if (exists) throw new ApiError("User already exists", 400);
+  const exists = await User.findOne({
+    $or: [{ email: email.toLowerCase() }, { username: normalizedUsername }],
+  });
+
+  if (exists) {
+    if (exists.email === email.toLowerCase()) {
+      throw new ApiError("Email already exists", 400);
+    }
+
+    if (exists.username === normalizedUsername) {
+      throw new ApiError("Username already exists", 400);
+    }
+  }
 
   const user = await User.create({
-    username,
-    email,
+    username: username.toLowerCase(),
+    email: email.toLowerCase(),
     password,
     name,
   });
@@ -24,8 +36,9 @@ export const registerUser = async (
   const accessToken = generateAccessToken(user._id.toString());
   const refreshToken = generateRefreshToken(user._id.toString());
 
-  user.refreshToken = refreshToken;
-  await user.save();
+  await User.findByIdAndUpdate(user._id, {
+    refreshToken,
+  });
 
   const { password: _password, ...userObj } = user.toObject();
 
@@ -33,7 +46,9 @@ export const registerUser = async (
 };
 
 export const loginUser = async (email: string, password: string) => {
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email: email.toLowerCase() }).select(
+    "+password",
+  );
 
   if (!user) throw new ApiError("Invalid credentials", 401);
 
@@ -44,8 +59,9 @@ export const loginUser = async (email: string, password: string) => {
   const accessToken = generateAccessToken(user._id.toString());
   const refreshToken = generateRefreshToken(user._id.toString());
 
-  user.refreshToken = refreshToken;
-  await user.save();
+  await User.findByIdAndUpdate(user._id, {
+    refreshToken,
+  });
 
   const { password: _password, ...userObj } = user.toObject();
 
@@ -62,7 +78,7 @@ export const refreshTokenService = async (token: string) => {
     throw new ApiError("Invalid refresh token", 403);
   }
 
-  const user = await User.findById(decoded.id);
+  const user = await User.findById(decoded.id).select("+refreshToken");
 
   if (!user || user.refreshToken !== token) {
     throw new ApiError("Invalid refresh token", 403);
@@ -73,8 +89,9 @@ export const refreshTokenService = async (token: string) => {
   const newAccessToken = generateAccessToken(userId);
   const newRefreshToken = generateRefreshToken(userId);
 
-  user.refreshToken = newRefreshToken;
-  await user.save();
+  await User.findByIdAndUpdate(user._id, {
+    refreshToken: newRefreshToken,
+  });
 
   return {
     accessToken: newAccessToken,
@@ -87,8 +104,19 @@ export const logoutUser = async (userId: string) => {
 
   if (!user) throw new ApiError("User not found", 404);
 
-  user.refreshToken = "";
-  await user.save();
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    {
+      refreshToken: "",
+    },
+    {
+      new: true,
+    },
+  );
+
+  if (!updatedUser) {
+    throw new ApiError("User not found", 404);
+  }
 };
 
 export const getMe = async (userId: string) => {
