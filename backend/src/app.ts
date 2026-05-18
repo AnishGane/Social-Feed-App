@@ -11,7 +11,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(errorHandler);
+app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
@@ -22,5 +22,7 @@ app.use(
 
 // Routes
 app.use("/api/v1", routes);
+
+app.use(errorHandler);
 
 export default app;

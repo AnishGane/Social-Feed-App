@@ -8,6 +8,7 @@ export const registerUser = async (
   username: string,
   email: string,
   password: string,
+  name: string,
 ) => {
   const exists = await User.findOne({ email });
 
@@ -17,6 +18,7 @@ export const registerUser = async (
     username,
     email,
     password,
+    name,
   });
 
   const accessToken = generateAccessToken(user._id.toString());

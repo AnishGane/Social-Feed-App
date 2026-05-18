@@ -13,9 +13,9 @@ export interface IUser extends Document {
   refreshToken?: string;
   comparePassword(candidate: string): Promise<boolean>;
 
-  name?: string;
+  name: string;
   bio?: string;
-  bannerImage?: string;
+  bannerImage?: string | null;
   socialLinks?: {
     website?: string;
     github?: string;
@@ -71,8 +71,9 @@ const userSchema = new mongoose.Schema<IUser>(
     name: {
       type: String,
       trim: true,
-      default: "",
+      required: true,
       maxlength: 50,
+      minlength: 3,
     },
 
     bio: {

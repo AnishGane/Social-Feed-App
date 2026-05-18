@@ -42,10 +42,11 @@ const SignupForm = ({
     const form = useForm<SignupSchemaType>({
         resolver: zodResolver(signupSchema),
         defaultValues: {
+            name: "",
             username: "",
             email: "",
             password: "",
-            confirmPassword: ""
+            confirmPassword: "",
         }
     })
 
@@ -57,7 +58,7 @@ const SignupForm = ({
                 user: res.data.user,
                 accessToken: res.data.accessToken
             }));
-            navigate("/dashboard");
+            navigate("/");
 
         } catch (err: any) {
             const message = err?.data?.message || "Signup failed. Please try again.";
@@ -77,6 +78,27 @@ const SignupForm = ({
                 <CardContent>
                     <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
                         <FieldGroup>
+                            <Controller
+                                name="name"
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                    <Field data-invalid={fieldState.invalid}>
+                                        <FieldLabel htmlFor="form-rhf-demo-name">
+                                            Name
+                                        </FieldLabel>
+                                        <Input
+                                            {...field}
+                                            id="form-rhf-demo-name"
+                                            aria-invalid={fieldState.invalid}
+                                            placeholder="name"
+                                            autoComplete="off"
+                                        />
+                                        {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                        )}
+                                    </Field>
+                                )}
+                            />
                             <Controller
                                 name="username"
                                 control={form.control}

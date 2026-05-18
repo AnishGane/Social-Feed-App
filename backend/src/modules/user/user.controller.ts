@@ -7,7 +7,6 @@ import {
   updateProfileService,
 } from "./user.service";
 import { sendResponse } from "../../utils/api-response";
-import { updateProfileSchema } from "./user.validation";
 
 export const getProfile = asyncHandler(async (req: Request, res: Response) => {
   const username = req.params.username.toString();

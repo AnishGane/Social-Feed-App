@@ -21,7 +21,7 @@ const ProfileHeader = ({ user }: Props) => {
         <div className="flex flex-col space-y-1">
             <div className="relative h-44">
                 {/* Banner image */}
-                <UserBannerImage user={user} />
+                <UserBannerImage user={user} canEdit={isOwner} />
 
                 {/* User Image */}
                 <div className="flex size-[120px] p-1 absolute bottom-[-40%] left-0 items-center justify-center rounded-full bg-white">

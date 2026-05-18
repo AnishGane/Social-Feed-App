@@ -23,7 +23,7 @@ const MyProfile = () => {
     const profile = data.data;
 
     return (
-        <Card className="max-w-3xl rounded-none mx-auto p-0">
+        <Card className="max-w-3xl rounded-none mx-auto p-0 pb-4">
             <ProfileHeader user={profile.user} />
 
             <div className="px-4 space-y-6">

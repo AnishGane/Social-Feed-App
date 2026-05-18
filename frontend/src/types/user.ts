@@ -13,9 +13,9 @@ export type User = {
   email: string;
   avatar?: string;
 
-  name?: string;
+  name: string;
   bio?: string;
-  bannerImage?: string;
+  bannerImage?: string | null;
 
   socialLinks?: SocialLinks;
 

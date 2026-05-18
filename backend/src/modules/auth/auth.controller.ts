@@ -13,11 +13,12 @@ import { requireUser } from "../../utils/require-user";
 import { refreshCookieOptions } from "../../utils/cookie-options";
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, name } = req.body;
   const { user, accessToken, refreshToken } = await registerUser(
     username,
     email,
     password,
+    name
   );
 
   res.cookie("refreshToken", refreshToken, refreshCookieOptions);
