@@ -1,11 +1,11 @@
 import type { User } from "@/types"
 import UserAvatar from "../user-avatar";
 import { Globe } from "lucide-react";
-import EditProfileDialog from "./edit-profile-dialog";
 import SocialLinks from "../social-links";
 import { Github, Instagram, Linkedin, X, Youtube } from "@/assets/icons";
 import UserBannerImage from "./user-banner-image";
 import { useGetMeQuery } from "@/services/user-api";
+import EditProfileSheet from "./edit-profile-sheet";
 
 interface Props {
     user: User
@@ -48,7 +48,7 @@ const ProfileHeader = ({ user }: Props) => {
             </div>
 
             <div className="px-4 py-2 flex sm:items-center flex-col sm:flex-row justify-between gap-4">
-                {isOwner && <EditProfileDialog user={user} />}
+                {isOwner && <EditProfileSheet user={user} />}
                 <div className="flex flex-1 flex-wrap gap-3 sm:gap-2 text-sm text-muted-foreground">
                     {user.socialLinks?.website && (
                         <SocialLinks icon={Globe} url={user.socialLinks.website} label="website" />

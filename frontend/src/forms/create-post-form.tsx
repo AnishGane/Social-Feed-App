@@ -22,7 +22,7 @@ import { toast } from "sonner"
 import { useEffect, useRef, useState } from "react"
 import { Image, Loader2, X } from "lucide-react"
 
-const CreatePostForm = ({ onOpenChange }: { onOpenChange: (open: boolean) => void }) => {
+const CreatePostForm = ({ onOpenChange }: { onOpenChange?: (open: boolean) => void }) => {
     const form = useForm<CreatePostInput>({
         resolver: zodResolver(createPostSchema),
         defaultValues: {
@@ -169,7 +169,7 @@ const CreatePostForm = ({ onOpenChange }: { onOpenChange: (open: boolean) => voi
                                         htmlFor="form-rhf-post-mainimage"
                                         className="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed p-6 text-center transition-colors hover:bg-muted/50"
                                     >
-                                        <div className="space-y-2 flex flex-col items-center justify-center">
+                                        <div className="space-y-2 min-h-40 flex flex-col items-center justify-center">
                                             <div className="size-14 rounded-full bg-muted-foreground/20 hover:border hover:border-primary/60 transition-all duration-200 hover:border-dashed flex items-center justify-center">
                                                 <Image className="size-8 text-muted-foreground/90" />
                                             </div>
@@ -210,8 +210,8 @@ const CreatePostForm = ({ onOpenChange }: { onOpenChange: (open: boolean) => voi
 
                                 {previewUrl && (
                                     <div className="overflow-hidden rounded-xl border relative">
-                                        <Button type="button" variant="destructive"
-                                            className="size-8 rounded-full bg-destructive/80 hover:bg-destructive scale-95 hover:scale-100 transition-all duration-200 text-secondary cursor-pointer flex items-center justify-center right-2 top-2 absolute"
+                                        <Button type="button"
+                                            className="size-8 rounded-full hover:bg-destructive scale-95 hover:scale-100 transition-all duration-200 cursor-pointer bg-red-500/80 text-white flex items-center justify-center right-2 top-2 absolute"
                                             onClick={removeImage}
                                             aria-label="Remove image">
                                             <X className="size-5" />

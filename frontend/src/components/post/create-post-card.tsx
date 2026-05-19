@@ -1,10 +1,9 @@
 import { useState } from "react";
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-import CreatePostDialog from "./create-post-dialog";
 import { Lightbulb, Plus } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
+import CreatePostForm from "@/forms/create-post-form";
 
 const CreatePostCard = () => {
     const [open, setOpen] = useState(false);
@@ -19,17 +18,23 @@ const CreatePostCard = () => {
                         </p>
                     </div>
 
-                    <Button className="py-5 px-3 cursor-pointer rounded-full text-xs" title="Create new post" onClick={() => setOpen(true)}>
-                        <Plus className="size-5" />
-                        <span className="sr-only">Create new post</span>
-                    </Button>
+                    <Sheet open={open} onOpenChange={setOpen}>
+                        <SheetTrigger asChild>
+                            <Button className="py-5 px-2.5 cursor-pointer rounded-full text-xs" title="Create new post">
+                                <Plus className="size-5" />
+                                <span className="sr-only">Create new post</span>
+                            </Button>
+
+                        </SheetTrigger>
+                        <SheetContent className="px-4">
+                            <SheetHeader className="px-0">
+                                <SheetTitle className="text-2xl">Create a post</SheetTitle>
+                            </SheetHeader>
+                            <CreatePostForm onOpenChange={setOpen} />
+                        </SheetContent>
+                    </Sheet>
                 </div>
             </Card>
-
-            <CreatePostDialog
-                open={open}
-                onOpenChange={setOpen}
-            />
         </>
     )
 }
