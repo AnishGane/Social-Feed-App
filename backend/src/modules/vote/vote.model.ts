@@ -39,6 +39,10 @@ const voteSchema = new Schema<IVote>(
 
 // ensures one vote per user per post
 voteSchema.index({ user: 1, post: 1 }, { unique: true });
+voteSchema.index({
+  user: 1,
+  _id: -1,
+});
 
 const voteModel = mongoose.model("Vote", voteSchema);
 export default voteModel;

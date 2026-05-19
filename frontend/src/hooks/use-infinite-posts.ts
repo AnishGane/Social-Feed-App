@@ -1,21 +1,28 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Post } from "@/types";
+import type { FeedType, Post } from "@/types";
 import {
   useLazyGetPostsQuery,
   useLazyGetPostsByUserQuery,
+  useLazyGetVotedPostByUserQuery,
+  type GetPostsResponse,
 } from "@/services/post-api";
 
 type UseInfinitePostsProps = {
+  type?: FeedType;
   userId?: string;
 };
 
 const LIMIT = 10;
 
-export const useInfinitePosts = ({ userId }: UseInfinitePostsProps = {}) => {
+export const useInfinitePosts = ({
+  type = "all",
+  userId,
+}: UseInfinitePostsProps = {}) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [totalVotedPostCount, setTotalVotedPostCount] = useState(0);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -24,7 +31,10 @@ export const useInfinitePosts = ({ userId }: UseInfinitePostsProps = {}) => {
   const [getUserPosts, { isFetching: isUserFetching }] =
     useLazyGetPostsByUserQuery();
 
-  const isFetching = isHomeFetching || isUserFetching;
+  const [getVotedPosts, { isFetching: isVotedFetching }] =
+    useLazyGetVotedPostByUserQuery();
+
+  const isFetching = isHomeFetching || isUserFetching || isVotedFetching;
 
   /**
    * CORE FETCH LOGIC
@@ -32,19 +42,40 @@ export const useInfinitePosts = ({ userId }: UseInfinitePostsProps = {}) => {
   const fetchPosts = useCallback(
     async (nextCursor?: string) => {
       try {
-        const response = userId
-          ? await getUserPosts({
+        let response: GetPostsResponse;
+
+        switch (type) {
+          case "user":
+            if (!userId) {
+              console.error('userId is required when type is "user"');
+              return;
+            }
+            response = await getUserPosts({
               userId,
               cursor: nextCursor ?? undefined,
               limit: LIMIT,
-            }).unwrap()
-          : await getPosts({
+            }).unwrap();
+            break;
+
+          case "voted":
+            response = await getVotedPosts({
               cursor: nextCursor ?? undefined,
               limit: LIMIT,
             }).unwrap();
+            break;
+
+          default:
+            response = await getPosts({
+              cursor: nextCursor ?? undefined,
+              limit: LIMIT,
+            }).unwrap();
+        }
 
         const incomingPosts = response.data.posts;
         const incomingCursor = response.data.nextCursor;
+        if (type === "voted") {
+          setTotalVotedPostCount(response.data.totalCount ?? 0);
+        }
 
         setPosts((prev) => {
           const existing = new Set(prev.map((p) => p._id));
@@ -56,18 +87,16 @@ export const useInfinitePosts = ({ userId }: UseInfinitePostsProps = {}) => {
 
         setCursor(incomingCursor ?? null);
 
-        if (!incomingCursor || incomingPosts.length < LIMIT) {
-          setHasMore(false);
-        }
+        setHasMore(!!incomingCursor);
       } finally {
         setInitialLoading(false);
       }
     },
-    [userId, getPosts, getUserPosts],
+    [type, userId, getPosts, getUserPosts, getVotedPosts],
   );
 
   /**
-   * RESET WHEN USER CHANGES
+   * RESET WHEN FEED CHANGES
    */
   useEffect(() => {
     setPosts([]);
@@ -75,8 +104,12 @@ export const useInfinitePosts = ({ userId }: UseInfinitePostsProps = {}) => {
     setHasMore(true);
     setInitialLoading(true);
 
+    if (type !== "voted") {
+      setTotalVotedPostCount(0);
+    }
+
     fetchPosts();
-  }, [userId, fetchPosts]);
+  }, [type, userId, fetchPosts]);
 
   /**
    * OBSERVER FOR INFINITE SCROLL
@@ -90,19 +123,26 @@ export const useInfinitePosts = ({ userId }: UseInfinitePostsProps = {}) => {
           fetchPosts(cursor);
         }
       },
-      { threshold: 1 },
+      {
+        threshold: 1,
+      },
     );
 
     const el = loadMoreRef.current;
-    if (el) observer.observe(el);
+
+    if (el) {
+      observer.observe(el);
+    }
 
     return () => {
-      if (el) observer.unobserve(el);
+      if (el) {
+        observer.unobserve(el);
+      }
     };
   }, [cursor, hasMore, isFetching, fetchPosts]);
 
   /**
-   * EXTERNAL HANDLER (for vote updates, edits, etc.)
+   * UPDATE SINGLE POST
    */
   const updatePost = useCallback((postId: string, updates: Partial<Post>) => {
     setPosts((prev) =>
@@ -113,13 +153,16 @@ export const useInfinitePosts = ({ userId }: UseInfinitePostsProps = {}) => {
   }, []);
 
   /**
-   * MANUAL REFRESH (optional)
+   * MANUAL REFRESH
    */
   const refresh = useCallback(() => {
     setPosts([]);
     setCursor(null);
     setHasMore(true);
     setInitialLoading(true);
+
+    setTotalVotedPostCount(0);
+
     fetchPosts();
   }, [fetchPosts]);
 
@@ -130,7 +173,14 @@ export const useInfinitePosts = ({ userId }: UseInfinitePostsProps = {}) => {
     isFetching,
     initialLoading,
     loadMoreRef,
-    fetchNext: () => cursor && fetchPosts(cursor),
+    totalVotedPostCount,
+
+    fetchNext: () => {
+      if (cursor) {
+        fetchPosts(cursor);
+      }
+    },
+
     updatePost,
     refresh,
   };

@@ -3,7 +3,7 @@ import { baseQueryWithReauth } from "./base-api";
 import type { ApiResponse } from "@/types/api";
 import type { PaginatedPosts, Post, VoteType } from "@/types";
 
-type GetPostsResponse = ApiResponse<PaginatedPosts>;
+export type GetPostsResponse = ApiResponse<PaginatedPosts>;
 
 type VoteResponse = ApiResponse<{
   upvotesCount: number;
@@ -155,6 +155,31 @@ export const postApi = createApi({
             ]
           : [{ type: "Posts", id: "LIST" }],
     }),
+
+    // 8. get voted post by user
+    getVotedPostByUser: builder.query<
+      GetPostsResponse,
+      { cursor?: string; limit?: number }
+    >({
+      query: ({ cursor, limit = 10 }) => {
+        const params = new URLSearchParams({ limit: limit.toString() });
+        if (cursor) params.set("cursor", cursor);
+        return {
+          url: `/posts/voted?${params.toString()}`,
+          method: "GET",
+        };
+      },
+      providesTags: (result) =>
+        result?.data?.posts
+          ? [
+              ...result.data.posts.map((post) => ({
+                type: "Posts" as const,
+                id: post._id,
+              })),
+              { type: "Posts", id: "LIST" },
+            ]
+          : [{ type: "Posts", id: "LIST" }],
+    }),
   }),
 });
 
@@ -172,4 +197,6 @@ export const {
 
   useGetPostsByUserQuery,
   useLazyGetPostsByUserQuery,
+
+  useLazyGetVotedPostByUserQuery,
 } = postApi;

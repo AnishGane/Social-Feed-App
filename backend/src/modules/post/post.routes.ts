@@ -6,6 +6,7 @@ import {
   getPostById,
   getPosts,
   getPostsByUser,
+  getVotedPostByUser,
   updatePost,
 } from "./post.controller";
 import { validate } from "../../middleware/validate.middleware";
@@ -36,6 +37,10 @@ router.post(
   validate(voteSchema, "body"),
   votePost,
 );
+
+// get voted post by user
+router.get("/voted", protect, getVotedPostByUser);
+
 router.get("/user/:userId", protect, getPostsByUser);
 
 router.get("/:id", getPostById);

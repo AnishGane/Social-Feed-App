@@ -35,7 +35,7 @@ const ProfilePage = () => {
             <div className="px-4 space-y-6">
                 <ProfileStats stats={profile.stats} />
 
-                <PostFeed userId={profile.user._id} />
+                <PostFeed userId={profile.user._id} type="user" />
             </div>
         </Card>
     )

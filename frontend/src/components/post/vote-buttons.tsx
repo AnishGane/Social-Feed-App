@@ -1,4 +1,4 @@
-import { ThumbsDown, ThumbsUp } from "lucide-react";
+import { ArrowBigDownDash, ArrowBigUpDash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Post } from "@/types";
 import { useVotePostMutation } from "@/services/post-api";
@@ -53,10 +53,10 @@ const VoteButtons = ({
                 variant="outline"
                 disabled={isLoading}
                 onClick={() => handleVote("up")}
-
                 className="flex items-center gap-1 cursor-pointer"
+                title="Upvote"
             >
-                <ThumbsUp className={cn("size-4", isUpvoted && "fill-primary")} />
+                <ArrowBigUpDash className={cn("size-4", isUpvoted && "fill-primary")} />
                 <p className="text-sm pt-px">{post.upvotesCount}</p>
             </Button>
 
@@ -66,8 +66,9 @@ const VoteButtons = ({
                 disabled={isLoading}
                 onClick={() => handleVote("down")}
                 className="flex items-center gap-1 cursor-pointer"
+                title="Downvote"
             >
-                <ThumbsDown className={cn("size-4", isDownvoted && "fill-primary")} />
+                <ArrowBigDownDash className={cn("size-4", isDownvoted && "fill-primary")} />
                 <p className="text-sm pt-px">{post.downvotesCount}</p>
             </Button>
         </div >

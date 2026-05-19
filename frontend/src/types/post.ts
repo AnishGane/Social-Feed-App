@@ -2,6 +2,8 @@ import type { User } from "./user";
 
 export type VoteType = "up" | "down";
 
+export type FeedType = "all" | "user" | "voted" | "bookmarked";
+
 export interface Post {
   _id: string;
 
@@ -31,4 +33,5 @@ export interface Post {
 export interface PaginatedPosts {
   posts: Post[];
   nextCursor: string | null;
+  totalCount?: number;
 }

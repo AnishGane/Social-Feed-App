@@ -2,6 +2,8 @@
 
 import { Types, isValidObjectId } from "mongoose";
 import postModel, { IPost } from "./post.model";
+import voteModel from "../vote/vote.model";
+import { validateObjectId } from "../../utils/validate-object-id";
 
 export const createPostRepo = (data: Partial<IPost>) => postModel.create(data);
 
@@ -127,4 +129,113 @@ export const getPostsStatByUserRepo = async (
       totalScore: 0,
     }
   );
+};
+
+// get the post that is voted by the user
+export const getVotedPostByUserRepo = async (
+  userId: string | Types.ObjectId,
+  cursor?: string,
+  limit = 10,
+) => {
+  const matchStage: any = {
+    user: userId,
+  };
+
+  if (cursor) {
+    if (!validateObjectId(cursor)) {
+      throw new Error("Invalid cursor format");
+    }
+
+    matchStage._id = {
+      $lt: new Types.ObjectId(cursor),
+    };
+  }
+
+  const pipeline: any[] = [
+    { $match: matchStage },
+    { $sort: { _id: -1 } },
+    { $limit: limit },
+    {
+      $lookup: {
+        from: "posts",
+        localField: "post",
+        foreignField: "_id",
+        as: "post",
+      },
+    },
+    { $unwind: "$post" },
+    {
+      $match: {
+        "post.isPublished": true,
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "post.author",
+        foreignField: "_id",
+        as: "author",
+      },
+    },
+    { $unwind: "$author" },
+    {
+      $addFields: {
+        "post.author": {
+          _id: "$author._id",
+          username: "$author.username",
+          avatar: "$author.avatar",
+          name: "$author.name",
+        },
+        "post.voteId": "$_id",
+      },
+    },
+    {
+      $replaceRoot: {
+        newRoot: "$post",
+      },
+    },
+  ];
+
+  const countPipeline = [
+    {
+      $match: {
+        user: userId,
+      },
+    },
+    {
+      $lookup: {
+        from: "posts",
+        localField: "post",
+        foreignField: "_id",
+        as: "post",
+      },
+    },
+    {
+      $unwind: "$post",
+    },
+    {
+      $match: {
+        "post.isPublished": true,
+      },
+    },
+    {
+      $count: "total",
+    },
+  ];
+
+  const [posts, countResult] = await Promise.all([
+    voteModel.aggregate(pipeline),
+    voteModel.aggregate(countPipeline),
+  ]);
+
+  const nextCursor =
+    posts.length === limit ? posts[posts.length - 1].voteId.toString() : null;
+
+  const totalCount = countResult[0]?.total || 0;
+
+  return {
+    posts,
+    nextCursor,
+    totalCount,
+  };
 };

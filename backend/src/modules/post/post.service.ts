@@ -7,6 +7,7 @@ import {
   updatePostRepo,
   deletePostRepo,
   getPostsByUserRepo,
+  getVotedPostByUserRepo,
 } from "./post.repository";
 import {
   UpdatePostInput,
@@ -157,4 +158,25 @@ export const getPostsByUserService = async (
   }
 
   return await getPostsByUserRepo(userObjectId, cursor, limit);
+};
+
+export const getVotedPostByUserService = async (
+  userId: string,
+  cursor?: string,
+  limit = 10,
+) => {
+  const userObjectId = validateObjectId(userId, "User");
+
+  if (cursor) {
+    validateObjectId(cursor, "Cursor");
+  }
+
+  if (limit <= 0 || limit > 100) {
+    throw new ApiError(
+      "Invalid limit parameter. Must be between 1 and 100",
+      400,
+    );
+  }
+
+  return await getVotedPostByUserRepo(userObjectId, cursor, limit);
 };

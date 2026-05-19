@@ -6,6 +6,7 @@ import {
   getPostByIdService,
   getPostsByUserService,
   getPostsService,
+  getVotedPostByUserService,
   updatePostService,
 } from "./post.service";
 import { sendResponse } from "../../utils/api-response";
@@ -111,5 +112,24 @@ export const getPostsByUser = asyncHandler(
     );
 
     sendResponse(res, 200, result, "User posts fetched successfully");
+  },
+);
+
+export const getVotedPostByUser = asyncHandler(
+  async (req: Request, res: Response) => {
+    const user = requireUser(req);
+    const cursor =
+      typeof req.query.cursor === "string" ? req.query.cursor : undefined;
+    const rawLimit = Number(req.query.limit);
+    const limit =
+      !isNaN(rawLimit) && rawLimit > 0 && rawLimit <= 100 ? rawLimit : 10;
+
+    const result = await getVotedPostByUserService(
+      user._id.toString(),
+      cursor,
+      limit,
+    );
+
+    sendResponse(res, 200, result, "Voted posts fetched successfully");
   },
 );
