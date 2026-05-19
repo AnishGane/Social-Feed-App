@@ -16,6 +16,7 @@ import {
 import { useUpdateProfileMutation } from "@/services/user-api";
 import type { User } from "@/types";
 import { toast } from "sonner";
+import { InputGroup, InputGroupAddon, InputGroupText, InputGroupTextarea } from "@/components/ui/input-group";
 
 const EditProfileForm = ({ user, setOpen }: { user: User, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
     const form = useForm<EditProfileInput>({
@@ -146,14 +147,20 @@ const EditProfileForm = ({ user, setOpen }: { user: User, setOpen: React.Dispatc
                             >
                                 Bio
                             </FieldLabel>
-
-                            <Textarea
-                                {...field}
-                                id="form-rhf-profile-bio"
-                                aria-invalid={fieldState.invalid}
-                                placeholder="Tell something about yourself"
-                                className="min-h-28 rounded-sm resize-none"
-                            />
+                            <InputGroup>
+                                <InputGroupTextarea
+                                    {...field}
+                                    id="form-rhf-profile-bio"
+                                    aria-invalid={fieldState.invalid}
+                                    placeholder="Tell something about yourself"
+                                    className="min-h-28 rounded-sm resize-none"
+                                />
+                                <InputGroupAddon align="block-end">
+                                    <InputGroupText className="tabular-nums">
+                                        {field.value.length}/160 characters
+                                    </InputGroupText>
+                                </InputGroupAddon>
+                            </InputGroup>
 
                             {fieldState.invalid && (
                                 <FieldError

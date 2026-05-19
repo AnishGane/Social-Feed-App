@@ -50,3 +50,4 @@ const PostFeed = ({ userId }: { userId?: string }) => {
 };
 
 export default PostFeed;
+

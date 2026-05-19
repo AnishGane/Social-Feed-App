@@ -93,7 +93,7 @@ const UserBannerImage = ({ user, canEdit }: Props) => {
             {canEdit && (
                 <>
                     <div className="absolute right-2 top-2 z-10">
-                        <label className="cursor-pointer inline-flex items-center gap-2 px-2 py-1.5 rounded-md bg-white/90 hover:bg-white border border-gray-200 shadow text-sm font-medium">
+                        <label className="cursor-pointer inline-flex items-center gap-2 px-2 py-1.5 rounded-md bg-white/90 hover:bg-white border border-gray-200 shadow text-sm font-medium text-black">
                             <span>Change Banner</span>
                             <input
                                 type="file"

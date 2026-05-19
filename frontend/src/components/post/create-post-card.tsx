@@ -19,8 +19,9 @@ const CreatePostCard = () => {
                         </p>
                     </div>
 
-                    <Button className="py-5 cursor-pointer rounded-lg text-xs" size="sm" onClick={() => setOpen(true)}>
-                        <Plus /> Create a Post
+                    <Button className="py-5 px-3 cursor-pointer rounded-full text-xs" title="Create new post" onClick={() => setOpen(true)}>
+                        <Plus className="size-5" />
+                        <span className="sr-only">Create new post</span>
                     </Button>
                 </div>
             </Card>

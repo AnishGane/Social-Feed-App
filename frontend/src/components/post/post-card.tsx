@@ -156,7 +156,7 @@ const PostCardDropdownMenus = ({
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="cursor-pointer"
+                    className="cursor-pointer rounded-full px-2 ml-1"
                     aria-label="Post actions"
                 >
                     <EllipsisVertical />

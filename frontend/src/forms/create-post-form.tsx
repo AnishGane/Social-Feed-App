@@ -138,8 +138,6 @@ const CreatePostForm = ({ onOpenChange }: { onOpenChange: (open: boolean) => voi
                                     {...field}
                                     id="form-rhf-post-content"
                                     placeholder="What's on your mind?"
-                                    rows={6}
-                                    className="min-h-24 resize-none rounded-sm"
                                     aria-invalid={fieldState.invalid}
                                 />
                                 <InputGroupAddon align="block-end">

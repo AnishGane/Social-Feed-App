@@ -130,4 +130,21 @@
   html {
     @apply font-sans;
   }
+  textarea::-webkit-scrollbar {
+    width: 0px;
+  }
+
+  textarea:hover::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  textarea::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 999px;
+    transition: background 200ms ease;
+  }
+
+  textarea:hover::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+  }
 }
