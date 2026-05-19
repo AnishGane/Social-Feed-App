@@ -3,7 +3,7 @@ import PostFeed from "@/components/post/post-feed"
 
 const HomePage = () => {
     return (
-        <main className="mx-auto w-full max-w-2xl px-4 py-6">
+        <main className="mx-auto w-full max-w-3xl px-4 py-6">
             <CreatePostCard />
 
             <PostFeed />

@@ -2,8 +2,9 @@ import PostFeed from "@/components/post/post-feed";
 import ProfileHeader from "@/components/profile/profile-header";
 import ProfileStats from "@/components/profile/profile-stats";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetMeQuery } from "@/services/user-api"
-import { Loader2 } from "lucide-react";
+import { ArrowBigDownDash, ArrowBigUpDash, Bookmark, Loader2, SquareDashedBottom } from "lucide-react";
 
 const MyProfile = () => {
     const { data, isLoading } = useGetMeQuery();
@@ -28,8 +29,33 @@ const MyProfile = () => {
 
             <div className="px-4 space-y-6">
                 <ProfileStats stats={profile.stats} />
-
-                <PostFeed userId={profile.user._id} />
+                <Tabs defaultValue="post-feed">
+                    <TabsList variant="line" className="w-full mb-4">
+                        <TabsTrigger value="post-feed" className="py-4 cursor-pointer hover:bg-muted">
+                            <SquareDashedBottom className="size-6" />
+                            <span className="sr-only">Posts</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="voted-post" className="py-4 gap-0 cursor-pointer hover:bg-muted">
+                            <div>
+                                <ArrowBigUpDash className="size-6" />
+                                <span className="sr-only">Voted posts</span>
+                            </div>
+                            <div>
+                                <ArrowBigDownDash className="size-6" />
+                                <span className="sr-only">Voted posts</span>
+                            </div>
+                        </TabsTrigger>
+                        <TabsTrigger value="bookmark-post" className="py-4 gap-0 cursor-pointer hover:bg-muted">
+                            <Bookmark className="size-6" />
+                            <span className="sr-only">Bookmark posts</span>
+                        </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="post-feed">
+                        <PostFeed userId={profile.user._id} />
+                    </TabsContent>
+                    <TabsContent value="voted-post">Voted posts by user will be here.</TabsContent>
+                    <TabsContent value="bookmark-post">Bookmarked posts by user will be here.</TabsContent>
+                </Tabs>
             </div>
         </Card>
     )

@@ -48,7 +48,6 @@ const NavUser = ({
                         >
                             <UserAvatar seed={user._id} className="size-8" />
                             <div className="grid flex-1 text-left text-base leading-tight">
-                                <span className="truncate font-normal">{user.name}</span>
                                 <span className="truncate text-sm tracking-wide">{user.email}</span>
                             </div>
                             <Button variant="outline" size="sm">Beta</Button>
