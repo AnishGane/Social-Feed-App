@@ -8,6 +8,7 @@ import {
   findExistingBookmarkRepo,
 } from "./bookmark.repository";
 import postModel from "../post/post.model";
+import { isMongoDuplicateKeyError } from "./bookmark.utils";
 
 export const toggleBookmarkService = async (
   userId: string | Types.ObjectId,
@@ -44,6 +45,7 @@ export const toggleBookmarkService = async (
       await postModel.updateOne(
         {
           _id: postObjectId,
+          bookmarksCount: { $gt: 0 },
         },
         {
           $inc: {
@@ -60,26 +62,33 @@ export const toggleBookmarkService = async (
       /**
        * CREATE BOOKMARK
        */
-      await createBookmarkRepo(
-        {
-          user: userObjectId,
-          post: postObjectId,
-        },
-        session,
-      );
-      await postModel.updateOne(
-        {
-          _id: postObjectId,
-        },
-        {
-          $inc: {
-            bookmarksCount: 1,
+      try {
+        await createBookmarkRepo(
+          {
+            user: userObjectId,
+            post: postObjectId,
           },
-        },
-        {
           session,
-        },
-      );
+        );
+        await postModel.updateOne(
+          {
+            _id: postObjectId,
+          },
+          {
+            $inc: {
+              bookmarksCount: 1,
+            },
+          },
+          {
+            session,
+          },
+        );
+      } catch (error) {
+        if (!isMongoDuplicateKeyError(error)) {
+          throw error;
+        }
+        // Concurrent create won the race; bookmark already exists.
+      }
 
       isBookmarked = true;
     }

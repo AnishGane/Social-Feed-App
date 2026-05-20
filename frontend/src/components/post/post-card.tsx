@@ -139,13 +139,13 @@ const PostCard = ({
                     </span>
 
                     <span title="Score" className="text-sm text-foreground flex items-center justify-center gap-1">
-                        {post.score > 0 ? <TrendingUp className="size-5 " /> : post.score < 0 ? <TrendingDown className="size-4.5" /> : null}
+                        {post.score >= 0 ? <TrendingUp className="size-5 " /> : post.score < 0 ? <TrendingDown className="size-4.5" /> : null}
                         {post.score}
                     </span>
 
                     <BookmarkButton
                         postId={post._id}
-                        isBookmarked={post.isBookmarked}
+                        isBookmarked={post.isBookmarked ?? false}
                         bookmarksCount={post.bookmarksCount}
                     />
                 </div>

@@ -17,6 +17,7 @@ const BookmarkButton = ({ postId, isBookmarked, bookmarksCount }: Props) => {
                 variant="ghost"
                 className="px-0.5 cursor-pointer"
                 disabled={isLoading}
+                aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
                 onClick={() => toggleBookmark({ postId })}
             >
                 {isBookmarked ? <Bookmark className="size-5 fill-amber-50" /> : <Bookmark className="size-5" />}
