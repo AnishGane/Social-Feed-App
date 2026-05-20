@@ -4,6 +4,7 @@ import { Types, isValidObjectId } from "mongoose";
 import postModel, { IPost } from "./post.model";
 import voteModel from "../vote/vote.model";
 import { validateObjectId } from "../../utils/validate-object-id";
+import { buildPostsPipeline } from "./post.aggregation";
 
 export const createPostRepo = (data: Partial<IPost>) => postModel.create(data);
 
@@ -25,8 +26,12 @@ export const deletePostRepo = (id: string | Types.ObjectId) =>
 export const findPostByIdRepo = (id: string | Types.ObjectId) =>
   postModel.findById(id);
 
-export const getPostsRepo = async (cursor?: string, limit = 10) => {
-  const query: any = {
+export const getPostsRepo = async (
+  currentUserId?: string | Types.ObjectId,
+  cursor?: string,
+  limit = 10,
+) => {
+  const matchStage: any = {
     isPublished: true,
   };
 
@@ -34,19 +39,22 @@ export const getPostsRepo = async (cursor?: string, limit = 10) => {
     if (!isValidObjectId(cursor)) {
       throw new Error("Invalid cursor format");
     }
-    query._id = {
-      $lt: new Types.ObjectId(cursor),
+
+    matchStage._id = {
+      $lt: validateObjectId(cursor, "Cursor"),
     };
   }
 
-  const posts = await postModel
-    .find(query)
-    .populate("author", "username avatar name")
-    .sort({ _id: -1 })
-    .limit(limit);
+  const pipeline = buildPostsPipeline({
+    currentUserId,
+    matchStage,
+    limit,
+  });
+
+  const posts = await postModel.aggregate(pipeline);
 
   const nextCursor =
-    posts.length === limit ? posts[posts.length - 1]._id : null;
+    posts.length === limit ? posts[posts.length - 1]._id.toString() : null;
 
   return {
     posts,
@@ -55,11 +63,12 @@ export const getPostsRepo = async (cursor?: string, limit = 10) => {
 };
 
 export const getPostsByUserRepo = async (
+  currentUserId: string | Types.ObjectId | undefined,
   userId: string | Types.ObjectId,
   cursor?: string,
   limit = 10,
 ) => {
-  const query: any = {
+  const matchStage: any = {
     author: userId,
     isPublished: true,
   };
@@ -68,19 +77,22 @@ export const getPostsByUserRepo = async (
     if (!isValidObjectId(cursor)) {
       throw new Error("Invalid cursor format");
     }
-    query._id = {
-      $lt: new Types.ObjectId(cursor),
+
+    matchStage._id = {
+      $lt: validateObjectId(cursor, "Cursor"),
     };
   }
 
-  const posts = await postModel
-    .find(query)
-    .populate("author", "username avatar name")
-    .sort({ _id: -1 })
-    .limit(limit);
+  const pipeline = buildPostsPipeline({
+    currentUserId,
+    matchStage,
+    limit,
+  });
+
+  const posts = await postModel.aggregate(pipeline);
 
   const nextCursor =
-    posts.length === limit ? posts[posts.length - 1]._id : null;
+    posts.length === limit ? posts[posts.length - 1]._id.toString() : null;
 
   return {
     posts,
@@ -142,12 +154,12 @@ export const getVotedPostByUserRepo = async (
   };
 
   if (cursor) {
-    if (!validateObjectId(cursor)) {
+    if (!isValidObjectId(cursor)) {
       throw new Error("Invalid cursor format");
     }
 
     matchStage._id = {
-      $lt: new Types.ObjectId(cursor),
+      $lt: validateObjectId(cursor, "Cursor"),
     };
   }
 

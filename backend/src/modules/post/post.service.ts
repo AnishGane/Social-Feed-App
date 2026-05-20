@@ -54,7 +54,11 @@ export const createPostService = async (
   });
 };
 
-export const getPostsService = async (cursor?: string, limit = 10) => {
+export const getPostsService = async (
+  currentUserId?: string,
+  cursor?: string,
+  limit = 10,
+) => {
   if (limit <= 0 || limit > 100) {
     throw new ApiError(
       "Invalid limit parameter. Must be between 1 and 100",
@@ -66,7 +70,7 @@ export const getPostsService = async (cursor?: string, limit = 10) => {
     validateObjectId(cursor, "Cursor");
   }
 
-  return await getPostsRepo(cursor, limit);
+  return await getPostsRepo(currentUserId, cursor, limit);
 };
 
 export const getPostByIdService = async (id: string) => {
@@ -140,6 +144,7 @@ export const deletePostService = async (id: string, userId: string) => {
 };
 
 export const getPostsByUserService = async (
+  currentUserId: string | undefined,
   userId: string,
   cursor?: string,
   limit = 10,
@@ -157,7 +162,7 @@ export const getPostsByUserService = async (
     );
   }
 
-  return await getPostsByUserRepo(userObjectId, cursor, limit);
+  return await getPostsByUserRepo(currentUserId, userObjectId, cursor, limit);
 };
 
 export const getVotedPostByUserService = async (

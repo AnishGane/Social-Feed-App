@@ -9,7 +9,7 @@ import {
 
 import VoteButtons from "./vote-buttons";
 import UserAvatar from "../user-avatar";
-import { Dot, EllipsisVertical, MessageSquare, Trash2, TrendingDown, TrendingUp } from "lucide-react";
+import { EllipsisVertical, MessageSquare, Trash2, TrendingDown, TrendingUp } from "lucide-react";
 import { formatPostDate } from "@/utils/format-date";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -23,6 +23,7 @@ import {
 import EditPostDialog from "./edit-post-dialog";
 import AlertDialogComp from "../alert-dialog-comp";
 import { Link, useLocation } from "react-router-dom";
+import BookmarkButton from "./bookmark-button";
 
 type Props = {
     post: Post;
@@ -66,9 +67,6 @@ const PostCard = ({
                                 <p className="text-xs text-muted-foreground tracking-wide">@{post.author.username}</p>
                             </Link>
 
-                            <p className="text-[13px] text-muted-foreground">
-                                {formatPostDate(post.createdAt)}
-                            </p>
                         </div>
                     </div>
                     {isOwner && isMeProfile && (
@@ -124,23 +122,32 @@ const PostCard = ({
                 )}
             </CardContent>
 
-            <CardFooter className="flex items-center justify-between">
-                <VoteButtons
-                    post={post}
-                    onVoteUpdate={onVoteUpdate}
-                />
+            <CardFooter className="flex items-center justify-between py-3!">
+                <div className="flex flex-col gap-2">
+                    <p className="text-[13px] text-muted-foreground">
+                        {formatPostDate(post.createdAt)}
+                    </p>
+                    <VoteButtons
+                        post={post}
+                        onVoteUpdate={onVoteUpdate}
+                    />
+                </div>
 
-                <div className="flex items-center justify-center">
-                    <span title="Comments" className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+                <div className="flex items-center justify-center gap-3">
+                    <span title="Comments" className="text-sm  text-foreground flex items-center justify-center gap-1">
                         <MessageSquare className="size-4.5" />{post.commentCount}
                     </span>
 
-                    <Dot className="size-4.5" />
-
-                    <span title="Score" className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-                        {post.score > 0 ? <TrendingUp className="size-4.5" /> : post.score < 0 ? <TrendingDown className="size-4.5" /> : null}
+                    <span title="Score" className="text-sm text-foreground flex items-center justify-center gap-1">
+                        {post.score > 0 ? <TrendingUp className="size-5 " /> : post.score < 0 ? <TrendingDown className="size-4.5" /> : null}
                         {post.score}
                     </span>
+
+                    <BookmarkButton
+                        postId={post._id}
+                        isBookmarked={post.isBookmarked}
+                        bookmarksCount={post.bookmarksCount}
+                    />
                 </div>
             </CardFooter>
         </Card>
