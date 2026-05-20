@@ -26,6 +26,9 @@ export interface Post {
 
   isPublished: boolean;
 
+  bookmarksCount: number;
+  isBookmarked?: boolean;
+
   createdAt: string;
   updatedAt: string;
 }
@@ -35,3 +38,4 @@ export interface PaginatedPosts {
   nextCursor: string | null;
   totalCount?: number;
 }
+

@@ -46,7 +46,9 @@ export const getPosts = asyncHandler(async (req: Request, res: Response) => {
   const limit =
     !isNaN(rawLimit) && rawLimit > 0 && rawLimit <= 100 ? rawLimit : 10;
 
-  const result = await getPostsService(cursor, limit);
+  const user = requireUser(req);
+
+  const result = await getPostsService(user?._id?.toString(), cursor, limit);
 
   sendResponse(res, 200, result, "Posts fetched successfully");
 });
@@ -103,9 +105,11 @@ export const getPostsByUser = asyncHandler(
     const rawLimit = Number(req.query.limit);
     const limit =
       !isNaN(rawLimit) && rawLimit > 0 && rawLimit <= 100 ? rawLimit : 10;
+    const user = requireUser(req);
     const userId = req.params.userId;
 
     const result = await getPostsByUserService(
+      user._id.toString(),
       userId.toString(),
       cursor,
       limit,

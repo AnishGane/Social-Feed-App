@@ -5,6 +5,11 @@ import type { PaginatedPosts, Post, VoteType } from "@/types";
 
 export type GetPostsResponse = ApiResponse<PaginatedPosts>;
 
+export type ToggleBookmarkResponse = ApiResponse<{
+  bookmarksCount: number;
+  isBookmarked: boolean;
+}>;
+
 type VoteResponse = ApiResponse<{
   upvotesCount: number;
   downvotesCount: number;
@@ -180,6 +185,61 @@ export const postApi = createApi({
             ]
           : [{ type: "Posts", id: "LIST" }],
     }),
+
+    // 9. Toggle bookmark of a post
+    toggleBookmark: builder.mutation<
+      ToggleBookmarkResponse,
+      { postId: string }
+    >({
+      query: ({ postId }) => ({
+        url: "/bookmarks",
+        method: "POST",
+        body: { postId },
+      }),
+
+      async onQueryStarted({ postId }, { dispatch, queryFulfilled, getState }) {
+        // Find all getPosts cache entries and patch them
+        const state = getState();
+        const patches: Array<{ undo: () => void }> = [];
+
+        for (const {
+          endpointName,
+          originalArgs,
+        } of postApi.util.selectInvalidatedBy(state, [
+          { type: "Posts", id: postId },
+        ])) {
+          if (
+            endpointName === "getPosts" ||
+            endpointName === "getPostsByUser" ||
+            endpointName === "getVotedPostByUser"
+          ) {
+            const patch = dispatch(
+              postApi.util.updateQueryData(
+                endpointName as any,
+                originalArgs,
+                (draft: GetPostsResponse) => {
+                  const post = draft.data?.posts?.find((p) => p._id === postId);
+                  if (!post) return;
+                  post.isBookmarked = !post.isBookmarked;
+                  post.bookmarksCount += post.isBookmarked ? 1 : -1;
+                },
+              ),
+            );
+            patches.push(patch);
+          }
+        }
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patches.forEach((p) => p.undo());
+        }
+      },
+
+      invalidatesTags: (_result, _error, arg) => [
+        { type: "Posts", id: arg.postId },
+      ],
+    }),
   }),
 });
 
@@ -199,4 +259,6 @@ export const {
   useLazyGetPostsByUserQuery,
 
   useLazyGetVotedPostByUserQuery,
+
+  useToggleBookmarkMutation,
 } = postApi;

@@ -12,6 +12,7 @@ export interface IPost extends Document {
   downvotesCount: number;
   commentCount: number;
   score: number;
+  bookmarksCount: number;
   isPublished: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -20,7 +21,7 @@ export interface IPost extends Document {
 const postSchema = new Schema<IPost>(
   {
     author: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
       index: true,
@@ -76,6 +77,12 @@ const postSchema = new Schema<IPost>(
     score: {
       type: Number,
       default: 0, // upvotesCount - downvotesCount
+    },
+
+    bookmarksCount: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
 
     isPublished: {

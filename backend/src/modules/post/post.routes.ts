@@ -29,7 +29,7 @@ router.post(
   upload.single("mainImage"),
   createPost,
 );
-router.get("/", getPosts);
+router.get("/",protect, getPosts);
 router.post(
   "/vote",
   protect,
