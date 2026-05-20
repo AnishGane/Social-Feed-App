@@ -30,40 +30,45 @@ const MyProfile = () => {
             <div className="px-4 space-y-6">
                 <ProfileStats stats={profile.stats} />
 
-
-                <Tabs defaultValue="post-feed">
-                    <div className="border border-border rounded-xl px-0.5 py-1.5 mb-2">
-                        <TabsList variant="line" className="w-full">
-                            <TabsTrigger value="post-feed" className="py-4 cursor-pointer hover:bg-muted rounded-sm">
-                                <SquareDashedBottom className="size-6" />
-                                <span className="sr-only">Posts</span>
-                            </TabsTrigger>
-                            <TabsTrigger value="voted-post" className="py-4 gap-0 cursor-pointer hover:bg-muted">
-                                <div>
-                                    <ArrowBigUpDash className="size-6" />
-                                    <span className="sr-only">Voted posts</span>
-                                </div>
-                                <div>
-                                    <ArrowBigDownDash className="size-6" />
-                                    <span className="sr-only">Voted posts</span>
-                                </div>
-                            </TabsTrigger>
-                            <TabsTrigger value="bookmark-post" className="py-4 gap-0 cursor-pointer hover:bg-muted">
-                                <Bookmark className="size-6" />
-                                <span className="sr-only">Bookmark posts</span>
-                            </TabsTrigger>
-                        </TabsList>
-                    </div>
-                    <TabsContent value="post-feed">
-                        <PostFeed userId={profile.user._id} type="user" />
-                    </TabsContent>
-                    <TabsContent value="voted-post">
-                        <PostFeed type="voted" />
-                    </TabsContent>
-                    <TabsContent value="bookmark-post">Bookmarked posts by user will be here.</TabsContent>
-                </Tabs>
+                <ProfileTabSection profile={profile} />
             </div>
         </Card >
+    )
+}
+
+const ProfileTabSection = ({ profile }) => {
+    return (
+        <Tabs defaultValue="post-feed">
+            <div className="border border-border rounded-xl px-1 py-1.5 mb-2">
+                <TabsList className="w-full bg-transparent gap-1">
+                    <TabsTrigger value="post-feed" className="py-4 cursor-pointer hover:bg-muted rounded-sm">
+                        <SquareDashedBottom className="size-6" />
+                        <span className="sr-only">Posts</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="voted-post" className="py-4 gap-0 cursor-pointer hover:bg-muted">
+                        <div>
+                            <ArrowBigUpDash className="size-6" />
+                            <span className="sr-only">Voted posts</span>
+                        </div>
+                        <div>
+                            <ArrowBigDownDash className="size-6" />
+                            <span className="sr-only">Voted posts</span>
+                        </div>
+                    </TabsTrigger>
+                    <TabsTrigger value="bookmark-post" className="py-4 gap-0 cursor-pointer hover:bg-muted">
+                        <Bookmark className="size-6" />
+                        <span className="sr-only">Bookmark posts</span>
+                    </TabsTrigger>
+                </TabsList>
+            </div>
+            <TabsContent value="post-feed">
+                <PostFeed userId={profile.user._id} type="user" />
+            </TabsContent>
+            <TabsContent value="voted-post">
+                <PostFeed type="voted" />
+            </TabsContent>
+            <TabsContent value="bookmark-post">Bookmarked posts by user will be here.</TabsContent>
+        </Tabs>
     )
 }
 
