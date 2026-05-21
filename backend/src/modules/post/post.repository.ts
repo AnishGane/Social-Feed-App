@@ -4,7 +4,8 @@ import { Types, isValidObjectId } from "mongoose";
 import postModel, { IPost } from "./post.model";
 import voteModel from "../vote/vote.model";
 import { validateObjectId } from "../../utils/validate-object-id";
-import { buildPostsPipeline } from "./post.aggregation";
+import { buildCountPipeline, buildPostsPipeline } from "./post.aggregation";
+import bookmarkModel from "../bookmark/bookmark.model";
 
 export const createPostRepo = (data: Partial<IPost>) => postModel.create(data);
 
@@ -150,7 +151,7 @@ export const getVotedPostByUserRepo = async (
   limit = 10,
 ) => {
   const matchStage: any = {
-    user: userId,
+    user: validateObjectId(userId, "User"),
   };
 
   if (cursor) {
@@ -163,91 +164,129 @@ export const getVotedPostByUserRepo = async (
     };
   }
 
-  const pipeline: any[] = [
-    { $match: matchStage },
-    { $sort: { _id: -1 } },
-    { $limit: limit },
-    {
-      $lookup: {
-        from: "posts",
-        localField: "post",
-        foreignField: "_id",
-        as: "post",
-      },
-    },
-    { $unwind: "$post" },
-    {
-      $match: {
-        "post.isPublished": true,
-      },
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "post.author",
-        foreignField: "_id",
-        as: "author",
-      },
-    },
-    { $unwind: "$author" },
-    {
-      $addFields: {
-        "post.author": {
-          _id: "$author._id",
-          username: "$author.username",
-          avatar: "$author.avatar",
-          name: "$author.name",
-        },
-        "post.voteId": "$_id",
-      },
-    },
-    {
-      $replaceRoot: {
-        newRoot: "$post",
-      },
-    },
-  ];
+  const pipeline = buildPostsPipeline({
+    currentUserId: userId,
 
-  const countPipeline = [
-    {
-      $match: {
-        user: userId,
+    prependStages: [
+      {
+        $lookup: {
+          from: "posts",
+          localField: "post",
+          foreignField: "_id",
+          as: "post",
+        },
       },
-    },
-    {
-      $lookup: {
-        from: "posts",
-        localField: "post",
-        foreignField: "_id",
-        as: "post",
+
+      {
+        $unwind: "$post",
       },
-    },
-    {
-      $unwind: "$post",
-    },
-    {
-      $match: {
-        "post.isPublished": true,
+
+      {
+        $replaceRoot: {
+          newRoot: "$post",
+        },
       },
+    ],
+
+    matchStage: {
+      isPublished: true,
     },
-    {
-      $count: "total",
-    },
-  ];
+
+    limit,
+  });
+
+  const countPipeline = buildCountPipeline(userId);
 
   const [posts, countResult] = await Promise.all([
-    voteModel.aggregate(pipeline),
+    voteModel.aggregate([
+      {
+        $match: matchStage,
+      },
+
+      ...pipeline,
+    ]),
     voteModel.aggregate(countPipeline),
   ]);
 
   const nextCursor =
-    posts.length === limit ? posts[posts.length - 1].voteId.toString() : null;
-
-  const totalCount = countResult[0]?.total || 0;
+    posts.length === limit ? posts[posts.length - 1]._id.toString() : null;
 
   return {
     posts,
     nextCursor,
-    totalCount,
+    totalCount: countResult[0]?.total || 0,
+  };
+};
+
+// get the post that is bookmarked by the user
+export const getBookmarkedPostsByUserRepo = async (
+  userId: string | Types.ObjectId,
+  cursor?: string,
+  limit = 10,
+) => {
+  const userObjectId = validateObjectId(userId, "User");
+
+  const matchStage: any = {
+    user: userObjectId,
+  };
+
+  if (cursor) {
+    if (!isValidObjectId(cursor)) {
+      throw new Error("Invalid cursor format");
+    }
+
+    matchStage._id = {
+      $lt: validateObjectId(cursor, "Cursor"),
+    };
+  }
+
+  const pipeline = buildPostsPipeline({
+    currentUserId: userId,
+    prependStages: [
+      {
+        $lookup: {
+          from: "posts",
+          localField: "post",
+          foreignField: "_id",
+          as: "post",
+        },
+      },
+      {
+        $unwind: "$post",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$post",
+        },
+      },
+    ],
+    matchStage: {
+      isPublished: true,
+    },
+    limit,
+  });
+
+  const countPipeline = buildCountPipeline(userObjectId);
+
+  const [posts, countResult] = await Promise.all([
+    bookmarkModel.aggregate([
+      {
+        $match: matchStage,
+      },
+      {
+        $sort: { _id: -1 },
+      },
+      ...pipeline,
+    ]),
+    bookmarkModel.aggregate(countPipeline),
+  ]);
+
+  const nextCursor =
+    posts.length === limit ? posts[posts.length - 1]._id.toString() : null;
+
+  return {
+    posts,
+    nextCursor,
+    totalCount: countResult[0]?.total || 0,
   };
 };

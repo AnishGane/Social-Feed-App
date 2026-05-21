@@ -77,7 +77,7 @@ const PostCard = ({
 
             <CardContent className="space-y-4">
                 <div>
-                    <h2 className="text-xl font-bold">
+                    <h2 className="text-xl font-semibold">
                         {post.title}
                     </h2>
 
@@ -134,11 +134,11 @@ const PostCard = ({
                 </div>
 
                 <div className="flex items-center justify-center gap-3">
-                    <span title="Comments" className="text-sm  text-foreground flex items-center justify-center gap-1">
+                    <span title="Comments" className="text-base text-foreground flex items-center justify-center gap-1">
                         <MessageSquare className="size-4.5" />{post.commentCount}
                     </span>
 
-                    <span title="Score" className="text-sm text-foreground flex items-center justify-center gap-1">
+                    <span title="Score" className="text-base text-foreground flex items-center justify-center gap-1">
                         {post.score >= 0 ? <TrendingUp className="size-5 " /> : post.score < 0 ? <TrendingDown className="size-4.5" /> : null}
                         {post.score}
                     </span>

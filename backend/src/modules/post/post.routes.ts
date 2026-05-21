@@ -3,6 +3,7 @@ import { protect } from "../../middleware/auth.middleware";
 import {
   createPost,
   deletePost,
+  getBookmarkedPostsByUser,
   getPostById,
   getPosts,
   getPostsByUser,
@@ -40,6 +41,8 @@ router.post(
 
 // get voted post by user
 router.get("/voted", protect, getVotedPostByUser);
+// get bookmarked post by user
+router.get("/bookmarked", protect, getBookmarkedPostsByUser);
 
 router.get("/user/:userId", protect, getPostsByUser);
 

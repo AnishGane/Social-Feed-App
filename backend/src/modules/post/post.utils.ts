@@ -24,3 +24,12 @@ export const parseTags = (tags?: unknown): string[] => {
 
   throw new ApiError("Invalid tags format", 400);
 };
+
+export const checkLimit = (limit: number) => {
+  if (limit <= 0 || limit > 100) {
+    throw new ApiError(
+      "Invalid limit parameter. Must be between 1 and 100",
+      400,
+    );
+  }
+};

@@ -5,6 +5,7 @@ import {
   useLazyGetPostsByUserQuery,
   useLazyGetVotedPostByUserQuery,
   type GetPostsResponse,
+  useLazyGetPostsBookmarkedByUserQuery,
 } from "@/services/post-api";
 
 type UseInfinitePostsProps = {
@@ -23,6 +24,7 @@ export const useInfinitePosts = ({
   const [hasMore, setHasMore] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
   const [totalVotedPostCount, setTotalVotedPostCount] = useState(0);
+  const [totalBookmarkedPostCount, setTotalBookmarkedPostCount] = useState(0);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -34,7 +36,11 @@ export const useInfinitePosts = ({
   const [getVotedPosts, { isFetching: isVotedFetching }] =
     useLazyGetVotedPostByUserQuery();
 
-  const isFetching = isHomeFetching || isUserFetching || isVotedFetching;
+  const [getBookmarkedPosts, { isFetching: isBookmarkedFetching }] =
+    useLazyGetPostsBookmarkedByUserQuery();
+
+  const isFetching =
+    isHomeFetching || isUserFetching || isVotedFetching || isBookmarkedFetching;
 
   /**
    * CORE FETCH LOGIC
@@ -64,6 +70,13 @@ export const useInfinitePosts = ({
             }).unwrap();
             break;
 
+          case "bookmarked":
+            response = await getBookmarkedPosts({
+              cursor: nextCursor ?? undefined,
+              limit: LIMIT,
+            }).unwrap();
+            break;
+
           default:
             response = await getPosts({
               cursor: nextCursor ?? undefined,
@@ -75,6 +88,9 @@ export const useInfinitePosts = ({
         const incomingCursor = response.data.nextCursor;
         if (type === "voted") {
           setTotalVotedPostCount(response.data.totalCount ?? 0);
+        }
+        if (type === "bookmarked") {
+          setTotalBookmarkedPostCount(response.data.totalCount ?? 0);
         }
 
         setPosts((prev) => {
@@ -92,7 +108,7 @@ export const useInfinitePosts = ({
         setInitialLoading(false);
       }
     },
-    [type, userId, getPosts, getUserPosts, getVotedPosts],
+    [type, userId, getPosts, getUserPosts, getVotedPosts, getBookmarkedPosts],
   );
 
   /**
@@ -106,6 +122,10 @@ export const useInfinitePosts = ({
 
     if (type !== "voted") {
       setTotalVotedPostCount(0);
+    }
+
+    if (type !== "bookmarked") {
+      setTotalBookmarkedPostCount(0);
     }
 
     fetchPosts();
@@ -162,6 +182,7 @@ export const useInfinitePosts = ({
     setInitialLoading(true);
 
     setTotalVotedPostCount(0);
+    setTotalBookmarkedPostCount(0);
 
     fetchPosts();
   }, [fetchPosts]);
@@ -174,6 +195,7 @@ export const useInfinitePosts = ({
     initialLoading,
     loadMoreRef,
     totalVotedPostCount,
+    totalBookmarkedPostCount,
 
     fetchNext: () => {
       if (cursor) {

@@ -8,6 +8,7 @@ import {
   deletePostRepo,
   getPostsByUserRepo,
   getVotedPostByUserRepo,
+  getBookmarkedPostsByUserRepo,
 } from "./post.repository";
 import {
   UpdatePostInput,
@@ -16,6 +17,7 @@ import {
 } from "./post.validation";
 import uploadImageToCloudinary from "../../utils/upload-image";
 import { validateImageFile } from "../../utils/validate-image";
+import { checkLimit } from "./post.utils";
 
 interface CreatePostRequestBody {
   title: string;
@@ -59,16 +61,11 @@ export const getPostsService = async (
   cursor?: string,
   limit = 10,
 ) => {
-  if (limit <= 0 || limit > 100) {
-    throw new ApiError(
-      "Invalid limit parameter. Must be between 1 and 100",
-      400,
-    );
-  }
-
   if (cursor) {
     validateObjectId(cursor, "Cursor");
   }
+
+  checkLimit(limit);
 
   return await getPostsRepo(currentUserId, cursor, limit);
 };
@@ -155,12 +152,7 @@ export const getPostsByUserService = async (
     validateObjectId(cursor, "Cursor");
   }
 
-  if (limit <= 0 || limit > 100) {
-    throw new ApiError(
-      "Invalid limit parameter. Must be between 1 and 100",
-      400,
-    );
-  }
+  checkLimit(limit);
 
   return await getPostsByUserRepo(currentUserId, userObjectId, cursor, limit);
 };
@@ -176,12 +168,23 @@ export const getVotedPostByUserService = async (
     validateObjectId(cursor, "Cursor");
   }
 
-  if (limit <= 0 || limit > 100) {
-    throw new ApiError(
-      "Invalid limit parameter. Must be between 1 and 100",
-      400,
-    );
-  }
+  checkLimit(limit);
 
   return await getVotedPostByUserRepo(userObjectId, cursor, limit);
+};
+
+export const getBookmarkedPostByUserService = async (
+  userId: string,
+  cursor?: string,
+  limit = 10,
+) => {
+  const userObjectId = validateObjectId(userId, "User");
+
+  if (cursor) {
+    validateObjectId(cursor, "Cursor");
+  }
+
+  checkLimit(limit);
+
+  return await getBookmarkedPostsByUserRepo(userObjectId, cursor, limit);
 };

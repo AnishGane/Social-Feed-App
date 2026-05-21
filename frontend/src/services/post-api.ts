@@ -240,6 +240,32 @@ export const postApi = createApi({
         { type: "Posts", id: arg.postId },
       ],
     }),
+
+    // 10. Get Posts Bookmarked by User
+    getPostsBookmarkedByUser: builder.query<
+      GetPostsResponse,
+      { cursor?: string; limit?: number }
+    >({
+      query: ({ cursor, limit = 10 }) => {
+        const params = new URLSearchParams({ limit: limit.toString() });
+        if (cursor) params.set("cursor", cursor);
+        return {
+          url: `/posts/bookmarked?${params.toString()}`,
+          method: "GET",
+        };
+      },
+
+      providesTags: (result) =>
+        result?.data?.posts
+          ? [
+              ...result.data.posts.map((post) => ({
+                type: "Posts" as const,
+                id: post._id,
+              })),
+              { type: "Posts", id: "LIST" },
+            ]
+          : [{ type: "Posts", id: "LIST" }],
+    }),
   }),
 });
 
@@ -261,4 +287,6 @@ export const {
   useLazyGetVotedPostByUserQuery,
 
   useToggleBookmarkMutation,
+
+  useLazyGetPostsBookmarkedByUserQuery,
 } = postApi;

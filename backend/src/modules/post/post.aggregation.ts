@@ -1,29 +1,61 @@
 import { Types } from "mongoose";
 import { validateObjectId } from "../../utils/validate-object-id";
 
+type BuildPostsPipelineProps = {
+  currentUserId?: string | Types.ObjectId;
+
+  matchStage?: any;
+
+  limit?: number;
+
+  sortStage?: any;
+
+  prependStages?: any[];
+
+  appendStages?: any[];
+};
+
 export const buildPostsPipeline = ({
   currentUserId,
-  matchStage,
+  matchStage = {},
   limit,
-}: {
-  currentUserId?: string | Types.ObjectId;
-  matchStage: any;
-  limit: number;
-}) => {
+  sortStage = { _id: -1 },
+  prependStages = [],
+  appendStages = [],
+}: BuildPostsPipelineProps) => {
   const pipeline: any[] = [
+    /**
+     * PRE-STAGES
+     */
+    ...prependStages,
+
+    /**
+     * MATCH
+     */
     {
       $match: matchStage,
     },
-    {
-      $sort: {
-        _id: -1,
-      },
-    },
-    {
-      $limit: limit,
-    },
+
     /**
-     * AUTHOR
+     * SORT
+     */
+    {
+      $sort: sortStage,
+    },
+
+    /**
+     * LIMIT
+     */
+    ...(limit
+      ? [
+          {
+            $limit: limit,
+          },
+        ]
+      : []),
+
+    /**
+     * AUTHOR LOOKUP
      */
     {
       $lookup: {
@@ -33,9 +65,11 @@ export const buildPostsPipeline = ({
         as: "author",
       },
     },
+
     {
       $unwind: "$author",
     },
+
     /**
      * BOOKMARK LOOKUP
      */
@@ -45,6 +79,7 @@ export const buildPostsPipeline = ({
         let: {
           postId: "$_id",
         },
+
         pipeline: [
           {
             $match: {
@@ -67,9 +102,11 @@ export const buildPostsPipeline = ({
             },
           },
         ],
+
         as: "bookmarkDocs",
       },
     },
+
     /**
      * COMPUTED FIELDS
      */
@@ -78,6 +115,7 @@ export const buildPostsPipeline = ({
         isBookmarked: {
           $gt: [{ $size: "$bookmarkDocs" }, 0],
         },
+
         author: {
           _id: "$author._id",
           username: "$author.username",
@@ -95,7 +133,47 @@ export const buildPostsPipeline = ({
         bookmarkDocs: 0,
       },
     },
+
+    /**
+     * POST STAGES
+     */
+    ...appendStages,
   ];
 
   return pipeline;
+};
+
+export const buildCountPipeline = (userId: string | Types.ObjectId) => {
+  const countPipeline = [
+    {
+      $match: {
+        user: validateObjectId(userId, "User"),
+      },
+    },
+
+    {
+      $lookup: {
+        from: "posts",
+        localField: "post",
+        foreignField: "_id",
+        as: "post",
+      },
+    },
+
+    {
+      $unwind: "$post",
+    },
+
+    {
+      $match: {
+        "post.isPublished": true,
+      },
+    },
+
+    {
+      $count: "total",
+    },
+  ];
+
+  return countPipeline;
 };

@@ -67,7 +67,9 @@ const ProfileTabSection = ({ profile }) => {
             <TabsContent value="voted-post">
                 <PostFeed type="voted" />
             </TabsContent>
-            <TabsContent value="bookmark-post">Bookmarked posts by user will be here.</TabsContent>
+            <TabsContent value="bookmark-post">
+                <PostFeed type="bookmarked" />
+            </TabsContent>
         </Tabs>
     )
 }
