@@ -16,7 +16,6 @@ const PostFeed = ({ userId, type }: Props) => {
         initialLoading,
         loadMoreRef,
         updatePost,
-        // counts: totalCount,
     } = useInfinitePosts({ userId, type });
 
     if (initialLoading && posts.length === 0) {

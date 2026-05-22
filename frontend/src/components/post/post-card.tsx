@@ -148,9 +148,8 @@ const PostCard = ({
                     </span>
 
                     <BookmarkButton
-                        postId={post._id}
-                        isBookmarked={post.isBookmarked ?? false}
-                        bookmarksCount={post.bookmarksCount}
+                        post={post}
+                        onBookmarkUpdate={onVoteUpdate}
                     />
                 </div>
             </CardFooter>

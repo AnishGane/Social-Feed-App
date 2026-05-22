@@ -5,6 +5,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenuButton,
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { navItems } from "@/constants"
@@ -20,12 +21,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useAppSelector(state => state.auth.user);
 
   return (
-    <Sidebar className="border-r-0" {...props}>
-      <SidebarHeader className="py-4 flex items-center flex-row pl-4 gap-">
-        <div className="size-8 p-[6px] rounded-md bg-primary">
-          <BringToFront className="size-full text-secondary" />
-        </div>
-        <Link to="/" className="font-medium text-xl text-primary">SocialFeed</Link>
+    <Sidebar collapsible="icon" className="border-r-0" {...props}>
+      <SidebarHeader className="py-4 flex items-start">
+        <SidebarMenuButton asChild className="hover:bg-transparent">
+          <Link to="/" className="text-xl text-primary flex items-center justify-center gap-2 font-semibold">
+            <BringToFront className="size-8 text-primary" />
+            SocialFeed
+          </Link>
+        </SidebarMenuButton>
       </SidebarHeader>
       <Separator />
       <SidebarContent className="p-2 flex flex-col items-center justify-center">

@@ -1,15 +1,42 @@
 import { useToggleBookmarkMutation } from "@/services/post-api";
 import { Button } from "../ui/button";
 import { Bookmark } from "lucide-react";
+import type { Post } from "@/types";
+import { toast } from "sonner";
 
 type Props = {
-    postId: string,
-    isBookmarked: boolean
-    bookmarksCount: number
-}
+    post: Post
+    onBookmarkUpdate: (
+        postId: string,
+        updates: Partial<Post>
+    ) => void;
+};
 
-const BookmarkButton = ({ postId, isBookmarked, bookmarksCount }: Props) => {
-    const [toggleBookmark, { isLoading }] = useToggleBookmarkMutation();
+const BookmarkButton = ({
+    post,
+    onBookmarkUpdate,
+}: Props) => {
+    const [toggleBookmark, { isLoading }] =
+        useToggleBookmarkMutation();
+
+    const isBooked = post.isBookmarked;
+
+    const handleBookmarkUpdate = async () => {
+        try {
+            const res = await toggleBookmark({
+                postId: post._id,
+            }).unwrap();
+
+            onBookmarkUpdate(post._id, {
+                isBookmarked: res.data.isBookmarked,
+                bookmarksCount: res.data.bookmarksCount,
+            });
+
+            toast.success(isBooked ? "Bookmark removed" : "Bookmark added");
+        } catch (error) {
+            toast.error("Failed to toggle bookmark.");
+        }
+    };
 
     return (
         <div className="flex items-center pr-1">
@@ -17,13 +44,26 @@ const BookmarkButton = ({ postId, isBookmarked, bookmarksCount }: Props) => {
                 variant="ghost"
                 className="p-0 cursor-pointer"
                 disabled={isLoading}
-                aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
-                onClick={() => toggleBookmark({ postId })}
+                aria-label={
+                    isBooked
+                        ? "Remove bookmark"
+                        : "Add bookmark"
+                }
+                onClick={handleBookmarkUpdate}
             >
-                {isBookmarked ? <Bookmark className="size-5 fill-amber-50" /> : <Bookmark className="size-5" />}
+                <Bookmark
+                    className={`size-5 ${isBooked
+                        ? "fill-primary text-primary"
+                        : ""
+                        }`}
+                />
             </Button>
-            <span className="text-base">{bookmarksCount}</span>
+
+            <span className="text-base">
+                {post.bookmarksCount}
+            </span>
         </div>
     );
 };
-export default BookmarkButton
+
+export default BookmarkButton;
