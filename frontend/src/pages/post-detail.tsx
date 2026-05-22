@@ -9,6 +9,9 @@ import { useParams } from "react-router-dom";
 const PostDetailPage = () => {
     const { postId } = useParams();
     const { updatePost } = useInfinitePosts();
+    const { data, isLoading, isError, error } = useGetPostByIdQuery(postId ?? "", {
+        skip: !postId
+    })
 
     if (!postId) {
         return (
@@ -18,11 +21,9 @@ const PostDetailPage = () => {
         )
     }
 
-    const { data, isLoading, isError, error } = useGetPostByIdQuery(postId)
-
     if (isLoading) return (
         <div className="max-w-3xl mx-auto mt-6">
-            <PostSkeleton />;
+            <PostSkeleton />
         </div>
     )
     if (isError) return (
@@ -39,7 +40,7 @@ const PostDetailPage = () => {
         </div>
     );
 
-    const post = data.data;
+    const post = data?.data;
 
     if (!post) {
         return (
