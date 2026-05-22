@@ -23,8 +23,6 @@ export const useInfinitePosts = ({
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
-  const [totalVotedPostCount, setTotalVotedPostCount] = useState(0);
-  const [totalBookmarkedPostCount, setTotalBookmarkedPostCount] = useState(0);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -86,12 +84,6 @@ export const useInfinitePosts = ({
 
         const incomingPosts = response.data.posts;
         const incomingCursor = response.data.nextCursor;
-        if (type === "voted") {
-          setTotalVotedPostCount(response.data.totalCount ?? 0);
-        }
-        if (type === "bookmarked") {
-          setTotalBookmarkedPostCount(response.data.totalCount ?? 0);
-        }
 
         setPosts((prev) => {
           const existing = new Set(prev.map((p) => p._id));
@@ -119,14 +111,6 @@ export const useInfinitePosts = ({
     setCursor(null);
     setHasMore(true);
     setInitialLoading(true);
-
-    if (type !== "voted") {
-      setTotalVotedPostCount(0);
-    }
-
-    if (type !== "bookmarked") {
-      setTotalBookmarkedPostCount(0);
-    }
 
     fetchPosts();
   }, [type, userId, fetchPosts]);
@@ -181,9 +165,6 @@ export const useInfinitePosts = ({
     setHasMore(true);
     setInitialLoading(true);
 
-    setTotalVotedPostCount(0);
-    setTotalBookmarkedPostCount(0);
-
     fetchPosts();
   }, [fetchPosts]);
 
@@ -194,8 +175,6 @@ export const useInfinitePosts = ({
     isFetching,
     initialLoading,
     loadMoreRef,
-    totalVotedPostCount,
-    totalBookmarkedPostCount,
 
     fetchNext: () => {
       if (cursor) {

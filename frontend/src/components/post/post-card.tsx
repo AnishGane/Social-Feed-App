@@ -24,6 +24,7 @@ import EditPostDialog from "./edit-post-dialog";
 import AlertDialogComp from "../alert-dialog-comp";
 import { Link, useLocation } from "react-router-dom";
 import BookmarkButton from "./bookmark-button";
+import ShareButton from "./share-button";
 
 type Props = {
     post: Post;
@@ -174,7 +175,7 @@ const PostCardDropdownMenus = ({
                 </Button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent>
+            <DropdownMenuContent className="w-fit">
                 <EditPostDialog post={post} />
 
                 <DropdownMenuSeparator />
@@ -183,8 +184,12 @@ const PostCardDropdownMenus = ({
                     icon={Trash2}
                     title="Are you sure you want to delete this post?"
                     description="This action cannot be undone. If you once deleted a post, you can't recover it."
-                    iconLabel="Delete Post"
+                    iconLabel="Delete this Post"
                     post={post} />
+
+                <DropdownMenuSeparator />
+
+                <ShareButton postId={post._id} title={post.title} />
             </DropdownMenuContent>
         </DropdownMenu>
     );

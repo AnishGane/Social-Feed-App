@@ -23,7 +23,7 @@ export const voteService = async (
   try {
     session.startTransaction();
 
-    const post = await findPostByIdRepo(postObjectId);
+    const post = await findPostByIdRepo(userObjectId, postObjectId);
     if (!post) throw new ApiError("Post not found", 404);
 
     const existingVote = await findExistingVoteRepo(
@@ -91,7 +91,7 @@ export const voteService = async (
 
     await session.commitTransaction();
 
-    const updatedPost = await findPostByIdRepo(postObjectId);
+    const updatedPost = await findPostByIdRepo(userObjectId, postObjectId);
     if (!updatedPost) throw new ApiError("Post not found", 404);
 
     return {

@@ -22,7 +22,7 @@ export interface Post {
   commentCount: number;
   score: number;
 
-  currentUserVote?: VoteType | null;
+  currentUserVote: VoteType | null;
 
   isPublished: boolean;
 
@@ -38,6 +38,14 @@ export interface PaginatedPosts {
   nextCursor: string | null;
   totalCount?: number;
 }
+
+export type ProfileTabSectionProps = {
+  userId: string;
+  counts: {
+    voted: number;
+    bookmarked: number;
+  };
+};
 
 
 

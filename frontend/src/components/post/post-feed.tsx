@@ -16,8 +16,7 @@ const PostFeed = ({ userId, type }: Props) => {
         initialLoading,
         loadMoreRef,
         updatePost,
-        totalVotedPostCount: totalCount,
-        totalBookmarkedPostCount
+        // counts: totalCount,
     } = useInfinitePosts({ userId, type });
 
     if (initialLoading && posts.length === 0) {
@@ -36,11 +35,6 @@ const PostFeed = ({ userId, type }: Props) => {
 
     return (
         <>
-            {type === "voted" ?
-                <h2 className="text-base my-4 font-medium">Voted posts till now <span className="text-xl"> ({totalCount})</span></h2>
-                : type === "bookmarked" ?
-                    <h2 className="text-base my-4 font-medium">Bookmarked posts till now <span className="text-xl"> ({totalBookmarkedPostCount})</span></h2>
-                    : ""}
             <div className="flex flex-col items-center gap-4">
                 {posts.map((post) => (
                     <PostCard

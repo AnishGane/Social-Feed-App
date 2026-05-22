@@ -32,7 +32,7 @@ const EditPostDialog = ({
             >
                 <Pencil />
 
-                Edit Post
+                Edit this Post
             </DropdownMenuItem>
 
             <Dialog
