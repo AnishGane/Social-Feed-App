@@ -1,6 +1,4 @@
-// DB Queries all here
-
-import { Types, isValidObjectId } from "mongoose";
+import { PipelineStage, Types, isValidObjectId } from "mongoose";
 import postModel, { IPost } from "./post.model";
 import voteModel from "../vote/vote.model";
 import { validateObjectId } from "../../utils/validate-object-id";
@@ -24,8 +22,27 @@ export const updatePostRepo = (
 export const deletePostRepo = (id: string | Types.ObjectId) =>
   postModel.findByIdAndDelete(id);
 
-export const findPostByIdRepo = (id: string | Types.ObjectId) =>
-  postModel.findById(id);
+export const findPostByIdRepo = async (
+  currentUserId: string | Types.ObjectId | undefined,
+  id: string | Types.ObjectId,
+) => {
+  const pipeline: PipelineStage[] = [
+    {
+      $match: {
+        _id: validateObjectId(id, "Post"),
+        isPublished: true,
+      },
+    },
+
+    ...buildPostsPipeline({
+      currentUserId,
+    }),
+  ];
+
+  const posts = await postModel.aggregate(pipeline);
+
+  return posts[0] || null;
+};
 
 export const getPostsRepo = async (
   currentUserId?: string | Types.ObjectId,
@@ -46,13 +63,24 @@ export const getPostsRepo = async (
     };
   }
 
-  const pipeline = buildPostsPipeline({
-    currentUserId,
-    matchStage,
-    limit,
-  });
+  const posts = await postModel.aggregate([
+    {
+      $match: matchStage,
+    },
+    {
+      $sort: {
+        _id: -1,
+      },
+    },
 
-  const posts = await postModel.aggregate(pipeline);
+    {
+      $limit: limit,
+    },
+
+    ...buildPostsPipeline({
+      currentUserId,
+    }),
+  ]);
 
   const nextCursor =
     posts.length === limit ? posts[posts.length - 1]._id.toString() : null;
@@ -84,13 +112,25 @@ export const getPostsByUserRepo = async (
     };
   }
 
-  const pipeline = buildPostsPipeline({
-    currentUserId,
-    matchStage,
-    limit,
-  });
+  const posts = await postModel.aggregate([
+    {
+      $match: matchStage,
+    },
 
-  const posts = await postModel.aggregate(pipeline);
+    {
+      $sort: {
+        _id: -1,
+      },
+    },
+
+    {
+      $limit: limit,
+    },
+
+    ...buildPostsPipeline({
+      currentUserId,
+    }),
+  ]);
 
   const nextCursor =
     posts.length === limit ? posts[posts.length - 1]._id.toString() : null;
@@ -164,10 +204,24 @@ export const getVotedPostByUserRepo = async (
     };
   }
 
-  const pipeline = buildPostsPipeline({
-    currentUserId: userId,
+  const countPipeline = buildCountPipeline(userId);
 
-    prependStages: [
+  const [posts, countResult] = await Promise.all([
+    voteModel.aggregate([
+      {
+        $match: matchStage,
+      },
+
+      {
+        $sort: {
+          _id: -1,
+        },
+      },
+
+      {
+        $limit: limit,
+      },
+
       {
         $lookup: {
           from: "posts",
@@ -186,25 +240,18 @@ export const getVotedPostByUserRepo = async (
           newRoot: "$post",
         },
       },
-    ],
 
-    matchStage: {
-      isPublished: true,
-    },
-
-    limit,
-  });
-
-  const countPipeline = buildCountPipeline(userId);
-
-  const [posts, countResult] = await Promise.all([
-    voteModel.aggregate([
       {
-        $match: matchStage,
+        $match: {
+          isPublished: true,
+        },
       },
 
-      ...pipeline,
+      ...buildPostsPipeline({
+        currentUserId: userId,
+      }),
     ]),
+
     voteModel.aggregate(countPipeline),
   ]);
 
@@ -240,9 +287,24 @@ export const getBookmarkedPostsByUserRepo = async (
     };
   }
 
-  const pipeline = buildPostsPipeline({
-    currentUserId: userId,
-    prependStages: [
+  const countPipeline = buildCountPipeline(userObjectId);
+
+  const [posts, countResult] = await Promise.all([
+    bookmarkModel.aggregate([
+      {
+        $match: matchStage,
+      },
+
+      {
+        $sort: {
+          _id: -1,
+        },
+      },
+
+      {
+        $limit: limit,
+      },
+
       {
         $lookup: {
           from: "posts",
@@ -251,33 +313,28 @@ export const getBookmarkedPostsByUserRepo = async (
           as: "post",
         },
       },
+
       {
         $unwind: "$post",
       },
+
       {
         $replaceRoot: {
           newRoot: "$post",
         },
       },
-    ],
-    matchStage: {
-      isPublished: true,
-    },
-    limit,
-  });
 
-  const countPipeline = buildCountPipeline(userObjectId);
+      {
+        $match: {
+          isPublished: true,
+        },
+      },
 
-  const [posts, countResult] = await Promise.all([
-    bookmarkModel.aggregate([
-      {
-        $match: matchStage,
-      },
-      {
-        $sort: { _id: -1 },
-      },
-      ...pipeline,
+      ...buildPostsPipeline({
+        currentUserId: userId,
+      }),
     ]),
+
     bookmarkModel.aggregate(countPipeline),
   ]);
 

@@ -14,6 +14,7 @@ import { sendResponse } from "../../utils/api-response";
 import { requireUser } from "../../utils/require-user";
 import { createPostSchema, updatePostSchema } from "./post.validation";
 import { parseTags } from "./post.utils";
+import { log } from "console";
 
 export const createPost = asyncHandler(async (req: Request, res: Response) => {
   const user = requireUser(req);
@@ -56,7 +57,11 @@ export const getPosts = asyncHandler(async (req: Request, res: Response) => {
 
 export const getPostById = asyncHandler(async (req: Request, res: Response) => {
   const id = req.params.id.toString();
-  const post = await getPostByIdService(id);
+
+  const user = requireUser(req);
+
+  const post = await getPostByIdService(user._id.toString(), id);
+  // console.dir(`PostById: ${JSON.stringify(post)}`, { depth: null });
 
   sendResponse(res, 200, post, "Post fetched successfully");
 });

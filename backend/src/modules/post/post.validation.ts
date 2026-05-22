@@ -13,6 +13,10 @@ export const createPostSchema = z.object({
   removeImage: z.enum(["true", "false"]).optional(),
 });
 
+export const postIdSchema = z.object({
+  id: z.string().regex(/^[a-f\d]{24}$/i, "Invalid postId"),
+});
+
 export const updatePostSchema = createPostSchema.partial();
 
 export type CreatePostInput = z.infer<typeof createPostSchema>;

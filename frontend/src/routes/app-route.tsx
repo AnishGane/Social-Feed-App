@@ -13,6 +13,7 @@ import CreatePostPage from "@/pages/create-post";
 import NotificationsPage from "@/pages/notifications";
 import NotFoundPage from "@/pages/not-found";
 import MyProfile from "@/pages/my-profile";
+import PostDetailPage from "@/pages/post-detail";
 
 export const router = createBrowserRouter([
     {
@@ -54,6 +55,10 @@ export const router = createBrowserRouter([
             {
                 path: "/u/:username",
                 element: <ProfilePage />
+            },
+            {
+                path: "/p/:postId",
+                element: <PostDetailPage />
             }
         ]
     },

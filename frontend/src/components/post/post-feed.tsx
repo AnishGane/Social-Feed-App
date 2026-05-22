@@ -22,7 +22,7 @@ const PostFeed = ({ userId, type }: Props) => {
 
     if (initialLoading && posts.length === 0) {
         return (
-            <div className="space-y-4">
+            <div className="space-y-4 w-full">
                 <PostSkeleton />
                 <PostSkeleton />
                 <PostSkeleton />

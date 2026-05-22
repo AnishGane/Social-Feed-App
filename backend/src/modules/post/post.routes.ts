@@ -19,6 +19,7 @@ import { voteSchema } from "../vote/vote.validation";
 import { votePost } from "../vote/vote.controller";
 import { votePostLimiter } from "../../middleware/rate-limit/vote-rate-limit";
 import upload from "../../middleware/multer.middleware";
+import { postIdSchema } from "./post.validation";
 
 const router = express.Router();
 
@@ -30,7 +31,7 @@ router.post(
   upload.single("mainImage"),
   createPost,
 );
-router.get("/",protect, getPosts);
+router.get("/", protect, getPosts);
 router.post(
   "/vote",
   protect,
@@ -44,9 +45,10 @@ router.get("/voted", protect, getVotedPostByUser);
 // get bookmarked post by user
 router.get("/bookmarked", protect, getBookmarkedPostsByUser);
 
+router.get("/:id", protect, validate(postIdSchema, "params"), getPostById);
+
 router.get("/user/:userId", protect, getPostsByUser);
 
-router.get("/:id", getPostById);
 router.put(
   "/:id",
   protect,
