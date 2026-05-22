@@ -51,6 +51,7 @@ const PostCard = ({
     const visitProfile = isOwner ? `/u/me` : `/u/${post.author.username}`;
 
     return (
+
         <Card className="w-full">
             <CardHeader>
                 <div className="flex items-center justify-between">
@@ -74,53 +75,62 @@ const PostCard = ({
                     )}
                 </div>
             </CardHeader>
+            <Link to={`/p/${post._id}`} className="cursor-pointer">
+                <CardContent className="space-y-4">
+                    <div>
+                        <h2 className="text-xl font-semibold">
+                            {post.title}
+                        </h2>
 
-            <CardContent className="space-y-4">
-                <div>
-                    <h2 className="text-xl font-semibold">
-                        {post.title}
-                    </h2>
+                        <p
+                            className={`mt-2 whitespace-pre-wrap text-justify text-sm text-muted-foreground transition-all ${shouldClamp && !expanded
+                                ? "line-clamp-3"
+                                : ""}`}>
+                            {post.content}
+                        </p>
 
-                    <p
-                        className={`mt-2 whitespace-pre-wrap text-justify text-sm text-muted-foreground transition-all ${shouldClamp && !expanded
-                            ? "line-clamp-3"
-                            : ""}`}>
-                        {post.content}
-                    </p>
-
-                    {shouldClamp && post.content.length > 180 && (
-                        <Button
-                            variant="link"
-                            className="h-auto p-0 mt-1 text-sm cursor-pointer text-primary/90 hover:text-primary"
-                            onClick={() => setExpanded((prev) => !prev)}
-                        >
-                            {expanded ? "Show less" : "Show more"}
-                        </Button>
-                    )}
-                </div>
-
-                {post.mainImage && (
-                    <img
-                        src={post.mainImage}
-                        alt={post.title}
-                        className="w-full rounded-xl object-cover select-none"
-                        draggable={false}
-                    />
-                )}
-
-                {!!post.tags?.length && (
-                    <div className="flex flex-wrap gap-2">
-                        {post.tags.map((tag) => (
-                            <span
-                                key={tag}
-                                className="rounded-full bg-muted font-semibold tracking-wide px-3 py-1 text-xs"
+                        {shouldClamp && post.content.length > 180 && (
+                            <Button
+                                variant="link"
+                                className="h-auto p-0 mt-1 text-sm cursor-pointer text-primary/90 hover:text-primary"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setExpanded((prev) => !prev)
+                                }}
                             >
-                                #{tag}
-                            </span>
-                        ))}
+                                {expanded ? "Show less" : "Show more"}
+                            </Button>
+                        )}
                     </div>
-                )}
-            </CardContent>
+
+                    {post.mainImage && (
+                        <img
+                            src={post.mainImage}
+                            alt={post.title}
+                            className="w-full rounded-xl object-cover select-none cursor-default"
+                            draggable={false}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                        />
+                    )}
+
+                    {!!post.tags?.length && (
+                        <div className="flex flex-wrap gap-2">
+                            {post.tags.map((tag) => (
+                                <span
+                                    key={tag}
+                                    className="rounded-full bg-muted font-semibold tracking-wide px-3 py-1 text-xs"
+                                >
+                                    #{tag}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Link>
 
             <CardFooter className="flex items-center justify-between py-3!">
                 <div className="flex flex-col gap-2">

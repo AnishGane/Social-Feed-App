@@ -23,7 +23,7 @@ export const toggleBookmarkService = async (
   try {
     session.startTransaction();
 
-    const post = await findPostByIdRepo(postObjectId).session(session);
+    const post = await findPostByIdRepo(userObjectId, postObjectId);
 
     if (!post) {
       throw new ApiError("Post not found", 404);

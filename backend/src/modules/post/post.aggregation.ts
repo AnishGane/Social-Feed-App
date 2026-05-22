@@ -1,62 +1,154 @@
 import { Types } from "mongoose";
 import { validateObjectId } from "../../utils/validate-object-id";
 
-type BuildPostsPipelineProps = {
-  currentUserId?: string | Types.ObjectId;
+// type BuildPostsPipelineProps = {
+//   currentUserId?: string | Types.ObjectId;
 
-  matchStage?: any;
+//   matchStage?: any;
 
-  limit?: number;
+//   limit?: number;
 
-  sortStage?: any;
+//   sortStage?: any;
 
-  prependStages?: any[];
+//   prependStages?: any[];
 
-  appendStages?: any[];
-};
+//   appendStages?: any[];
+// };
+
+// export const buildPostsPipeline = ({
+//   currentUserId,
+//   matchStage = {},
+//   limit,
+//   sortStage = { _id: -1 },
+//   prependStages = [],
+//   appendStages = [],
+// }: BuildPostsPipelineProps) => {
+//   const pipeline: any[] = [
+//     /**
+//      * PRE-STAGES
+//      */
+//     ...prependStages,
+
+//     /**
+//      * MATCH
+//      */
+//     {
+//       $match: matchStage,
+//     },
+
+//     /**
+//      * SORT
+//      */
+//     {
+//       $sort: sortStage,
+//     },
+
+//     /**
+//      * LIMIT
+//      */
+//     ...(limit
+//       ? [
+//           {
+//             $limit: limit,
+//           },
+//         ]
+//       : []),
+
+//     /**
+//      * AUTHOR LOOKUP
+//      */
+//     {
+//       $lookup: {
+//         from: "users",
+//         localField: "author",
+//         foreignField: "_id",
+//         as: "author",
+//       },
+//     },
+
+//     {
+//       $unwind: "$author",
+//     },
+
+//     /**
+//      * BOOKMARK LOOKUP
+//      */
+//     {
+//       $lookup: {
+//         from: "bookmarks",
+//         let: {
+//           postId: "$_id",
+//         },
+
+//         pipeline: [
+//           {
+//             $match: {
+//               $expr: {
+//                 $and: [
+//                   {
+//                     $eq: ["$post", "$$postId"],
+//                   },
+
+//                   {
+//                     $eq: [
+//                       "$user",
+//                       currentUserId
+//                         ? validateObjectId(currentUserId, "User")
+//                         : null,
+//                     ],
+//                   },
+//                 ],
+//               },
+//             },
+//           },
+//         ],
+
+//         as: "bookmarkDocs",
+//       },
+//     },
+
+//     /**
+//      * COMPUTED FIELDS
+//      */
+//     {
+//       $addFields: {
+//         isBookmarked: {
+//           $gt: [{ $size: "$bookmarkDocs" }, 0],
+//         },
+
+//         author: {
+//           _id: "$author._id",
+//           username: "$author.username",
+//           avatar: "$author.avatar",
+//           name: "$author.name",
+//         },
+//       },
+//     },
+
+//     /**
+//      * CLEANUP
+//      */
+//     {
+//       $project: {
+//         bookmarkDocs: 0,
+//       },
+//     },
+
+//     /**
+//      * POST STAGES
+//      */
+//     ...appendStages,
+//   ];
+
+//   return pipeline;
+// };
 
 export const buildPostsPipeline = ({
   currentUserId,
-  matchStage = {},
-  limit,
-  sortStage = { _id: -1 },
-  prependStages = [],
-  appendStages = [],
-}: BuildPostsPipelineProps) => {
-  const pipeline: any[] = [
-    /**
-     * PRE-STAGES
-     */
-    ...prependStages,
-
-    /**
-     * MATCH
-     */
-    {
-      $match: matchStage,
-    },
-
-    /**
-     * SORT
-     */
-    {
-      $sort: sortStage,
-    },
-
-    /**
-     * LIMIT
-     */
-    ...(limit
-      ? [
-          {
-            $limit: limit,
-          },
-        ]
-      : []),
-
-    /**
-     * AUTHOR LOOKUP
-     */
+}: {
+  currentUserId?: string | Types.ObjectId;
+}) => {
+  return [
     {
       $lookup: {
         from: "users",
@@ -70,16 +162,12 @@ export const buildPostsPipeline = ({
       $unwind: "$author",
     },
 
-    /**
-     * BOOKMARK LOOKUP
-     */
     {
       $lookup: {
         from: "bookmarks",
         let: {
           postId: "$_id",
         },
-
         pipeline: [
           {
             $match: {
@@ -102,14 +190,10 @@ export const buildPostsPipeline = ({
             },
           },
         ],
-
         as: "bookmarkDocs",
       },
     },
 
-    /**
-     * COMPUTED FIELDS
-     */
     {
       $addFields: {
         isBookmarked: {
@@ -125,22 +209,12 @@ export const buildPostsPipeline = ({
       },
     },
 
-    /**
-     * CLEANUP
-     */
     {
       $project: {
         bookmarkDocs: 0,
       },
     },
-
-    /**
-     * POST STAGES
-     */
-    ...appendStages,
   ];
-
-  return pipeline;
 };
 
 export const buildCountPipeline = (userId: string | Types.ObjectId) => {

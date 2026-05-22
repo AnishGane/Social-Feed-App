@@ -70,11 +70,18 @@ export const getPostsService = async (
   return await getPostsRepo(currentUserId, cursor, limit);
 };
 
-export const getPostByIdService = async (id: string) => {
+export const getPostByIdService = async (
+  currentUserId: string | undefined,
+  id: string,
+) => {
   const postObjectId = validateObjectId(id, "Post");
 
-  const post = await findPostByIdRepo(postObjectId);
-  if (!post) throw new ApiError("Post not found", 404);
+  const post = await findPostByIdRepo(currentUserId, postObjectId);
+
+  if (!post) {
+    throw new ApiError("Post not found", 404);
+  }
+
   return post;
 };
 
@@ -88,12 +95,12 @@ export const updatePostService = async (
 
   const userObjectId = validateObjectId(userId, "User");
 
-  const post = await findPostByIdRepo(postObjectId);
+  const post = await findPostByIdRepo(userObjectId, postObjectId);
   if (!post) throw new ApiError("Post not found", 404);
 
-  if (!post.author.equals(userObjectId))
+  if (post.author._id.toString() !== userObjectId.toString()) {
     throw new ApiError("Forbidden access", 403);
-
+  }
   const validatedData = updatePostSchema.parse(reqBody);
 
   let imageUrl = post.mainImage;
@@ -131,11 +138,12 @@ export const deletePostService = async (id: string, userId: string) => {
   const postObjectId = validateObjectId(id, "Post");
   const userObjectId = validateObjectId(userId, "User");
 
-  const post = await findPostByIdRepo(postObjectId);
-
+  const post = await findPostByIdRepo(userObjectId, postObjectId); // return just a post not an post[].
   if (!post) throw new ApiError("Post not found", 404);
-  if (!post.author.equals(userObjectId))
+
+  if (post.author._id.toString() !== userObjectId.toString()) {
     throw new ApiError("Forbidden access", 403);
+  }
 
   return deletePostRepo(id);
 };

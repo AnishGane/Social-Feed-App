@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const PostSkeleton = () => {
     return (
-        <div className="space-y-3 rounded-xl border p-4">
+        <div className="space-y-3 rounded-xl w-full border p-4">
             <div className="flex items-center gap-3">
                 <Skeleton className="size-10 rounded-full" />
                 <div className="space-y-2">
