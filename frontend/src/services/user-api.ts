@@ -1,20 +1,10 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth } from "./base-api";
-import type {
-  ApiResponse,
-  ProfileResponse,
-  User,
-} from "@/types";
+import { api } from "./api";
 
-export const userApi = createApi({
-  reducerPath: "userApi",
+import type { ApiResponse, ProfileResponse, User } from "@/types";
 
-  baseQuery: baseQueryWithReauth,
-
-  tagTypes: ["Users"],
-
+export const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    // 1. Current User/logged-in user info
+    // me
     getMe: builder.query<ApiResponse<ProfileResponse>, void>({
       query: () => ({
         url: "/users/me",
@@ -24,7 +14,7 @@ export const userApi = createApi({
       providesTags: [{ type: "Users", id: "ME" }],
     }),
 
-    // 2. Public Profile
+    // profile
     getProfile: builder.query<ApiResponse<ProfileResponse>, string>({
       query: (username) => ({
         url: `/users/${username}`,
@@ -36,7 +26,7 @@ export const userApi = createApi({
       ],
     }),
 
-    // 3. Update Profile
+    // update profile
     updateProfile: builder.mutation<ApiResponse<User>, FormData>({
       query: (data) => ({
         url: "/users/me",

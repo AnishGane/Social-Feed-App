@@ -1,5 +1,5 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth } from "./base-api";
+import { api } from "./api";
+
 import type { ApiResponse } from "@/types/api";
 import type { PaginatedPosts, Post, VoteType } from "@/types";
 
@@ -17,13 +17,7 @@ type VoteResponse = ApiResponse<{
   currentUserVote: VoteType | null;
 }>;
 
-export const postApi = createApi({
-  reducerPath: "postApi",
-
-  baseQuery: baseQueryWithReauth,
-
-  tagTypes: ["Posts"],
-
+export const postApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // 1. GET POSTS (CURSOR PAGINATION)
     getPosts: builder.query<
@@ -276,17 +270,17 @@ export const {
   useGetPostByIdQuery,
 
   useCreatePostMutation,
-  useUpdatePostMutation,
   useDeletePostMutation,
+  useUpdatePostMutation,
 
   useVotePostMutation,
+
+  useToggleBookmarkMutation,
 
   useGetPostsByUserQuery,
   useLazyGetPostsByUserQuery,
 
   useLazyGetVotedPostByUserQuery,
-
-  useToggleBookmarkMutation,
 
   useLazyGetPostsBookmarkedByUserQuery,
 } = postApi;

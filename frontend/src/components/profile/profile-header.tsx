@@ -5,7 +5,7 @@ import SocialLinks from "../social-links";
 import { Github, Instagram, Linkedin, X, Youtube } from "@/assets/icons";
 import UserBannerImage from "./user-banner-image";
 import { useGetMeQuery } from "@/services/user-api";
-import EditProfileSheet from "./edit-profile-sheet";
+import EditProfileSheet from "./sheets/edit-profile-sheet";
 
 interface Props {
     user: User

@@ -1,16 +1,20 @@
-import { PipelineStage, Types } from "mongoose";
+import { ClientSession, PipelineStage, Types } from "mongoose";
 import commentModel from "./comment.model";
 import { GetCommentsByPostParams } from "./comment.types";
 import { validateObjectId } from "../../utils/validate-object-id";
 import { buildGetCommentsByPostPipeline } from "./comment.aggregation";
 
-export const createCommentRepo = async (payload: {
-  content: string;
-  post: Types.ObjectId;
-  author: Types.ObjectId;
-  parentComment?: Types.ObjectId | null;
-}) => {
-  return commentModel.create(payload);
+export const createCommentRepo = async (
+  payload: {
+    content: string;
+    post: Types.ObjectId;
+    author: Types.ObjectId;
+    parentComment?: Types.ObjectId | null;
+  },
+  session?: ClientSession,
+) => {
+  const [comment] = await commentModel.create([payload], { session });
+  return comment;
 };
 
 export const updateCommentRepo = async (
@@ -23,8 +27,11 @@ export const updateCommentRepo = async (
   return commentModel.findByIdAndUpdate(commentId, payload, { new: true });
 };
 
-export const deleteCommentRepo = async (commentId: string | Types.ObjectId) => {
-  return commentModel.findByIdAndDelete(commentId);
+export const deleteCommentRepo = async (
+  commentId: string | Types.ObjectId,
+  session?: ClientSession,
+) => {
+  return commentModel.findByIdAndDelete(commentId, { session });
 };
 
 export const getCommentByIdRepo = async (

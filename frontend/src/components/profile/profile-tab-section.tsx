@@ -22,12 +22,12 @@ const ProfileTabSection = ({ userId, counts }: ProfileTabSectionProps) => {
                             <ArrowBigDownDash className="size-6" />
                             <span className="sr-only">Voted posts</span>
                         </div>
-                        <Badge className="ml-2 p-1.5 text-[9px]">{counts?.voted ?? 0}</Badge>
+                        <Badge className="ml-2 py-1 px-1.5 text-sm font-semibold">{counts?.voted ?? 0}</Badge>
                     </TabsTrigger>
                     <TabsTrigger value="bookmark-post" className="py-4 gap-0 cursor-pointer hover:bg-muted">
                         <Bookmark className="size-6" />
                         <span className="sr-only">Bookmark posts</span>
-                        <Badge className="ml-2 text-[9px] p-1.5">{counts?.bookmarked ?? 0}</Badge>
+                        <Badge className="ml-2 p-1 text-sm font-semibold">{counts?.bookmarked ?? 0}</Badge>
                     </TabsTrigger>
                 </TabsList>
             </div>
