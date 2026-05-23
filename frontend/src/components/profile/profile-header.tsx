@@ -12,7 +12,6 @@ interface Props {
 }
 
 const ProfileHeader = ({ user }: Props) => {
-    // const me = useAppSelector(state => state.auth.user);
     const me = useGetMeQuery().data?.data;
 
     const isOwner = me?.user._id === user._id;

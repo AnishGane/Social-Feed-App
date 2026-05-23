@@ -15,7 +15,6 @@ const UserAvatar = ({ seed, className }: Props) => {
         return createAvatar(lorelei, {
             seed,
             size: 128,
-            // ... other options
         }).toDataUri();
     }, [seed]);
 

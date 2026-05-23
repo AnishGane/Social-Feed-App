@@ -23,8 +23,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" className="border-r-0" {...props}>
       <SidebarHeader className="py-4 flex items-start">
-        <SidebarMenuButton asChild className="hover:bg-transparent">
-          <Link to="/" className="text-xl text-primary flex items-center justify-center gap-2 font-semibold">
+        <SidebarMenuButton asChild className="hover:bg-transparentflex items-center justify-start">
+          <Link to="/" className="text-xl text-primary font-semibold">
             <BringToFront className="size-8 text-primary" />
             SocialFeed
           </Link>

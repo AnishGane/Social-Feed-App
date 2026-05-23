@@ -99,7 +99,6 @@ const ShareButton = ({ postId, title }: Props) => {
                         Share to LinkedIn
                     </DropdownMenuItem>
 
-                    {/* <DropdownMenuSeparator /> */}
                 </DropdownMenuSubContent>
             </DropdownMenuPortal>
         </DropdownMenuSub>
