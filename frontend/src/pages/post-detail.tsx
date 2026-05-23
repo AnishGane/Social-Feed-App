@@ -53,7 +53,7 @@ const PostDetailPage = () => {
 
     return (
         <main className="mx-auto w-full max-w-3xl px-4 py-6">
-            <PostCard post={post} onVoteUpdate={updatePost} />
+            <PostCard post={post} onVoteUpdate={updatePost}  />
         </main>
     )
 }

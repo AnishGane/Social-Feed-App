@@ -6,25 +6,17 @@ import {
     CardFooter,
     CardHeader,
 } from "@/components/ui/card";
-
 import VoteButtons from "./vote-buttons";
 import UserAvatar from "../user-avatar";
-import { EllipsisVertical, MessageSquare, Trash2, TrendingDown, TrendingUp } from "lucide-react";
+import { MessageSquare, TrendingDown, TrendingUp } from "lucide-react";
 import { formatPostDate } from "@/utils/format-date";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { useGetMeQuery } from "@/services/user-api";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import EditPostDialog from "./edit-post-dialog";
-import AlertDialogComp from "../alert-dialog-comp";
 import { Link, useLocation } from "react-router-dom";
 import BookmarkButton from "./bookmark-button";
-import ShareButton from "./share-button";
+import OwnerPostDropDown from "./owner-post-dropdown";
+import SharePostDropdown from "./share-post-dropdown";
 
 type Props = {
     post: Post;
@@ -52,7 +44,6 @@ const PostCard = ({
     const visitProfile = isOwner ? `/u/me` : `/u/${post.author.username}`;
 
     return (
-
         <Card className="w-full">
             <CardHeader>
                 <div className="flex items-center justify-between">
@@ -71,9 +62,7 @@ const PostCard = ({
 
                         </div>
                     </div>
-                    {isOwner && isMeProfile && (
-                        <PostCardDropdownMenus post={post} />
-                    )}
+                    {isOwner && isMeProfile ? <OwnerPostDropDown post={post} /> : <SharePostDropdown post={post} />}
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -157,41 +146,6 @@ const PostCard = ({
     );
 };
 
-const PostCardDropdownMenus = ({
-    post,
-}: {
-    post: Post;
-}) => {
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button
-                    variant="ghost"
-                    className="cursor-pointer rounded-full px-2 ml-1"
-                    aria-label="Post actions"
-                >
-                    <EllipsisVertical />
-                </Button>
-            </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="w-fit">
-                <EditPostDialog post={post} />
-
-                <DropdownMenuSeparator />
-
-                <AlertDialogComp
-                    icon={Trash2}
-                    title="Are you sure you want to delete this post?"
-                    description="This action cannot be undone. If you once deleted a post, you can't recover it."
-                    iconLabel="Delete this Post"
-                    post={post} />
-
-                <DropdownMenuSeparator />
-
-                <ShareButton postId={post._id} title={post.title} />
-            </DropdownMenuContent>
-        </DropdownMenu>
-    );
-};
 
 export default PostCard;

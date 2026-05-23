@@ -64,7 +64,7 @@ const ShareButton = ({ postId, title }: Props) => {
         <DropdownMenuSub>
             <DropdownMenuSubTrigger className="cursor-pointer py-2.5">
                 <Share2 />
-                Share
+                Share this post
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
                 <DropdownMenuSubContent className="ml-2 w-48 data-[side=left]:mr-2">
