@@ -14,7 +14,6 @@ import { sendResponse } from "../../utils/api-response";
 import { requireUser } from "../../utils/require-user";
 import { createPostSchema, updatePostSchema } from "./post.validation";
 import { parseTags } from "./post.utils";
-import { log } from "console";
 
 export const createPost = asyncHandler(async (req: Request, res: Response) => {
   const user = requireUser(req);

@@ -111,6 +111,11 @@ export const buildPostsPipeline = ({
     {
       $project: {
         bookmarkDocs: 0,
+        voteDocs: 0,
+
+        "author.password": 0,
+        "author.refreshToken": 0,
+        "author.__v": 0,
       },
     },
   ];

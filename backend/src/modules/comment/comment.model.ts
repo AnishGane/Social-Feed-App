@@ -6,7 +6,7 @@ interface IComment extends Document {
   content: string;
   parentComment?: mongoose.Types.ObjectId | null;
   likesCount: number;
-  isDeleted: boolean;
+  isEdited: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -14,14 +14,14 @@ interface IComment extends Document {
 const commentSchema = new Schema<IComment>(
   {
     post: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Post",
       required: true,
       index: true,
     },
 
     author: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
       index: true,
@@ -31,11 +31,11 @@ const commentSchema = new Schema<IComment>(
       type: String,
       required: true,
       trim: true,
-      maxlength: 1000,
+      maxlength: 500,
     },
 
     parentComment: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Comment",
       default: null, // for replies (optional future feature)
     },
@@ -46,7 +46,7 @@ const commentSchema = new Schema<IComment>(
       min: 0,
     },
 
-    isDeleted: {
+    isEdited: {
       type: Boolean,
       default: false,
     },
@@ -54,7 +54,11 @@ const commentSchema = new Schema<IComment>(
   { timestamps: true },
 );
 
-commentSchema.index({ createdAt: -1 });
+commentSchema.index({ post: 1, createdAt: -1 });
+commentSchema.index({
+  parentComment: 1,
+  createdAt: -1,
+});
 
 const commentModel = mongoose.model("Comment", commentSchema);
 export default commentModel;
