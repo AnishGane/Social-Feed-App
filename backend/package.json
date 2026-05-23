@@ -21,6 +21,7 @@
     "express": "^4.22.1",
     "express-rate-limit": "^8.5.0",
     "file-type": "^18.7.0",
+    "http-status": "^2.1.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.6.1",
     "multer": "^2.1.1",
