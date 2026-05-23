@@ -6,7 +6,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import type { User } from "@/types"
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import EditProfileForm from "@/forms/edit-profile-form";
 import { useState } from "react";
 

@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import VoteButtons from "./vote-buttons";
 import UserAvatar from "../user-avatar";
-import { MessageSquare, TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import { formatPostDate } from "@/utils/format-date";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -17,6 +17,7 @@ import { Link, useLocation } from "react-router-dom";
 import BookmarkButton from "./bookmark-button";
 import OwnerPostDropDown from "./owner-post-dropdown";
 import SharePostDropdown from "./share-post-dropdown";
+import CommentSheet from "../comment/comment-sheet";
 
 type Props = {
     post: Post;
@@ -127,9 +128,8 @@ const PostCard = ({
                 </div>
 
                 <div className="flex items-center justify-center gap-3">
-                    <span title="Comments" className="text-base text-foreground flex items-center justify-center gap-1">
-                        <MessageSquare className="size-4.5" />{post.commentCount}
-                    </span>
+
+                    <CommentSheet post={post} />
 
                     <span title="Score" className="text-base text-foreground flex items-center justify-center gap-1">
                         {post.score >= 0 ? <TrendingUp className="size-5 " /> : post.score < 0 ? <TrendingDown className="size-4.5" /> : null}

@@ -24,7 +24,8 @@ export const createCommentService = async (
   }
 
   if (payload.parentComment) {
-    const parentComment = await getCommentByIdRepo(payload.parentComment);
+    const parentCommentId = validateObjectId(payload.parentComment, "Comment");
+    const parentComment = await getCommentByIdRepo(parentCommentId);
 
     if (!parentComment) {
       throw new ApiError("Parent comment not found", httpStatus.NOT_FOUND);
@@ -42,14 +43,17 @@ export const createCommentService = async (
   session.startTransaction();
 
   try {
-    const result = await createCommentRepo({
-      content: payload.content,
-      post: validateObjectId(payload.postId, "Post"),
-      author: validateObjectId(userId, "User"),
-      parentComment: payload.parentComment
-        ? validateObjectId(payload.parentComment, "Comment")
-        : null,
-    });
+    const result = await createCommentRepo(
+      {
+        content: payload.content,
+        post: validateObjectId(payload.postId, "Post"),
+        author: validateObjectId(userId, "User"),
+        parentComment: payload.parentComment
+          ? validateObjectId(payload.parentComment, "Comment")
+          : null,
+      },
+      session,
+    );
 
     await postModel.findByIdAndUpdate(
       payload.postId,
@@ -131,7 +135,8 @@ export const deleteCommentService = async (
   userId: string,
   commentId: string,
 ) => {
-  const comment = await getCommentByIdRepo(commentId);
+  const commentObjectId = validateObjectId(commentId, "Comment");
+  const comment = await getCommentByIdRepo(commentObjectId);
 
   if (!comment) {
     throw new ApiError("Comment not found", httpStatus.NOT_FOUND);
@@ -153,7 +158,7 @@ export const deleteCommentService = async (
       { session },
     );
 
-    await deleteCommentRepo(commentId);
+    await deleteCommentRepo(commentObjectId, session);
 
     await session.commitTransaction();
     return null;

@@ -2,9 +2,9 @@ import type { Post } from "@/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { EllipsisVertical, Trash2 } from "lucide-react";
-import EditPostDialog from "./edit-post-dialog";
 import AlertDialogComp from "../alert-dialog-comp";
 import ShareButton from "./share-button";
+import EditPostSheet from "./sheets/edit-post-sheet";
 
 type Props = {
     post: Post
@@ -24,7 +24,7 @@ const OwnerPostDropDown = ({ post }: Props) => {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent className="w-fit">
-                <EditPostDialog post={post} />
+                <EditPostSheet post={post} />
 
                 <DropdownMenuSeparator />
 

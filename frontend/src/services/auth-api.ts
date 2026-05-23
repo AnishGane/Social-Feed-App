@@ -1,5 +1,5 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth } from "./base-api";
+import { api } from "./api";
+
 import type { ApiResponse } from "@/types/api";
 import type { User } from "@/types";
 import type { LoginSchemaType, SignupSchemaType } from "@/schema/auth-schema";
@@ -17,13 +17,9 @@ export type LogoutResponse = ApiResponse<null>;
 
 export type MeResponse = ApiResponse<User>;
 
-export const authApi = createApi({
-  reducerPath: "authApi",
-
-  baseQuery: baseQueryWithReauth,
-
+export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    //1. register
+    // register
     register: builder.mutation<AuthResponse, SignupSchemaType>({
       query: (data) => ({
         url: "/auth/register",
@@ -31,7 +27,8 @@ export const authApi = createApi({
         body: data,
       }),
     }),
-    // 2. login
+
+    // login
     login: builder.mutation<AuthResponse, LoginSchemaType>({
       query: (data) => ({
         url: "/auth/login",
@@ -39,23 +36,29 @@ export const authApi = createApi({
         body: data,
       }),
     }),
-    // 3. LogoutAPI
+
+    // logout
     logoutApi: builder.mutation<LogoutResponse, void>({
       query: () => ({
         url: "/auth/logout",
         method: "POST",
       }),
     }),
-    // 4. refresh
+
+    // refresh
     refresh: builder.mutation<RefreshResponse, void>({
       query: () => ({
         url: "/auth/refresh",
         method: "POST",
       }),
     }),
-    // 5. me(user's own data)
+
+    // me
     me: builder.query<MeResponse, void>({
-      query: () => "/auth/me",
+      query: () => ({
+        url: "/auth/me",
+        method: "GET",
+      }),
     }),
   }),
 });
