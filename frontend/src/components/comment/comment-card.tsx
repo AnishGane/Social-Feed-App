@@ -3,10 +3,10 @@ import UserAvatar from "../user-avatar";
 import CommentActionsDropdown from "./comment-action-dropdown";
 import { formatCommentDate } from "@/utils/format-date";
 import { useEffect, useRef, useState } from "react";
-import { useUpdateCommentMutation } from "@/services/comment-api";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Dot } from "lucide-react";
+import { useUpdateCommentMutation } from "@/services/comment-api";
 
 type Props = {
     comment: Comment;

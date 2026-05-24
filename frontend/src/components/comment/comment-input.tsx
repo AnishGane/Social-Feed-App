@@ -2,6 +2,7 @@ import { useState } from "react";
 import UserAvatar from "../user-avatar";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
+import { toast } from "sonner";
 
 type Props = {
     userId: string;
@@ -23,6 +24,10 @@ const CommentInput = ({ userId, onSubmit }: Props) => {
             await onSubmit(trimmed);
 
             setContent("");
+
+            toast.success("Comment submitted successfully.");
+        } catch {
+            toast.error("Failed to submit comment.");
         } finally {
             setIsSubmitting(false);
         }
@@ -45,7 +50,7 @@ const CommentInput = ({ userId, onSubmit }: Props) => {
                     className="min-h-0 resize-none"
                     rows={6}
                 />
-                {content && (
+                {content.trim().length > 0 && (
                     <div className="flex items-center justify-center gap-2">
                         <Button
                             onClick={handleCancel}

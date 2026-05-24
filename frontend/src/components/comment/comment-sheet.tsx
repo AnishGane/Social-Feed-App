@@ -13,10 +13,7 @@ import type { Post } from "@/types";
 import { useAppSelector } from "@/hooks";
 import CommentInput from "./comment-input";
 import CommentList from "./comment-list";
-import {
-    useCreateCommentMutation,
-    useGetCommentsByPostQuery,
-} from "@/services/comment-api";
+import { useCreateCommentMutation, useGetCommentsByPostQuery } from "@/services/comment-api";
 
 type Props = {
     post: Post;
@@ -34,6 +31,7 @@ const CommentSheet = ({ post }: Props) => {
     if (!user) return null;
 
     const comments = data?.data.comments || [];
+    const commentCount = comments.length ?? post.commentCount;
 
     const handleCreateComment = async (content: string) => {
         await createComment({
@@ -51,7 +49,7 @@ const CommentSheet = ({ post }: Props) => {
                     className="gap-1 p-0 cursor-pointer"
                 >
                     <MessageCircle className="size-4.5" />
-                    {post.commentCount}
+                    {commentCount}
                 </Button>
             </SheetTrigger>
 
@@ -70,7 +68,7 @@ const CommentSheet = ({ post }: Props) => {
 
                 <div className="space-y-6">
                     <p className="text-sm text-muted-foreground">
-                        Total Comments ({comments.length})
+                        Total Comments ({commentCount})
                     </p>
 
                     <CommentInput

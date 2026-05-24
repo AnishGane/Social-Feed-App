@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 import type { Comment } from "@/types/comment";
 import { useDeleteCommentMutation } from "@/services/comment-api";
+import { toast } from "sonner";
 
 type Props = {
     comment: Comment;
@@ -18,10 +19,18 @@ const CommentActionsDropdown = ({ comment, onEdit }: Props) => {
     const [deleteComment, { isLoading }] = useDeleteCommentMutation();
 
     const handleDelete = async () => {
-        await deleteComment({
-            commentId: comment._id,
-            postId: comment.post,
-        });
+        try {
+
+            await deleteComment({
+                commentId: comment._id,
+                postId: comment.post,
+            });
+
+            toast.success("Comment deleted successfully.");
+        }
+        catch (error) {
+            toast.error("Failed to delete comment.");
+        }
     };
 
     return (
