@@ -7,7 +7,6 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "../../ui/button";
-import { Plus } from "lucide-react";
 import PostForm from "@/forms/post-form";
 
 const CreatePostSheet = () => {
@@ -16,9 +15,8 @@ const CreatePostSheet = () => {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <Button className="py-5 px-2.5 cursor-pointer rounded-full text-xs" title="Create new post">
-                    <Plus className="size-5" />
-                    <span className="sr-only">Create new post</span>
+                <Button className="p-5 rounded-3xl text-sm cursor-pointer" title="Create new post">
+                    <p>Post</p>
                 </Button>
 
             </SheetTrigger>

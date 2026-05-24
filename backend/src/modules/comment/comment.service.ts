@@ -158,8 +158,11 @@ export const deleteCommentService = async (
       { session },
     );
 
-    await deleteCommentRepo(commentObjectId, session);
-
+    const deletedComment = await deleteCommentRepo(commentObjectId, session);
+    if (!deletedComment) {
+      throw new ApiError("Comment not found", httpStatus.NOT_FOUND);
+    }
+    
     await session.commitTransaction();
     return null;
   } catch (error) {
