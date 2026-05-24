@@ -1,0 +1,59 @@
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
+import { EllipsisVertical, Pencil, Trash2 } from "lucide-react";
+import type { Comment } from "@/types/comment";
+import { useDeleteCommentMutation } from "@/services/comment-api";
+
+type Props = {
+    comment: Comment;
+    onEdit: () => void;
+};
+
+const CommentActionsDropdown = ({ comment, onEdit }: Props) => {
+    const [deleteComment, { isLoading }] = useDeleteCommentMutation();
+
+    const handleDelete = async () => {
+        await deleteComment({
+            commentId: comment._id,
+            postId: comment.post,
+        });
+    };
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-8"
+                >
+                    <EllipsisVertical className="size-4" />
+                </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={onEdit} className="cursor-pointer">
+                    <Pencil className="size-4" />
+                    Edit
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                    onSelect={(e) => e.preventDefault()}
+                    onClick={handleDelete}
+                    disabled={isLoading}
+                    className="text-destructive cursor-pointer focus:text-destructive"
+                >
+                    <Trash2 className="size-4" />
+                    Delete
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+};
+
+export default CommentActionsDropdown;

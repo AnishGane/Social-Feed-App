@@ -1,4 +1,8 @@
-import { format, formatDistanceToNowStrict } from "date-fns";
+import {
+  format,
+  formatDistanceToNow,
+  formatDistanceToNowStrict,
+} from "date-fns";
 
 export const formatPostDate = (date: string | Date) => {
   const dateObj = date instanceof Date ? date : new Date(date);
@@ -21,4 +25,16 @@ export const formatPostDate = (date: string | Date) => {
     .replace(" year", "y");
 
   return `${formattedDate} · ${shortRelative} ago`;
+};
+
+export const formatCommentDate = (date: string | Date) => {
+  const dateObj = date instanceof Date ? date : new Date(date);
+
+  if (isNaN(dateObj.getTime())) {
+    return "Invalid date";
+  }
+
+  return formatDistanceToNow(dateObj, {
+    addSuffix: true,
+  });
 };
