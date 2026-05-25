@@ -79,7 +79,6 @@ export const buildGetCommentsByPostPipeline = ({
 
         "author._id": 1,
         "author.username": 1,
-        "author.profileImage": 1,
       },
     },
   ];

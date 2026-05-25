@@ -14,6 +14,7 @@ import { useAppSelector } from "@/hooks";
 import CommentInput from "./comment-input";
 import CommentList from "./comment-list";
 import { useCreateCommentMutation, useGetCommentsByPostQuery } from "@/services/comment-api";
+import PostAuthorInfo from "../post-author-info";
 
 type Props = {
     post: Post;
@@ -53,9 +54,13 @@ const CommentSheet = ({ post }: Props) => {
                 </Button>
             </SheetTrigger>
 
+
+
             <SheetContent className="px-4">
                 <SheetHeader className="mt-10 p-0">
-                    <SheetTitle className="text-2xl">
+                    <PostAuthorInfo authorId={post.author._id} name={post.author.name} username={post.author.username} />
+
+                    <SheetTitle className="text-2xl mt-4">
                         {post.title}
                     </SheetTitle>
 
@@ -64,7 +69,7 @@ const CommentSheet = ({ post }: Props) => {
                     </SheetDescription>
                 </SheetHeader>
 
-                <Separator className="my-4 bg-foreground/40" />
+                <Separator className="my-4 bg-foreground/30" />
 
                 <div className="space-y-6">
                     <p className="text-sm text-muted-foreground">
@@ -86,4 +91,4 @@ const CommentSheet = ({ post }: Props) => {
     );
 };
 
-export default CommentSheet;
+export default CommentSheet;    

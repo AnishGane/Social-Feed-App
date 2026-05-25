@@ -7,7 +7,6 @@ import {
     CardHeader,
 } from "@/components/ui/card";
 import VoteButtons from "./vote-buttons";
-import UserAvatar from "../user-avatar";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { formatPostDate } from "@/utils/format-date";
 import { useState } from "react";
@@ -18,6 +17,7 @@ import BookmarkButton from "./bookmark-button";
 import OwnerPostDropDown from "./owner-post-dropdown";
 import SharePostDropdown from "./share-post-dropdown";
 import CommentSheet from "../comment/comment-sheet";
+import PostAuthorInfo from "../post-author-info";
 
 type Props = {
     post: Post;
@@ -42,27 +42,12 @@ const PostCard = ({
     const pathname = useLocation().pathname;
     const isMeProfile = pathname === "/u/me";
 
-    const visitProfile = isOwner ? `/u/me` : `/u/${post.author.username}`;
-
     return (
         <Card className="w-full">
             <CardHeader>
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 w-full">
-                        <div className="flex size-10 items-center justify-center rounded-full bg-muted text-sm font-bold">
-                            <UserAvatar seed={post.author._id} className="size-8" />
-                        </div>
+                    <PostAuthorInfo authorId={post.author._id} name={post.author.name} username={post.author.username} />
 
-                        <div className="flex items-center justify-between w-full">
-                            <Link to={visitProfile} className="flex flex-col">
-                                <h3 className="font-semibold text-base">
-                                    {post.author.name}
-                                </h3>
-                                <p className="text-xs text-muted-foreground tracking-wide">@{post.author.username}</p>
-                            </Link>
-
-                        </div>
-                    </div>
                     {isOwner && isMeProfile ? <OwnerPostDropDown post={post} /> : <SharePostDropdown post={post} />}
                 </div>
             </CardHeader>
