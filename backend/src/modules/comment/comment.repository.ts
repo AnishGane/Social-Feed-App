@@ -75,3 +75,42 @@ export const getCommentsByPostRepo = async ({
 
   return commentModel.aggregate(pipeline);
 };
+
+export const getRepliesByCommentRepo = async ({
+  parentCommentId,
+  cursor,
+  limit = 10,
+  currentUserId,
+}: {
+  parentCommentId: string | Types.ObjectId;
+  cursor?: string;
+  limit?: number;
+  currentUserId?: string | Types.ObjectId;
+}) => {
+  const matchStage: any = {
+    parentComment: validateObjectId(parentCommentId, "Comment"),
+  };
+
+  if (cursor) {
+    matchStage._id = {
+      $lt: validateObjectId(cursor, "Cursor"),
+    };
+  }
+
+  const pipeline: PipelineStage[] = [
+    {
+      $match: matchStage,
+    },
+    {
+      $sort: {
+        _id: -1,
+      },
+    },
+    {
+      $limit: limit + 1,
+    },
+    ...buildGetCommentsByPostPipeline({ currentUserId }),
+  ];
+
+  return commentModel.aggregate(pipeline);
+};

@@ -6,7 +6,12 @@ import { useEffect, useRef, useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Dot } from "lucide-react";
-import { useUpdateCommentMutation } from "@/services/comment-api";
+import { useCreateCommentMutation, useUpdateCommentMutation } from "@/services/comment-api";
+import ReplyButton from "./reply-button";
+import CommentInput from "./comment-input";
+import CommentReplies from "./comment-replies";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 type Props = {
     comment: Comment;
@@ -16,9 +21,10 @@ type Props = {
 const CommentCard = ({ comment, currentUserId }: Props) => {
     const isOwner = currentUserId === comment.author._id;
 
-    const [isEditable, setIsEditable] = useState(false);
-
     const [content, setContent] = useState(comment.content);
+    const [isEditable, setIsEditable] = useState(false);
+    const [showReplyInput, setShowReplyInput] = useState(false);
+    const [showReplies, setShowReplies] = useState(false);
 
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -26,9 +32,10 @@ const CommentCard = ({ comment, currentUserId }: Props) => {
         setContent(comment.content);
     }, [comment.content])
 
-
     const [updateComment, { isLoading }] =
         useUpdateCommentMutation();
+
+    const [createComment] = useCreateCommentMutation();
 
     // focus textarea when edit mode starts
     useEffect(() => {
@@ -70,8 +77,28 @@ const CommentCard = ({ comment, currentUserId }: Props) => {
             }).unwrap();
 
             setIsEditable(false);
+
+            toast.success("Comment updated successfully.");
         } catch (error) {
-            console.error(error);
+            toast.error("Failed to update comment.");
+        }
+    };
+
+    const handleReplySubmit = async (
+        content: string,
+    ) => {
+        try {
+            await createComment({
+                postId: comment.post,
+                content,
+                parentComment: comment._id,
+            }).unwrap();
+
+            setShowReplyInput(false);
+
+            toast.success("Reply submitted successfully.");
+        } catch (error) {
+            toast.error("Failed to reply.");
         }
     };
 
@@ -151,6 +178,43 @@ const CommentCard = ({ comment, currentUserId }: Props) => {
                     <p className="text-sm whitespace-pre-wrap wrap-break-words">
                         {content}
                     </p>
+                )}
+
+                <div className={cn("flex items-center mt-1.5 gap-2", showReplyInput && "flex-col items-start")}>
+                    <div className={cn("flex flex-col items-start", showReplyInput && "w-full")}>
+                        {currentUserId && (
+                            <ReplyButton setShowReplyInput={setShowReplyInput} />
+                        )}
+
+                        {showReplyInput && currentUserId && (
+                            <CommentInput
+                                userId={currentUserId}
+                                onSubmit={handleReplySubmit}
+                            />
+                        )}
+                    </div>
+
+                    {comment.repliesCount > 0 && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-auto px-0 text-xs cursor-pointer"
+                            onClick={() =>
+                                setShowReplies((prev) => !prev)
+                            }
+                        >
+                            {showReplies
+                                ? "Hide replies"
+                                : `View replies (${comment.repliesCount})`}
+                        </Button>
+                    )}
+                </div>
+
+                {showReplies && (
+                    <CommentReplies
+                        commentId={comment._id}
+                        currentUserId={currentUserId}
+                    />
                 )}
             </div>
         </div>

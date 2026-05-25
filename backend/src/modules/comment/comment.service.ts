@@ -8,10 +8,12 @@ import {
   deleteCommentRepo,
   getCommentByIdRepo,
   getCommentsByPostRepo,
+  getRepliesByCommentRepo,
   updateCommentRepo,
 } from "./comment.repository";
 import { CreateCommentPayload, UpdateCommentPayload } from "./comment.types";
 import httpStatus from "http-status";
+import commentModel from "./comment.model";
 
 export const createCommentService = async (
   userId: string,
@@ -149,20 +151,32 @@ export const deleteCommentService = async (
     );
   }
 
+  const replyCount = await commentModel.countDocuments({
+    parentComment: commentObjectId,
+  });
+
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    await postModel.findByIdAndUpdate(
-      comment.post,
-      { $inc: { commentCount: -1 } },
+    // delete replies first
+    await commentModel.deleteMany(
+      { parentComment: commentObjectId },
       { session },
     );
 
+    // delete parent
     const deletedComment = await deleteCommentRepo(commentObjectId, session);
+
     if (!deletedComment) {
       throw new ApiError("Comment not found", httpStatus.NOT_FOUND);
     }
-    
+
+    await postModel.findByIdAndUpdate(
+      comment.post,
+      { $inc: { commentCount: -(1 + replyCount) } },
+      { session },
+    );
+
     await session.commitTransaction();
     return null;
   } catch (error) {
@@ -171,4 +185,38 @@ export const deleteCommentService = async (
   } finally {
     session.endSession();
   }
+};
+
+export const getRepliesByCommentService = async (
+  parentCommentId: string,
+  cursor?: string,
+  limit = 10,
+  currentUserId?: string,
+) => {
+  if (cursor) {
+    validateObjectId(cursor, "Cursor");
+  }
+
+  checkLimit(limit);
+
+  const replies = await getRepliesByCommentRepo({
+    parentCommentId,
+    cursor,
+    limit,
+    currentUserId,
+  });
+
+  let nextCursor: string | null = null;
+
+  if (replies.length > limit) {
+    const nextItem = replies.pop();
+
+    nextCursor = nextItem?._id?.toString() || null;
+  }
+
+  return {
+    comments: replies,
+    nextCursor,
+    hasMore: !!nextCursor,
+  };
 };
