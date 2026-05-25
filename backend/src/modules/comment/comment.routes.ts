@@ -6,6 +6,7 @@ import {
   createCommentController,
   deleteCommentController,
   getCommentsByPostController,
+  getRepliesByCommentController,
   updateCommentController,
 } from "./comment.controller";
 
@@ -28,5 +29,7 @@ router.patch(
 );
 
 router.delete("/:commentId", protect, deleteCommentController);
+
+router.get("/replies/:commentId", protect, getRepliesByCommentController);
 
 export default router;

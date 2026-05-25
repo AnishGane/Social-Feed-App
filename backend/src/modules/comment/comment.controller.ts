@@ -4,6 +4,7 @@ import {
   createCommentService,
   deleteCommentService,
   getCommentsByPostService,
+  getRepliesByCommentService,
   updateCommentService,
 } from "./comment.service";
 import { requireUser } from "../../utils/require-user";
@@ -72,5 +73,30 @@ export const deleteCommentController = asyncHandler(
     await deleteCommentService(user._id.toString(), commentId.toString());
 
     sendResponse(res, httpStatus.OK, null, "Comment deleted successfully");
+  },
+);
+
+export const getRepliesByCommentController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { commentId } = req.params;
+
+    const cursor =
+      typeof req.query.cursor === "string" ? req.query.cursor : undefined;
+
+    const rawLimit = Number(req.query.limit);
+
+    const limit =
+      !isNaN(rawLimit) && rawLimit > 0 && rawLimit <= 100 ? rawLimit : 10;
+
+    const userId = req.user?._id?.toString();
+
+    const result = await getRepliesByCommentService(
+      commentId.toString(),
+      cursor,
+      limit,
+      userId,
+    );
+
+    sendResponse(res, httpStatus.OK, result, "Replies fetched successfully");
   },
 );

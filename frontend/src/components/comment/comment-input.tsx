@@ -38,7 +38,7 @@ const CommentInput = ({ userId, onSubmit }: Props) => {
     }
 
     return (
-        <div className="flex items-start gap-2">
+        <div className="flex items-start gap-2 w-full">
             <UserAvatar seed={userId} className="size-10" />
 
             <div className="w-full flex flex-col items-end gap-2">

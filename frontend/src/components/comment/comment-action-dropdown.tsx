@@ -5,7 +5,7 @@ import {
     DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { EllipsisVertical, Pencil, Trash2 } from "lucide-react";
+import { EllipsisVertical, Loader2, Pencil, Trash2 } from "lucide-react";
 import type { Comment } from "@/types/comment";
 import { useDeleteCommentMutation } from "@/services/comment-api";
 import { toast } from "sonner";
@@ -39,7 +39,7 @@ const CommentActionsDropdown = ({ comment, onEdit }: Props) => {
                 <Button
                     size="icon"
                     variant="ghost"
-                    className="size-8"
+                    className="size-6"
                 >
                     <EllipsisVertical className="size-4" />
                 </Button>
@@ -57,8 +57,17 @@ const CommentActionsDropdown = ({ comment, onEdit }: Props) => {
                     disabled={isLoading}
                     className="text-destructive cursor-pointer focus:text-destructive"
                 >
-                    <Trash2 className="size-4" />
-                    Delete
+                    {isLoading ? (
+                        <>
+                            <Loader2 className="size-4 animate-spin" />
+                            Deleting
+                        </>
+                    ) : (
+                        <>
+                            <Trash2 className="size-4" />
+                            Delete
+                        </>
+                    )}
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

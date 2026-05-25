@@ -11,14 +11,16 @@ export const commentApi = api.injectEndpoints({
       {
         postId: string;
         content: string;
+        parentComment?: string;
       }
     >({
-      query: ({ postId, content }) => ({
+      query: ({ postId, content, parentComment }) => ({
         url: "/comments",
         method: "POST",
         body: {
           postId,
           content,
+          parentComment,
         },
       }),
 
@@ -95,6 +97,35 @@ export const commentApi = api.injectEndpoints({
         { type: "Posts", id: arg.postId },
       ],
     }),
+
+    // get replies by comment
+    getRepliesByComment: builder.query<
+      GetCommentResponse,
+      {
+        commentId: string;
+        cursor?: string;
+        limit?: number;
+      }
+    >({
+      query: ({ commentId, cursor, limit = 10 }) => {
+        const params = new URLSearchParams({
+          limit: limit.toString(),
+        });
+
+        if (cursor) {
+          params.set("cursor", cursor);
+        }
+
+        return {
+          url: `/comments/replies/${commentId}?${params}`,
+          method: "GET",
+        };
+      },
+
+      providesTags: (_result, _error, { commentId }) => [
+        { type: "Comments", id: `REPLIES-${commentId}` },
+      ],
+    }),
   }),
 });
 
@@ -103,4 +134,5 @@ export const {
   useGetCommentsByPostQuery,
   useUpdateCommentMutation,
   useDeleteCommentMutation,
+  useGetRepliesByCommentQuery,
 } = commentApi;
