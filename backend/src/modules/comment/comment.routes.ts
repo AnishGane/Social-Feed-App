@@ -30,6 +30,6 @@ router.patch(
 
 router.delete("/:commentId", protect, deleteCommentController);
 
-router.get("/replies/:commentId", protect, getRepliesByCommentController);
+router.get("/replies/:commentId", getRepliesByCommentController);
 
 export default router;

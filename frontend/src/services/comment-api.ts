@@ -135,4 +135,5 @@ export const {
   useUpdateCommentMutation,
   useDeleteCommentMutation,
   useGetRepliesByCommentQuery,
+  useLazyGetRepliesByCommentQuery,
 } = commentApi;
