@@ -14,6 +14,9 @@ export type Comment = {
   repliesCount: number;
 
   author: Pick<User, "_id" | "name" | "username">;
+
+  isLiked: boolean;
+  likesCount: number;
 };
 
 type CommentResponseData = {

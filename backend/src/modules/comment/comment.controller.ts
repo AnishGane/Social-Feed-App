@@ -35,7 +35,8 @@ export const getCommentsByPostController = asyncHandler(
     const limit =
       !isNaN(rawLimit) && rawLimit > 0 && rawLimit <= 100 ? rawLimit : 10;
 
-    const userId = req.user?._id?.toString();
+    const user = requireUser(req);
+    const userId = user._id.toString();
 
     const result = await getCommentsByPostService(
       postId.toString(),

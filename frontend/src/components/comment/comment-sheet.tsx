@@ -54,8 +54,6 @@ const CommentSheet = ({ post }: Props) => {
                 </Button>
             </SheetTrigger>
 
-
-
             <SheetContent className="px-4">
                 <SheetHeader className="mt-10 p-0">
                     <PostAuthorInfo authorId={post.author._id} name={post.author.name} username={post.author.username} />

@@ -12,6 +12,7 @@ import CommentInput from "./comment-input";
 import CommentReplies from "./comment-replies";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import CommentLikeButton from "./comment-like-button";
 
 type Props = {
     comment: Comment;
@@ -177,7 +178,11 @@ const CommentCard = ({ comment, currentUserId }: Props) => {
                 <div className={cn("flex items-center mt-1.5 gap-2", showReplyInput && "flex-col items-start")}>
                     <div className={cn("flex flex-col items-start", showReplyInput && "w-full")}>
                         {currentUserId && (
-                            <ReplyButton setShowReplyInput={setShowReplyInput} />
+                            <div className="flex items-center gap-2">
+                                <CommentLikeButton comment={comment} postId={comment.post} />
+
+                                <ReplyButton setShowReplyInput={setShowReplyInput} showReplyInput={showReplyInput} />
+                            </div>
                         )}
 
                         {showReplyInput && currentUserId && (
