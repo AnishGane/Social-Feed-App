@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { PipelineStage, Types } from "mongoose";
 import { validateObjectId } from "../../utils/validate-object-id";
 
 export const buildGetCommentsByPostPipeline = ({
@@ -6,7 +6,7 @@ export const buildGetCommentsByPostPipeline = ({
 }: {
   currentUserId?: string | Types.ObjectId;
 }) => {
-  return [
+  const pipeline: PipelineStage[] = [
     {
       $lookup: {
         from: "users",
@@ -16,7 +16,6 @@ export const buildGetCommentsByPostPipeline = ({
       },
     },
 
-    //The $unwind operation will fail if the author lookup returns an empty array (e.g., if the author account was deleted). This would cause the entire aggregation to throw an error.
     {
       $unwind: {
         path: "$author",
@@ -38,7 +37,6 @@ export const buildGetCommentsByPostPipeline = ({
               },
             },
           },
-
           {
             $count: "count",
           },
@@ -46,7 +44,40 @@ export const buildGetCommentsByPostPipeline = ({
         as: "repliesCount",
       },
     },
+  ];
 
+  if (currentUserId) {
+    pipeline.push({
+      $lookup: {
+        from: "commentlikes",
+        let: {
+          commentId: "$_id",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: ["$comment", "$$commentId"],
+                  },
+                  {
+                    $eq: ["$user", validateObjectId(currentUserId, "User")],
+                  },
+                ],
+              },
+            },
+          },
+          {
+            $limit: 1,
+          },
+        ],
+        as: "liked",
+      },
+    });
+  }
+
+  pipeline.push(
     {
       $addFields: {
         repliesCount: {
@@ -63,6 +94,19 @@ export const buildGetCommentsByPostPipeline = ({
               $eq: ["$author._id", validateObjectId(currentUserId, "User")],
             }
           : false,
+
+        isLiked: currentUserId
+          ? {
+              $gt: [
+                {
+                  $size: {
+                    $ifNull: ["$liked", []],
+                  },
+                },
+                0,
+              ],
+            }
+          : false,
       },
     },
 
@@ -74,12 +118,18 @@ export const buildGetCommentsByPostPipeline = ({
         createdAt: 1,
         updatedAt: 1,
         isEdited: 1,
+
+        likesCount: 1,
         repliesCount: 1,
+
         isOwner: 1,
+        isLiked: 1,
 
         "author._id": 1,
         "author.username": 1,
       },
     },
-  ];
+  );
+
+  return pipeline;
 };
