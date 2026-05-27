@@ -88,19 +88,13 @@ const CommentCard = ({ comment, currentUserId }: Props) => {
     const handleReplySubmit = async (
         content: string,
     ) => {
-        try {
-            await createComment({
-                postId: comment.post,
-                content,
-                parentComment: comment._id,
-            }).unwrap();
+        await createComment({
+            postId: comment.post,
+            content,
+            parentComment: comment._id,
+        }).unwrap();
 
-            setShowReplyInput(false);
-
-            toast.success("Reply submitted successfully.");
-        } catch (error) {
-            toast.error("Failed to reply.");
-        }
+        setShowReplyInput(false);
     };
 
     return (

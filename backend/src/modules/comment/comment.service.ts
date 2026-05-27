@@ -151,18 +151,17 @@ export const deleteCommentService = async (
     );
   }
 
-  const replyCount = await commentModel.countDocuments({
-    parentComment: commentObjectId,
-  });
-
   const session = await mongoose.startSession();
   session.startTransaction();
+
   try {
     // delete replies first
-    await commentModel.deleteMany(
+    const deleteRepliesResult = await commentModel.deleteMany(
       { parentComment: commentObjectId },
       { session },
     );
+
+    const deletedReplies = deleteRepliesResult.deletedCount ?? 0;
 
     // delete parent
     const deletedComment = await deleteCommentRepo(commentObjectId, session);
@@ -173,7 +172,7 @@ export const deleteCommentService = async (
 
     await postModel.findByIdAndUpdate(
       comment.post,
-      { $inc: { commentCount: -(1 + replyCount) } },
+      { $inc: { commentCount: -(1 + deletedReplies) } },
       { session },
     );
 

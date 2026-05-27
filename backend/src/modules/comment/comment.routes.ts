@@ -32,7 +32,7 @@ router.patch(
 
 router.delete("/:commentId", protect, deleteCommentController);
 
-router.get("/replies/:commentId", protect, getRepliesByCommentController);
+router.get("/replies/:commentId", getRepliesByCommentController);
 
 router.post(
   "/:commentId/like",
