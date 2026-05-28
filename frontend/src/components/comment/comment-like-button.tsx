@@ -38,7 +38,7 @@ const CommentLikeButton = ({
                 )}
             />
 
-            <span>{likesCount}</span>
+            <span>{likesCount > 0 ? likesCount : null}</span>
         </div>
     );
 };

@@ -3,7 +3,6 @@ import {
   HomeIcon,
   Settings2Icon,
   UserIcon,
-  BookmarkIcon,
   BellIcon,
 } from "lucide-react";
 
@@ -22,11 +21,6 @@ export const navItems = [
     label: "Profile",
     url: "/u/me",
     icon: UserIcon,
-  },
-  {
-    label: "Bookmarks",
-    url: "/bookmarks",
-    icon: BookmarkIcon,
   },
   {
     label: "Notifications",

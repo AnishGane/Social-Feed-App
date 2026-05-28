@@ -245,9 +245,7 @@ export const {
   useUpdateCommentMutation,
   useDeleteCommentMutation,
   useGetRepliesByCommentQuery,
-<<<<<<< comment-like
   useToggleCommentLikeMutation,
-=======
+
   useLazyGetRepliesByCommentQuery,
->>>>>>> main
 } = commentApi;
