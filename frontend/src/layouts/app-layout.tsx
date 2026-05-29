@@ -1,5 +1,8 @@
 import { AppSidebar } from "@/components/app-sidebar";
+import NavSearchButton from "@/components/nav-search-button";
 import ScrollToTop from "@/components/scroll-to-top";
+import SearchModal from "@/components/search/search-modal";
+import { SearchShortcut } from "@/components/search/search-shortcut";
 
 import {
     SidebarInset,
@@ -16,9 +19,13 @@ const AppLayout = () => {
             <AppSidebar />
 
             <SidebarInset>
-                <header className="flex h-16 items-center border-b px-4">
+                <header className="flex h-16 items-center border-b px-4 justify-between">
                     <SidebarTrigger />
+                    <NavSearchButton />
                 </header>
+
+                <SearchShortcut />
+                <SearchModal />
 
                 <main className="min-h-[calc(100vh-64px)] bg-background">
                     <Outlet />

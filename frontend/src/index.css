@@ -147,4 +147,19 @@
   textarea:hover::-webkit-scrollbar-thumb {
     background: hsl(var(--muted-foreground) / 0.3);
   }
+
+  .animate-in {
+    animation: fadeIn 150ms ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
 }

@@ -21,3 +21,31 @@ export const updateUserRepo = (
     runValidators: true,
   });
 };
+
+export const searchUsersRepo = (
+  currentUserId: string | Types.ObjectId,
+  search: string,
+) => {
+  return User.find({
+    _id: {
+      $ne: currentUserId,
+    },
+
+    $or: [
+      {
+        username: {
+          $regex: search,
+          $options: "i",
+        },
+      },
+      {
+        name: {
+          $regex: search,
+          $options: "i",
+        },
+      },
+    ],
+  })
+    .select("_id username name")
+    .limit(10);
+};

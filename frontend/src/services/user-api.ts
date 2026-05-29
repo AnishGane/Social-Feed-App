@@ -1,6 +1,6 @@
 import { api } from "./api";
 
-import type { ApiResponse, ProfileResponse, User } from "@/types";
+import type { ApiResponse, ProfileResponse, SearchUser, User } from "@/types";
 
 export const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -36,8 +36,20 @@ export const userApi = api.injectEndpoints({
 
       invalidatesTags: [{ type: "Users", id: "ME" }, "Users"],
     }),
+
+    // Search Users
+    searchUsers: builder.query<ApiResponse<SearchUser[]>, string>({
+      query: (search: string) => ({
+        url: `/users/search?q=${search}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useGetMeQuery, useGetProfileQuery, useUpdateProfileMutation } =
-  userApi;
+export const {
+  useGetMeQuery,
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+  useSearchUsersQuery,
+} = userApi;

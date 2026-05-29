@@ -9,6 +9,7 @@ import {
 import {
   findUserByIdRepo,
   findUserByUsernameRepo,
+  searchUsersRepo,
   updateUserRepo,
 } from "./user.repository";
 import { UpdateProfileInput } from "./user.validation";
@@ -133,4 +134,21 @@ export const getMeService = async (userId: string) => {
       totalScore,
     },
   };
+};
+
+export const searchUserService = async (
+  currentUserId: string,
+  search: string,
+) => {
+  const userId = validateObjectId(currentUserId, "User");
+
+  const trimmedSearch = search.trim();
+
+  if (!trimmedSearch) {
+    return [];
+  }
+
+  const users = await searchUsersRepo(userId, trimmedSearch);
+
+  return users;
 };

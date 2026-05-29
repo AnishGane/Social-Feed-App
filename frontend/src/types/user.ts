@@ -34,3 +34,9 @@ export interface ProfileResponse {
   user: User;
   stats: ProfileStats;
 }
+
+export interface SearchUser {
+  _id: string;
+  username: string;
+  name: string;
+}

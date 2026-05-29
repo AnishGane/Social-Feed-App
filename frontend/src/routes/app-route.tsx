@@ -8,7 +8,6 @@ import HomePage from "@/pages/home";
 import ProfilePage from "@/pages/profile";
 import BookmarksPage from "@/pages/bookmarks";
 import SettingsPage from "@/pages/settings";
-import SearchPage from "@/pages/search";
 import CreatePostPage from "@/pages/create-post";
 import NotificationsPage from "@/pages/notifications";
 import NotFoundPage from "@/pages/not-found";
@@ -39,10 +38,6 @@ export const router = createBrowserRouter([
             {
                 path: "/settings",
                 element: <SettingsPage />
-            },
-            {
-                path: "/search",
-                element: <SearchPage />
             },
             {
                 path: "/create-post",

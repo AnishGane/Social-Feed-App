@@ -4,6 +4,7 @@ import { requireUser } from "../../utils/require-user";
 import {
   getMeService,
   getProfileService,
+  searchUserService,
   updateProfileService,
 } from "./user.service";
 import { sendResponse } from "../../utils/api-response";
@@ -44,3 +45,16 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
 
   sendResponse(res, 200, me, "Current user fetched");
 });
+
+export const searchUsersController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const user = requireUser(req);
+    const userId = user._id.toString();
+
+    const search = typeof req.query.q === "string" ? req.query.q : "";
+
+    const users = await searchUserService(userId, search);
+
+    sendResponse(res, 200, users, "Users fetched successfully");
+  },
+);
