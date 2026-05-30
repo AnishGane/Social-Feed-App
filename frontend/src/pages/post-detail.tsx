@@ -86,7 +86,7 @@ const PostDetailPage = () => {
 
                     {/* Comments */}
                     <Card className="p-6">
-                        <div className="mb-6">
+                        <div className="mb-2">
                             <h2 className="text-2xl font-semibold">
                                 Discussion
                             </h2>
@@ -117,7 +117,7 @@ const PostDetailPage = () => {
                         )}
                     </Card>
 
-                    <RelatedPosts />
+                    <RelatedPosts post={post} />
                 </div>
 
                 {/* Sidebar */}

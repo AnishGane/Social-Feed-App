@@ -18,7 +18,7 @@ type Props = {
 
 const PostDetailCard = ({ post, onVoteUpdate }: Props) => {
     return (
-        <Card className="overflow-hidden border-border/60">
+        <Card className="overflow-hidden border-border/60 py-0">
             {post.mainImage && (
                 <div className="aspect-16/7 overflow-hidden border-b -mt-4">
                     <img
@@ -81,8 +81,6 @@ const PostDetailCard = ({ post, onVoteUpdate }: Props) => {
                         <span>{formatPostDate(post.createdAt)}</span>
                     </div>
                 </div>
-
-                <Separator />
 
                 {/* Actions */}
                 <div className="flex items-center justify-between gap-4 flex-wrap">

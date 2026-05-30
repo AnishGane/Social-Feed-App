@@ -7,6 +7,7 @@ import {
   getPostByIdService,
   getPostsByUserService,
   getPostsService,
+  getRelatedPostsService,
   getVotedPostByUserService,
   updatePostService,
 } from "./post.service";
@@ -14,6 +15,8 @@ import { sendResponse } from "../../utils/api-response";
 import { requireUser } from "../../utils/require-user";
 import { createPostSchema, updatePostSchema } from "./post.validation";
 import { parseTags } from "./post.utils";
+import httpStatus from "http-status";
+import { ApiError } from "../../utils/api-error";
 
 export const createPost = asyncHandler(async (req: Request, res: Response) => {
   const user = requireUser(req);
@@ -36,7 +39,7 @@ export const createPost = asyncHandler(async (req: Request, res: Response) => {
 
   const post = await createPostService(validation.data, req.file, userId);
 
-  sendResponse(res, 201, post, "Post created successfully");
+  sendResponse(res, httpStatus.CREATED, post, "Post created successfully");
 });
 
 // Get Post of all the users
@@ -51,7 +54,7 @@ export const getPosts = asyncHandler(async (req: Request, res: Response) => {
 
   const result = await getPostsService(user?._id?.toString(), cursor, limit);
 
-  sendResponse(res, 200, result, "Posts fetched successfully");
+  sendResponse(res, httpStatus.OK, result, "Posts fetched successfully");
 });
 
 export const getPostById = asyncHandler(async (req: Request, res: Response) => {
@@ -62,7 +65,7 @@ export const getPostById = asyncHandler(async (req: Request, res: Response) => {
   const post = await getPostByIdService(user._id.toString(), id);
   // console.dir(`PostById: ${JSON.stringify(post)}`, { depth: null });
 
-  sendResponse(res, 200, post, "Post fetched successfully");
+  sendResponse(res, httpStatus.OK, post, "Post fetched successfully");
 });
 
 export const updatePost = asyncHandler(async (req: Request, res: Response) => {
@@ -89,7 +92,7 @@ export const updatePost = asyncHandler(async (req: Request, res: Response) => {
 
   const post = await updatePostService(id, userId, validation.data, req.file);
 
-  sendResponse(res, 200, post, "Post updated Successfully.");
+  sendResponse(res, httpStatus.OK, post, "Post updated Successfully.");
 });
 
 export const deletePost = asyncHandler(async (req: Request, res: Response) => {
@@ -99,7 +102,7 @@ export const deletePost = asyncHandler(async (req: Request, res: Response) => {
 
   await deletePostService(postId, userId);
 
-  sendResponse(res, 200, null, "Post deleted successfully");
+  sendResponse(res, httpStatus.OK, null, "Post deleted successfully");
 });
 
 // Get posts of a single user
@@ -120,7 +123,7 @@ export const getPostsByUser = asyncHandler(
       limit,
     );
 
-    sendResponse(res, 200, result, "User posts fetched successfully");
+    sendResponse(res, httpStatus.OK, result, "User posts fetched successfully");
   },
 );
 
@@ -139,7 +142,12 @@ export const getVotedPostByUser = asyncHandler(
       limit,
     );
 
-    sendResponse(res, 200, result, "Voted posts fetched successfully");
+    sendResponse(
+      res,
+      httpStatus.OK,
+      result,
+      "Voted posts fetched successfully",
+    );
   },
 );
 
@@ -158,6 +166,28 @@ export const getBookmarkedPostsByUser = asyncHandler(
       limit,
     );
 
-    sendResponse(res, 200, result, "Bookmarked posts fetched successfully");
+    sendResponse(
+      res,
+      httpStatus.OK,
+      result,
+      "Bookmarked posts fetched successfully",
+    );
+  },
+);
+
+export const getRelatedPostsController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const id = req.params.id.toString();
+    const user = requireUser(req);
+
+    const post = await getPostByIdService(user._id.toString(), id);
+
+    if (!post) {
+      throw new ApiError("Post not found", httpStatus.NOT_FOUND);
+    }
+
+    const result = await getRelatedPostsService(id, post.author._id.toString());
+
+    sendResponse(res, httpStatus.OK, result, "Related posts fetched");
   },
 );
