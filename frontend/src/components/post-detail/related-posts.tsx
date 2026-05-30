@@ -1,21 +1,41 @@
+import type { Post } from "@/types";
 import { Card } from "../ui/card";
+import { useGetRelatedPostsQuery } from "@/services/post-api";
+import { Loader2 } from "lucide-react";
+import RelatedPostsCard from "./related-posts-card";
 
-const RelatedPosts = () => {
+type Props = {
+    post: Post;
+};
+
+const RelatedPosts = ({ post }: Props) => {
+
+    const { data, isLoading } = useGetRelatedPostsQuery(post._id);
+
+    const relatedPosts = data?.data ?? [];
+
     return (
         <Card className="p-6">
-            <h2 className="text-lg font-semibold mb-4">
-                Related Posts
-            </h2>
+            <h2 className="text-lg font-semibold mb-4">Related Posts by @{post.author.username}</h2>
 
-            <div className="space-y-4">
-                <div className="rounded-lg border p-4">
-                    <h3 className="font-medium">
-                        Similar content coming soon
-                    </h3>
+            <div className="space-y-3">
+                {isLoading && (
+                    <div className="text-sm text-muted-foreground flex items-center gap-2 justify-center py-6">
+                        <Loader2 className="animate-spin size-5" />
+                        Please wait..
+                    </div>
+                )}
 
-                    <p className="text-sm text-muted-foreground mt-1">
-                        You can later fetch posts with same tags/category.
-                    </p>
+                {!isLoading && relatedPosts.length === 0 && (
+                    <div className="text-sm text-muted-foreground text-center py-8">
+                        No related posts found
+                    </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {relatedPosts.map((p) => (
+                        <RelatedPostsCard p={p} />
+                    ))}
                 </div>
             </div>
         </Card>

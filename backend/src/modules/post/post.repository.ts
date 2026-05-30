@@ -347,3 +347,39 @@ export const getBookmarkedPostsByUserRepo = async (
     totalCount: countResult[0]?.total || 0,
   };
 };
+
+export const getRelatedPostsRepo = async (
+  postId: string,
+  authorId: Types.ObjectId,
+  limit = 5,
+) => {
+  const postObjectId = validateObjectId(postId, "Post");
+  return postModel.aggregate([
+    {
+      $match: {
+        _id: {
+          $ne: postObjectId,
+        },
+        isPublished: true,
+        author: authorId,
+      },
+    },
+
+    {
+      $sort: { createdAt: -1 },
+    },
+
+    {
+      $limit: limit,
+    },
+
+    {
+      $project: {
+        title: 1,
+        content: 1,
+        mainImage: 1,
+        createdAt: 1,
+      },
+    },
+  ]);
+};

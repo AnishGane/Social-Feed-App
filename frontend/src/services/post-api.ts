@@ -1,7 +1,7 @@
 import { api } from "./api";
 
 import type { ApiResponse } from "@/types/api";
-import type { PaginatedPosts, Post, VoteType } from "@/types";
+import type { PaginatedPosts, Post, RelatedPosts, VoteType } from "@/types";
 
 export type GetPostsResponse = ApiResponse<PaginatedPosts>;
 
@@ -260,6 +260,11 @@ export const postApi = api.injectEndpoints({
             ]
           : [{ type: "Posts", id: "LIST" }],
     }),
+
+    // 11. Get Related Posts
+    getRelatedPosts: builder.query<ApiResponse<RelatedPosts[]>, string>({
+      query: (id) => `/posts/related/${id}`,
+    }),
   }),
 });
 
@@ -283,4 +288,6 @@ export const {
   useLazyGetVotedPostByUserQuery,
 
   useLazyGetPostsBookmarkedByUserQuery,
+
+  useGetRelatedPostsQuery,
 } = postApi;

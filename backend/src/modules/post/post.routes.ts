@@ -7,6 +7,7 @@ import {
   getPostById,
   getPosts,
   getPostsByUser,
+  getRelatedPostsController,
   getVotedPostByUser,
   updatePost,
 } from "./post.controller";
@@ -44,6 +45,14 @@ router.post(
 router.get("/voted", protect, getVotedPostByUser);
 // get bookmarked post by user
 router.get("/bookmarked", protect, getBookmarkedPostsByUser);
+
+// get Related post by postId
+router.get(
+  "/related/:id",
+  protect,
+  validate(postIdSchema, "params"),
+  getRelatedPostsController,
+);
 
 router.get("/:id", protect, validate(postIdSchema, "params"), getPostById);
 

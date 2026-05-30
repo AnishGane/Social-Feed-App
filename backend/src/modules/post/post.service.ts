@@ -9,6 +9,7 @@ import {
   getPostsByUserRepo,
   getVotedPostByUserRepo,
   getBookmarkedPostsByUserRepo,
+  getRelatedPostsRepo,
 } from "./post.repository";
 import {
   UpdatePostInput,
@@ -195,4 +196,11 @@ export const getBookmarkedPostByUserService = async (
   checkLimit(limit);
 
   return await getBookmarkedPostsByUserRepo(userObjectId, cursor, limit);
+};
+
+export const getRelatedPostsService = async (
+  postId: string,
+  authorId: string,
+) => {
+  return getRelatedPostsRepo(postId, validateObjectId(authorId, "Author"));
 };

@@ -47,5 +47,10 @@ export type ProfileTabSectionProps = {
   };
 };
 
-
-
+export type RelatedPosts = {
+  _id: string;
+  title: string;
+  content: string;
+  mainImage?: string;
+  createdAt: string;
+};

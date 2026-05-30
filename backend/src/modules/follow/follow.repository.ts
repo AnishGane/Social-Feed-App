@@ -6,6 +6,8 @@ import {
 } from "./follow.aggregation";
 import { isValidObjectId } from "mongoose";
 import { validateObjectId } from "../../utils/validate-object-id";
+import httpStatus from "http-status";
+import { ApiError } from "../../utils/api-error";
 
 export const getFollowRepo = (
   followerId: string | Types.ObjectId,
@@ -73,7 +75,7 @@ export const getFollowersRepo = async (
 
   if (cursor) {
     if (!isValidObjectId(cursor)) {
-      throw new Error("Invalid cursor format");
+      throw new ApiError("Invalid cursor format", httpStatus.BAD_REQUEST);
     }
 
     matchStage._id = {
@@ -86,14 +88,16 @@ export const getFollowersRepo = async (
 
     { $sort: { _id: -1 } },
 
-    { $limit: limit },
+    { $limit: limit + 1 },
 
     ...buildFollowersPipeline(currentUserId),
   ]);
-  const nextCursor =
-    follows.length === limit
-      ? follows[follows.length - 1]._id.toString()
-      : null;
+
+  const hasMore = follows.length > limit;
+  if (hasMore) follows.pop();
+  const nextCursor = hasMore
+    ? follows[follows.length - 1]._id.toString()
+    : null;
 
   return {
     follows,
@@ -113,7 +117,7 @@ export const getFollowingRepo = async (
 
   if (cursor) {
     if (!isValidObjectId(cursor)) {
-      throw new Error("Invalid cursor format");
+      throw new ApiError("Invalid cursor format", httpStatus.BAD_REQUEST);
     }
 
     matchStage._id = {
@@ -124,15 +128,16 @@ export const getFollowingRepo = async (
   const follows = await followModel.aggregate([
     { $match: matchStage },
     { $sort: { _id: -1 } },
-    { $limit: limit },
+    { $limit: limit + 1 },
 
     ...buildFollowingPipeline(currentUserId),
   ]);
 
-  const nextCursor =
-    follows.length === limit
-      ? follows[follows.length - 1]._id.toString()
-      : null;
+  const hasMore = follows.length > limit;
+  if (hasMore) follows.pop();
+  const nextCursor = hasMore
+    ? follows[follows.length - 1]._id.toString()
+    : null;
 
   return {
     follows,

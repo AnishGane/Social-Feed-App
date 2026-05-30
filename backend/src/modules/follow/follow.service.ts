@@ -33,13 +33,12 @@ export const toggleFollowService = async (
   session.startTransaction();
 
   try {
-    const existing = await getFollowRepo(
+    const deleted = await deleteFollowRepo(
       currentUserObjectId,
       targetUserObjectId,
+      session,
     );
-    if (existing) {
-      await deleteFollowRepo(currentUserObjectId, targetUserObjectId, session);
-
+    if (deleted) {
       await User.findByIdAndUpdate(
         currentUserObjectId,
         {
