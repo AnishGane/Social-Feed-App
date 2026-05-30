@@ -19,7 +19,10 @@ export const getProfile = asyncHandler(async (req: Request, res: Response) => {
   if (username.length > 50) {
     return sendResponse(res, 400, null, "Username is too long");
   }
-  const profile = await getProfileService(username);
+
+  const currentUserId = req.user?._id?.toString();
+
+  const profile = await getProfileService(username, currentUserId);
 
   sendResponse(res, 200, profile, "Profile fetched successfully");
 });

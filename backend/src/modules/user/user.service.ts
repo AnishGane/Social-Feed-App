@@ -2,6 +2,7 @@ import { ApiError } from "../../utils/api-error";
 import uploadImageToCloudinary from "../../utils/upload-image";
 import { validateImageFile } from "../../utils/validate-image";
 import { validateObjectId } from "../../utils/validate-object-id";
+import { isFollowingRepo } from "../follow/follow.repository";
 import {
   countPostsByUserRepo,
   getPostsStatByUserRepo,
@@ -14,11 +15,20 @@ import {
 } from "./user.repository";
 import { UpdateProfileInput } from "./user.validation";
 
-export const getProfileService = async (username: string) => {
+export const getProfileService = async (
+  username: string,
+  currentUserId?: string,
+) => {
   const user = await findUserByUsernameRepo(username);
 
   if (!user) {
     throw new ApiError("User not found", 404);
+  }
+
+  let isFollowing = false;
+
+  if (currentUserId) {
+    isFollowing = await isFollowingRepo(currentUserId, user._id);
   }
 
   const postsCount = await countPostsByUserRepo(user._id);
@@ -32,18 +42,19 @@ export const getProfileService = async (username: string) => {
       username: user.username,
       name: user.name,
       bio: user.bio,
-      avatar: user.avatar,
       socialLinks: user.socialLinks,
       createdAt: user.createdAt,
       bannerImage: user.bannerImage,
+
+      isFollowing,
+      followersCount: user.followersCount,
+      followingCount: user.followingCount,
     },
+
     stats: {
       postsCount,
-
       upvotesReceived,
-
       downvotesReceived,
-
       totalScore,
     },
   };
