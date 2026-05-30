@@ -24,6 +24,8 @@ export interface IUser extends Document {
     instagram?: string;
     youtube?: string;
   };
+  followersCount: number;
+  followingCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -128,6 +130,18 @@ const userSchema = new mongoose.Schema<IUser>(
         default: "",
         validate: urlValidator,
       },
+    },
+
+    followersCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    followingCount: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
   },
   {

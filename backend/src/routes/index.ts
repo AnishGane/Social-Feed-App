@@ -6,6 +6,7 @@ import postRoutes from "../modules/post/post.routes";
 import userRoutes from "../modules/user/user.routes";
 import bookmarkRoutes from "../modules/bookmark/bookmark.routes";
 import commentRoutes from "../modules/comment/comment.routes";
+import followRoutes from "../modules/follow/follow.routes";
 
 const router = Router();
 
@@ -18,5 +19,7 @@ router.use("/users", userRoutes);
 router.use("/bookmarks", bookmarkRoutes);
 // comment routes
 router.use("/comments", commentRoutes);
+
+router.use("/follow", followRoutes);
 
 export default router;

@@ -2,9 +2,9 @@ import mongoose, { Document, Types, Schema } from "mongoose";
 
 interface IComment extends Document {
   post: Types.ObjectId;
-  author: mongoose.Types.ObjectId;
+  author: Types.ObjectId;
   content: string;
-  parentComment?: mongoose.Types.ObjectId | null;
+  parentComment?: Types.ObjectId | null;
   likesCount: number;
   isEdited: boolean;
   createdAt: Date;

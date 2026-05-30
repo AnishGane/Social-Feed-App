@@ -1,0 +1,175 @@
+import { Types } from "mongoose";
+
+export const buildFollowersPipeline = (currentUserId?: Types.ObjectId) => [
+  {
+    $lookup: {
+      from: "users",
+      localField: "follower",
+      foreignField: "_id",
+      pipeline: [
+        {
+          $project: {
+            username: 1,
+            name: 1,
+          },
+        },
+      ],
+      as: "user",
+    },
+  },
+
+  {
+    $unwind: "$user",
+  },
+
+  // viewer follows this user?
+  {
+    $lookup: {
+      from: "follows",
+      let: { profileId: "$user._id" },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ["$follower", currentUserId] },
+                { $eq: ["$following", "$$profileId"] },
+              ],
+            },
+          },
+        },
+        { $limit: 1 },
+      ],
+      as: "viewerFollow",
+    },
+  },
+
+  // user follows viewer? (mutual check)
+  {
+    $lookup: {
+      from: "follows",
+      let: { profileId: "$user._id" },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ["$follower", "$$profileId"] },
+                { $eq: ["$following", currentUserId] },
+              ],
+            },
+          },
+        },
+        { $limit: 1 },
+      ],
+      as: "profileFollowsViewer",
+    },
+  },
+
+  {
+    $project: {
+      _id: 1, // preserve follow doc _id for cursor pagination
+      id: "$user._id",
+      username: "$user.username",
+      name: "$user.name",
+
+      isFollowing: {
+        $gt: [{ $size: "$viewerFollow" }, 0],
+      },
+
+      isMutual: {
+        $and: [
+          { $gt: [{ $size: "$viewerFollow" }, 0] },
+          { $gt: [{ $size: "$profileFollowsViewer" }, 0] },
+        ],
+      },
+    },
+  },
+];
+
+export const buildFollowingPipeline = (currentUserId?: Types.ObjectId) => [
+  {
+    $lookup: {
+      from: "users",
+      localField: "following",
+      foreignField: "_id",
+      pipeline: [
+        {
+          $project: {
+            username: 1,
+            name: 1,
+          },
+        },
+      ],
+      as: "user",
+    },
+  },
+
+  {
+    $unwind: "$user",
+  },
+
+  // viewer follows this user?
+  {
+    $lookup: {
+      from: "follows",
+      let: { profileId: "$user._id" },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ["$follower", currentUserId] },
+                { $eq: ["$following", "$$profileId"] },
+              ],
+            },
+          },
+        },
+        { $limit: 1 },
+      ],
+      as: "viewerFollow",
+    },
+  },
+
+  // mutual check
+  {
+    $lookup: {
+      from: "follows",
+      let: { profileId: "$user._id" },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ["$follower", "$$profileId"] },
+                { $eq: ["$following", currentUserId] },
+              ],
+            },
+          },
+        },
+        { $limit: 1 },
+      ],
+      as: "profileFollowsViewer",
+    },
+  },
+
+  {
+    $project: {
+      _id: 1, // preserve follow doc _id for cursor pagination
+      id: "$user._id",
+      username: "$user.username",
+      name: "$user.name",
+
+      isFollowing: {
+        $gt: [{ $size: "$viewerFollow" }, 0],
+      },
+
+      isMutual: {
+        $and: [
+          { $gt: [{ $size: "$viewerFollow" }, 0] },
+          { $gt: [{ $size: "$profileFollowsViewer" }, 0] },
+        ],
+      },
+    },
+  },
+];
