@@ -10,7 +10,7 @@ type Props = {
 
 const RelatedPosts = ({ post }: Props) => {
 
-    const { data, isLoading } = useGetRelatedPostsQuery(post._id);
+    const { data, isLoading, isError } = useGetRelatedPostsQuery(post._id);
 
     const relatedPosts = data?.data ?? [];
 
@@ -26,7 +26,13 @@ const RelatedPosts = ({ post }: Props) => {
                     </div>
                 )}
 
-                {!isLoading && relatedPosts.length === 0 && (
+                {!isLoading && isError && (
+                    <div className="text-sm text-muted-foreground text-center py-8">
+                        Failed to load related posts
+                    </div>
+                )}
+
+                {!isLoading && !isError && relatedPosts.length === 0 && (
                     <div className="text-sm text-muted-foreground text-center py-8">
                         No related posts found
                     </div>
@@ -34,7 +40,7 @@ const RelatedPosts = ({ post }: Props) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {relatedPosts.map((p) => (
-                        <RelatedPostsCard p={p} />
+                        <RelatedPostsCard p={p} key={p._id} />
                     ))}
                 </div>
             </div>

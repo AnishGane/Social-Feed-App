@@ -20,7 +20,7 @@ const PostDetailCard = ({ post, onVoteUpdate }: Props) => {
     return (
         <Card className="overflow-hidden border-border/60 py-0">
             {post.mainImage && (
-                <div className="aspect-16/7 overflow-hidden border-b -mt-4">
+                <div className="aspect-16/7 overflow-hidden border-b">
                     <img
                         src={post.mainImage}
                         alt={post.title}
