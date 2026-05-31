@@ -46,7 +46,7 @@ const PostCard = ({
         <Card className="w-full">
             <CardHeader>
                 <div className="flex items-center justify-between">
-                    <PostAuthorInfo authorId={post.author._id} name={post.author.name} username={post.author.username} />
+                    <PostAuthorInfo authorId={post.author._id} name={post.author.name} username={post.author.username} isOwner={isOwner} isFollowing={post.author.isFollowing} />
 
                     {isOwner && isMeProfile ? <OwnerPostDropDown post={post} /> : <SharePostDropdown post={post} />}
                 </div>

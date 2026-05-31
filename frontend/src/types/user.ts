@@ -19,6 +19,11 @@ export type User = {
 
   socialLinks?: SocialLinks;
 
+  followersCount: number;
+  followingCount: number;
+
+  isFollowing?: boolean;
+
   createdAt: string;
   updatedAt: string;
 };
@@ -39,4 +44,5 @@ export interface SearchUser {
   _id: string;
   username: string;
   name: string;
+  isFollowing: boolean;
 }
