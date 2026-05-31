@@ -6,7 +6,7 @@ export const api = createApi({
 
   baseQuery: baseQueryWithReauth,
 
-  tagTypes: ["Posts", "Comments", "Users"],
+  tagTypes: ["Posts", "Comments", "Users", "Follow"],
 
   endpoints: () => ({}),
 });

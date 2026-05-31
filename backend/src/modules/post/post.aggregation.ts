@@ -85,6 +85,32 @@ export const buildPostsPipeline = ({
     },
 
     {
+      $lookup: {
+        from: "follows",
+        let: {
+          authorId: "$author._id",
+          currentUserId: currentUserId
+            ? validateObjectId(currentUserId, "User")
+            : null,
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$follower", "$$currentUserId"] },
+                  { $eq: ["$following", "$$authorId"] },
+                ],
+              },
+            },
+          },
+          { $limit: 1 },
+        ],
+        as: "followDoc",
+      },
+    },
+
+    {
       $addFields: {
         isBookmarked: {
           $gt: [{ $size: "$bookmarkDocs" }, 0],
@@ -95,6 +121,7 @@ export const buildPostsPipeline = ({
           username: "$author.username",
           avatar: "$author.avatar",
           name: "$author.name",
+          isFollowing: { $gt: [{ $size: "$followDoc" }, 0] },
         },
 
         currentUserVote: {
@@ -112,6 +139,7 @@ export const buildPostsPipeline = ({
       $project: {
         bookmarkDocs: 0,
         voteDocs: 0,
+        followDoc: 0,
 
         "author.password": 0,
         "author.refreshToken": 0,

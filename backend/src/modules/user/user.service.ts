@@ -2,17 +2,13 @@ import { ApiError } from "../../utils/api-error";
 import uploadImageToCloudinary from "../../utils/upload-image";
 import { validateImageFile } from "../../utils/validate-image";
 import { validateObjectId } from "../../utils/validate-object-id";
-import { isFollowingRepo } from "../follow/follow.repository";
-import {
-  countPostsByUserRepo,
-  getPostsStatByUserRepo,
-} from "../post/post.repository";
 import {
   findUserByIdRepo,
   findUserByUsernameRepo,
   searchUsersRepo,
   updateUserRepo,
 } from "./user.repository";
+import { buildProfileResponse } from "./user.utils";
 import { UpdateProfileInput } from "./user.validation";
 
 export const getProfileService = async (
@@ -25,39 +21,7 @@ export const getProfileService = async (
     throw new ApiError("User not found", 404);
   }
 
-  let isFollowing = false;
-
-  if (currentUserId) {
-    isFollowing = await isFollowingRepo(currentUserId, user._id);
-  }
-
-  const postsCount = await countPostsByUserRepo(user._id);
-
-  const { upvotesReceived, downvotesReceived, totalScore } =
-    await getPostsStatByUserRepo(user._id);
-
-  return {
-    user: {
-      _id: user._id,
-      username: user.username,
-      name: user.name,
-      bio: user.bio,
-      socialLinks: user.socialLinks,
-      createdAt: user.createdAt,
-      bannerImage: user.bannerImage,
-
-      isFollowing,
-      followersCount: user.followersCount,
-      followingCount: user.followingCount,
-    },
-
-    stats: {
-      postsCount,
-      upvotesReceived,
-      downvotesReceived,
-      totalScore,
-    },
-  };
+  return buildProfileResponse(user, currentUserId);
 };
 
 export const updateProfileService = async (
@@ -118,33 +82,7 @@ export const getMeService = async (userId: string) => {
     throw new ApiError("User not found", 404);
   }
 
-  const postsCount = await countPostsByUserRepo(user._id);
-
-  const { upvotesReceived, downvotesReceived, totalScore } =
-    await getPostsStatByUserRepo(user._id);
-
-  return {
-    user: {
-      _id: user._id,
-      username: user.username,
-      name: user.name,
-      bio: user.bio,
-      avatar: user.avatar,
-      socialLinks: user.socialLinks,
-      email: user.email,
-      createdAt: user.createdAt,
-      bannerImage: user.bannerImage,
-    },
-    stats: {
-      postsCount,
-
-      upvotesReceived,
-
-      downvotesReceived,
-
-      totalScore,
-    },
-  };
+  return buildProfileResponse(user);
 };
 
 export const searchUserService = async (
