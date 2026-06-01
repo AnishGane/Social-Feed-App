@@ -15,12 +15,12 @@ const FollowButton = ({ userId, isFollowing }: Props) => {
 
     return (
         <Button
-            size="sm"
-            variant={isFollowing ? "secondary" : "default"}
+            variant={isFollowing ? "secondary" : "ghost"}
             onClick={handleClick}
             disabled={isLoading}
+            className="cursor-pointer text-xs"
         >
-            {isFollowing ? "Following" : "Follow"}
+            {isFollowing ? "Unfollow" : "Follow"}
         </Button>
     );
 }

@@ -11,6 +11,7 @@ export const buildFollowersPipeline = (currentUserId?: Types.ObjectId) => [
           $project: {
             username: 1,
             name: 1,
+            avatar: 1,
           },
         },
       ],
@@ -22,7 +23,6 @@ export const buildFollowersPipeline = (currentUserId?: Types.ObjectId) => [
     $unwind: "$user",
   },
 
-  // viewer follows this user?
   {
     $lookup: {
       from: "follows",
@@ -44,7 +44,6 @@ export const buildFollowersPipeline = (currentUserId?: Types.ObjectId) => [
     },
   },
 
-  // user follows viewer? (mutual check)
   {
     $lookup: {
       from: "follows",
@@ -68,10 +67,12 @@ export const buildFollowersPipeline = (currentUserId?: Types.ObjectId) => [
 
   {
     $project: {
-      _id: 1, // preserve follow doc _id for cursor pagination
-      id: "$user._id",
+      cursor: "$_id", // follow doc id for pagination
+
+      _id: "$user._id",
       username: "$user.username",
       name: "$user.name",
+      avatar: "$user.avatar",
 
       isFollowing: {
         $gt: [{ $size: "$viewerFollow" }, 0],
@@ -98,6 +99,7 @@ export const buildFollowingPipeline = (currentUserId?: Types.ObjectId) => [
           $project: {
             username: 1,
             name: 1,
+            avatar: 1,
           },
         },
       ],
@@ -109,7 +111,6 @@ export const buildFollowingPipeline = (currentUserId?: Types.ObjectId) => [
     $unwind: "$user",
   },
 
-  // viewer follows this user?
   {
     $lookup: {
       from: "follows",
@@ -131,7 +132,6 @@ export const buildFollowingPipeline = (currentUserId?: Types.ObjectId) => [
     },
   },
 
-  // mutual check
   {
     $lookup: {
       from: "follows",
@@ -155,10 +155,12 @@ export const buildFollowingPipeline = (currentUserId?: Types.ObjectId) => [
 
   {
     $project: {
-      _id: 1, // preserve follow doc _id for cursor pagination
-      id: "$user._id",
+      cursor: "$_id",
+
+      _id: "$user._id",
       username: "$user.username",
       name: "$user.name",
+      avatar: "$user.avatar",
 
       isFollowing: {
         $gt: [{ $size: "$viewerFollow" }, 0],

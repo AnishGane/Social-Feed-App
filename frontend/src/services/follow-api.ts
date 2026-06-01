@@ -102,9 +102,7 @@ export const followApi = api.injectEndpoints({
 
         try {
           const { data } = await queryFulfilled;
-
           const isFollowing = data.data.isFollowing;
-
           // Sync with actual server response
           for (const username of userApi.util.selectCachedArgsForQuery(
             getState(),
@@ -113,10 +111,11 @@ export const followApi = api.injectEndpoints({
             dispatch(
               userApi.util.updateQueryData("getProfile", username, (draft) => {
                 const profileUser = draft.data?.user;
-
                 if (!profileUser || profileUser._id !== userId) return;
-
-                profileUser.isFollowing = isFollowing;
+                if (profileUser.isFollowing !== isFollowing) {
+                  profileUser.followersCount += isFollowing ? 1 : -1;
+                  profileUser.isFollowing = isFollowing;
+                }
               }),
             );
           }
