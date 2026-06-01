@@ -6,6 +6,7 @@ import { Github, Instagram, Linkedin, X, Youtube } from "@/assets/icons";
 import UserBannerImage from "./user-banner-image";
 import { useGetMeQuery } from "@/services/user-api";
 import EditProfileSheet from "./sheets/edit-profile-sheet";
+import FollowStats from "../follow/follow-stats";
 
 interface Props {
     user: User
@@ -39,11 +40,15 @@ const ProfileHeader = ({ user }: Props) => {
                     </p>
                 </div>
 
-                {user.bio && (
-                    <p className="max-w-xl text-sm">
-                        {user.bio}
-                    </p>
-                )}
+                <div className="flex items-center justify-center gap-4 flex-col md:flex-row">
+                    {user.bio && (
+                        <p className="text-sm w-3/4">
+                            {user.bio}
+                        </p>
+                    )}
+
+                    <FollowStats followersCount={user.followersCount} followingCount={user.followingCount} userId={user._id}/>
+                </div>
             </div>
 
             <div className="px-4 py-2 flex sm:items-center flex-col sm:flex-row justify-between gap-4">

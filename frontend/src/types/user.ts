@@ -22,7 +22,7 @@ export type User = {
   followersCount: number;
   followingCount: number;
 
-  isFollowing?: boolean;
+  isFollowing: boolean;
 
   createdAt: string;
   updatedAt: string;
