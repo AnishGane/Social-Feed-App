@@ -11,10 +11,16 @@ type Props = {
 };
 
 const FollowList = ({ userId, type }: Props) => {
-    const query =
-        type === "followers"
-            ? useGetFollowersQuery({ userId })
-            : useGetFollowingQuery({ userId });
+    const followersQuery = useGetFollowersQuery(
+        { userId },
+        { skip: type !== "followers" }
+    );
+    const followingQuery = useGetFollowingQuery(
+        { userId },
+        { skip: type !== "following" }
+    );
+
+    const query = type === "followers" ? followersQuery : followingQuery;
 
     const users = query.data?.data.follows || [];
 
@@ -22,6 +28,14 @@ const FollowList = ({ userId, type }: Props) => {
         return <p className="text-muted-foreground text-sm h-40 flex items-center justify-center">
             Loading...
         </p>;
+    }
+
+    if (query.isError) {
+        return (
+            <p className="text-muted-foreground text-sm h-40 flex items-center justify-center">
+                Failed to load {type}. Please try again.
+            </p>
+        );
     }
 
     if (!users.length) {
