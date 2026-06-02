@@ -7,6 +7,7 @@ import UserBannerImage from "./user-banner-image";
 import { useGetMeQuery } from "@/services/user-api";
 import EditProfileSheet from "./sheets/edit-profile-sheet";
 import FollowStats from "../follow/follow-stats";
+import FollowButton from "../follow/follow-button";
 
 interface Props {
     user: User
@@ -40,19 +41,19 @@ const ProfileHeader = ({ user }: Props) => {
                     </p>
                 </div>
 
-                <div className="flex items-center justify-center gap-4 flex-col md:flex-row">
+                <div className="flex items-start justify-center gap-4 flex-col md:flex-row">
                     {user.bio && (
-                        <p className="text-sm w-3/4">
+                        <p className="text-sm w-3/4 mt-2">
                             {user.bio}
                         </p>
                     )}
 
-                    <FollowStats followersCount={user.followersCount} followingCount={user.followingCount} userId={user._id}/>
+                    <FollowStats followersCount={user.followersCount} followingCount={user.followingCount} userId={user._id} />
                 </div>
             </div>
 
             <div className="px-4 py-2 flex sm:items-center flex-col sm:flex-row justify-between gap-4">
-                {isOwner && <EditProfileSheet user={user} />}
+                {isOwner ? <EditProfileSheet user={user} /> : <FollowButton userId={user._id} isFollowing={user.isFollowing} className="bg-foreground text-background rounded-sm px-8 py-5 cursor-pointer hover:bg-foreground! hover:text-background! text-sm font-semibold" />}
                 <div className="flex flex-1 flex-wrap gap-3 sm:gap-2 text-sm text-muted-foreground">
                     {user.socialLinks?.website && (
                         <SocialLinks icon={Globe} url={user.socialLinks.website} label="website" />

@@ -3,6 +3,7 @@ import type {
   FollowListResponse,
   ToggleFollowResponse,
 } from "@/types";
+
 import { api } from "./api";
 import { userApi } from "./user-api";
 import { postApi } from "./post-api";
@@ -16,14 +17,10 @@ export const followApi = api.injectEndpoints({
       }),
 
       async onQueryStarted(userId, { dispatch, queryFulfilled, getState }) {
+        const state = getState();
         const patches: Array<{ undo: () => void }> = [];
 
-        const state = getState();
-
-        // --------------------------
-        // Profile page cache
-        // --------------------------
-
+        // ---------------- PROFILE CACHE ----------------
         for (const username of userApi.util.selectCachedArgsForQuery(
           state,
           "getProfile",
@@ -31,30 +28,23 @@ export const followApi = api.injectEndpoints({
           patches.push(
             dispatch(
               userApi.util.updateQueryData("getProfile", username, (draft) => {
-                const profileUser = draft.data?.user;
+                const user = draft.data?.user;
+                if (!user || user._id !== userId) return;
 
-                if (!profileUser || profileUser._id !== userId) return;
-
-                profileUser.isFollowing = !profileUser.isFollowing;
-
-                profileUser.followersCount += profileUser.isFollowing ? 1 : -1;
+                user.isFollowing = !user.isFollowing;
+                user.followersCount += user.isFollowing ? 1 : -1;
               }),
             ),
           );
         }
 
-        // --------------------------
-        // All post feeds
-        // --------------------------
-
+        // ---------------- POSTS ----------------
         const updatePostAuthors = (draft: any) => {
           const posts = draft?.data?.posts;
-
-          if (!posts) return;
+          if (!Array.isArray(posts)) return;
 
           posts.forEach((post: any) => {
-            if (post.author._id !== userId) return;
-
+            if (post.author?._id !== userId) return;
             post.author.isFollowing = !post.author.isFollowing;
           });
         };
@@ -79,10 +69,7 @@ export const followApi = api.injectEndpoints({
           }
         }
 
-        // --------------------------
-        // Search users cache
-        // --------------------------
-
+        // ---------------- SEARCH USERS ----------------
         for (const search of userApi.util.selectCachedArgsForQuery(
           state,
           "searchUsers",
@@ -90,43 +77,65 @@ export const followApi = api.injectEndpoints({
           patches.push(
             dispatch(
               userApi.util.updateQueryData("searchUsers", search, (draft) => {
-                draft.data?.forEach((user) => {
-                  if (user._id !== userId) return;
-
-                  user.isFollowing = !user.isFollowing;
+                draft.data?.forEach((u) => {
+                  if (u._id === userId) {
+                    u.isFollowing = !u.isFollowing;
+                  }
                 });
               }),
             ),
           );
         }
 
+        // ---------------- FOLLOW LISTS ----------------
+        const followEndpoints = ["getFollowers", "getFollowing"] as const;
+
+        for (const endpoint of followEndpoints) {
+          for (const args of followApi.util.selectCachedArgsForQuery(
+            state,
+            endpoint,
+          )) {
+            patches.push(
+              dispatch(
+                followApi.util.updateQueryData(endpoint, args, (draft) => {
+                  draft.data?.follows?.forEach((u) => {
+                    if (u._id === userId) {
+                      u.isFollowing = !u.isFollowing;
+                    }
+                  });
+                }),
+              ),
+            );
+          }
+        }
+
         try {
           const { data } = await queryFulfilled;
           const isFollowing = data.data.isFollowing;
-          // Sync with actual server response
+
           for (const username of userApi.util.selectCachedArgsForQuery(
             getState(),
             "getProfile",
           )) {
             dispatch(
               userApi.util.updateQueryData("getProfile", username, (draft) => {
-                const profileUser = draft.data?.user;
-                if (!profileUser || profileUser._id !== userId) return;
-                if (profileUser.isFollowing !== isFollowing) {
-                  profileUser.followersCount += isFollowing ? 1 : -1;
-                  profileUser.isFollowing = isFollowing;
+                const user = draft.data?.user;
+                if (!user || user._id !== userId) return;
+
+                if (user.isFollowing !== isFollowing) {
+                  user.followersCount += isFollowing ? 1 : -1;
+                  user.isFollowing = isFollowing;
                 }
               }),
             );
           }
         } catch {
-          patches.forEach((patch) => patch.undo());
+          patches.forEach((p) => p.undo());
         }
       },
-
-      invalidatesTags: ["Follow"],
     }),
 
+    // GET FOLLOWERS
     getFollowers: builder.query<
       ApiResponse<FollowListResponse>,
       {
@@ -146,6 +155,7 @@ export const followApi = api.injectEndpoints({
       providesTags: ["Follow"],
     }),
 
+    // GET FOLLOWING
     getFollowing: builder.query<
       ApiResponse<FollowListResponse>,
       {

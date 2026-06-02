@@ -23,7 +23,7 @@ const SharePostDropdown = ({
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="rounded-full px-2"
+                    className="rounded-full px-2 cursor-pointer"
                 >
                     <EllipsisVertical className="rotate-90" />
                 </Button>

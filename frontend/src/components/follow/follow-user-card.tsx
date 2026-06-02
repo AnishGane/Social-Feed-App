@@ -1,15 +1,18 @@
 import { Link } from "react-router-dom";
 
-import type { SearchUser } from "@/types";
+import type { FollowUser } from "@/types";
 
 import UserAvatar from "../user-avatar";
 import FollowButton from "./follow-button";
+import { Badge } from "../ui/badge";
 
 type Props = {
-    user: SearchUser;
+    user: FollowUser;
 };
 
 const FollowUserCard = ({ user }: Props) => {
+    console.log("FUC: ", user);
+
     return (
         <div className="flex items-center justify-between">
             <Link
@@ -22,9 +25,12 @@ const FollowUserCard = ({ user }: Props) => {
                 />
 
                 <div>
-                    <p className="font-medium">
-                        {user.name}
-                    </p>
+                    <div className="flex items-center gap-2">
+                        <p className="font-medium">
+                            {user.name}
+                        </p>
+                        {user.isMutual && <Badge className="text-[11px] tracking-wide px-2" variant="outline">mutual</Badge>}
+                    </div>
 
                     <p className="text-muted-foreground text-sm">
                         @{user.username}

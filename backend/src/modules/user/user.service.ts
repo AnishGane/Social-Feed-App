@@ -2,14 +2,19 @@ import { ApiError } from "../../utils/api-error";
 import uploadImageToCloudinary from "../../utils/upload-image";
 import { validateImageFile } from "../../utils/validate-image";
 import { validateObjectId } from "../../utils/validate-object-id";
+import { buildUserProfilePipeline } from "./user.aggregation";
 import {
   findUserByIdRepo,
   findUserByUsernameRepo,
   searchUsersRepo,
   updateUserRepo,
 } from "./user.repository";
-import { buildProfileResponse } from "./user.utils";
 import { UpdateProfileInput } from "./user.validation";
+import User from "./user.model";
+import {
+  countPostsByUserRepo,
+  getPostsStatByUserRepo,
+} from "../post/post.repository";
 
 export const getProfileService = async (
   username: string,
@@ -21,7 +26,32 @@ export const getProfileService = async (
     throw new ApiError("User not found", 404);
   }
 
-  return buildProfileResponse(user, currentUserId);
+  const currentUserObjectId = currentUserId
+    ? validateObjectId(currentUserId)
+    : undefined;
+
+  const result = await User.aggregate([
+    { $match: { _id: user._id } },
+    ...buildUserProfilePipeline(currentUserObjectId),
+  ]);
+
+  if (!result.length) {
+    throw new ApiError("User not found", 404);
+  }
+  const postsCount = await countPostsByUserRepo(user._id);
+
+  const { upvotesReceived, downvotesReceived, totalScore } =
+    await getPostsStatByUserRepo(user._id);
+
+  return {
+    user: result[0],
+    stats: {
+      postsCount,
+      upvotesReceived,
+      downvotesReceived,
+      totalScore,
+    },
+  };
 };
 
 export const updateProfileService = async (
@@ -82,7 +112,28 @@ export const getMeService = async (userId: string) => {
     throw new ApiError("User not found", 404);
   }
 
-  return buildProfileResponse(user);
+  const result = await User.aggregate([
+    { $match: { _id: user._id } },
+    ...buildUserProfilePipeline(userObjectId),
+  ]);
+
+  if (!result.length) {
+    throw new ApiError("User not found", 404);
+  }
+  const postsCount = await countPostsByUserRepo(user._id);
+
+  const { upvotesReceived, downvotesReceived, totalScore } =
+    await getPostsStatByUserRepo(user._id);
+
+  return {
+    user: result[0],
+    stats: {
+      postsCount,
+      upvotesReceived,
+      downvotesReceived,
+      totalScore,
+    },
+  };
 };
 
 export const searchUserService = async (

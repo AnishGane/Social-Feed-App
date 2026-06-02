@@ -11,7 +11,6 @@ export const buildFollowersPipeline = (currentUserId?: Types.ObjectId) => [
           $project: {
             username: 1,
             name: 1,
-            avatar: 1,
           },
         },
       ],
@@ -72,7 +71,6 @@ export const buildFollowersPipeline = (currentUserId?: Types.ObjectId) => [
       _id: "$user._id",
       username: "$user.username",
       name: "$user.name",
-      avatar: "$user.avatar",
 
       isFollowing: {
         $gt: [{ $size: "$viewerFollow" }, 0],
@@ -99,7 +97,6 @@ export const buildFollowingPipeline = (currentUserId?: Types.ObjectId) => [
           $project: {
             username: 1,
             name: 1,
-            avatar: 1,
           },
         },
       ],
@@ -160,7 +157,6 @@ export const buildFollowingPipeline = (currentUserId?: Types.ObjectId) => [
       _id: "$user._id",
       username: "$user.username",
       name: "$user.name",
-      avatar: "$user.avatar",
 
       isFollowing: {
         $gt: [{ $size: "$viewerFollow" }, 0],

@@ -1,28 +1,25 @@
-import { useToggleFollowMutation } from "@/services/follow-api"
-import { Button } from "../ui/button"
+import { useToggleFollowMutation } from "@/services/follow-api";
+import { Button } from "../ui/button";
 
 type Props = {
-    userId: string,
-    isFollowing: boolean
-}
+    userId: string;
+    isFollowing: boolean;
+    className?: string;
+};
 
-const FollowButton = ({ userId, isFollowing }: Props) => {
+const FollowButton = ({ userId, isFollowing, className }: Props) => {
     const [toggleFollow, { isLoading }] = useToggleFollowMutation();
-
-    const handleClick = async () => {
-        await toggleFollow(userId);
-    };
 
     return (
         <Button
-            variant={isFollowing ? "secondary" : "ghost"}
-            onClick={handleClick}
+            className={className}
+            variant={isFollowing ? "secondary" : "default"}
             disabled={isLoading}
-            className="cursor-pointer text-xs"
+            onClick={() => toggleFollow(userId)}
         >
-            {isFollowing ? "Unfollow" : "Follow"}
+            {isFollowing ? "Following" : "Follow"}
         </Button>
     );
-}
+};
 
-export default FollowButton
+export default FollowButton;
